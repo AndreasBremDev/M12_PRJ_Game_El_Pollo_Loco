@@ -15,23 +15,23 @@ document.addEventListener('keydown', (e) => {
     
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {
         keyboard.UP = true;
-        world.character.jump();
+        // world.character.jump();
     } 
     if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
         keyboard.LEFT = true;
-        world.character.moveCharacterLeft();
+        // world.character.moveCharacterLeft();
     }
     if (e.key === 'ArrowRight' || e.code === 'KeyD') {
         keyboard.RIGHT = true;
-        world.character.moveRight();
+        // world.character.moveRight();
     }
     if (e.key === 'ArrowDown' || e.code === 'KeyS') {
         keyboard.RIGHT = true;
-        world.character.moveRight();
+        // world.character.moveDown();
     }
     if (e.key === ' ' || e.code === 'Space') {
         keyboard.SPACE = true;
-        world.character.jump();
+        // world.character.jump();
     }
     
 });

@@ -14,6 +14,19 @@ class Character extends MovableObject {
         '../assets/img/2_character_pepe/2_walk/W-26.png'
     ];
 
+    IMAGES_IDLE = [
+        '../assets/img/2_character_pepe/1_idle/idle/I-1.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-3.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-2.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-4.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-5.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-6.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-7.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-8.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-9.png',
+        '../assets/img/2_character_pepe/1_idle/idle/ID-10.png'
+    ];
+
     IMAGES_JUMPING = [
         '../assets/img/2_character_pepe/3_jump/J-31.png',
         '../assets/img/2_character_pepe/3_jump/J-32.png',
@@ -26,8 +39,6 @@ class Character extends MovableObject {
         '../assets/img/2_character_pepe/3_jump/J-39.png'
     ];
 
-
-
     currentImage = 0;
     world;
 
@@ -36,6 +47,7 @@ class Character extends MovableObject {
         this.loadImage('../assets/img/2_character_pepe/2_walk/W-21.png');
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
+        this.loadImages(this.IMAGES_IDLE);
         this.applyGravity();
         this.animate();
     }
@@ -43,17 +55,20 @@ class Character extends MovableObject {
     animate() {
 
         setInterval(() => {
+            // this.walking_sound.pause();
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.x += this.speedX;
+                this.moveRight();
                 this.otherDirection = false;
+                // this.walking_sound.play();
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
-                this.x -= this.speedX;
+                this.moveLeft();
                 this.otherDirection = true;
+                // this.walking_sound.play();
             }
-            
-            if (this.world.keyboard.UP && !this.isAboveGround()) {
+
+            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
             }
 
@@ -72,11 +87,11 @@ class Character extends MovableObject {
                     this.playAnimation(this.IMAGES_WALKING);
                 }
             }
-        }, 1000 / 60);
+        }, 1000 / 25);
     }
 
-    moveCharacterLeft() {
-        console.log('move left');
+    jump() {
+        this.speedY = 30;
     }
 
 
