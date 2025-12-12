@@ -9,6 +9,12 @@ class Chicken extends MovableObject {
         '../assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
     ]
 
+    offset = { 
+        top: 5,
+        left: 5,
+        right: 5,
+        bottom: 5
+    };
 
     constructor() {
         super();
@@ -22,7 +28,7 @@ class Chicken extends MovableObject {
 
     animate() {
         setInterval(() => {
-            this.moveLeft();
+            // this.moveLeft();
         }, 1000 / 60);
 
         setInterval(() => {

@@ -12,10 +12,30 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+        // this.collisionIntervalId = null;
+        this.checkCollisions();
+
     }
 
     setWorld() {
         this.character.world = this;
+    }
+
+    checkCollisions() {
+        /* this.collisionIntervalId =  */setInterval(() => {
+            this.level.enemies.forEach((enemy) => {
+                if (this.character.isColliding(enemy) ) {
+                    
+                    this.character.hit();
+                    console.log('collision - character remaining energy: ', this.character.energy);
+                    
+                }
+            });
+            // if (this.character.energy <= 0) {
+            //     clearInterval(this.collisionIntervalId);
+            //     console.log('Game Over');
+            // }
+        }, 100);
     }
 
     draw() {

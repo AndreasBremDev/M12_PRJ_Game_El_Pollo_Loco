@@ -37,7 +37,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
-    console.log(e);
+    // console.log(e);
     
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {
         keyboard.UP = false;
