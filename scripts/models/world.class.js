@@ -5,6 +5,7 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    statusBar = new StatusBar();
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -23,19 +24,20 @@ class World {
 
     checkCollisions() {
         /* this.collisionIntervalId =  */setInterval(() => {
-            this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy) ) {
-                    
-                    this.character.hit();
-                    console.log('collision - character remaining energy: ', this.character.energy);
-                    
-                }
-            });
-            // if (this.character.energy <= 0) {
-            //     clearInterval(this.collisionIntervalId);
-            //     console.log('Game Over');
-            // }
-        }, 100);
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+
+                this.character.hit();
+                // console.log('collision - character remaining energy: ', this.character.energy);
+                this.statusBar.setPercentage(this.character.energy);
+
+            }
+        });
+        // if (this.character.energy <= 0) {
+        //     clearInterval(this.collisionIntervalId);
+        //     console.log('Game Over');
+        // }
+    }, 100);
     }
 
     draw() {
@@ -43,12 +45,14 @@ class World {
 
         this.ctx.translate(this.camera_x, 0);
 
-        this.addObjectsToMap(this.level.backgroundObjects)
-        this.addObjectsToMap(this.level.clouds)
-        this.addObjectsToMap(this.level.enemies)
+        this.addObjectsToMap(this.level.backgroundObjects);
+        this.addObjectsToMap(this.level.clouds);
+        this.addObjectsToMap(this.level.enemies);
         this.addToMap(this.character);
-
+        
         this.ctx.translate(-this.camera_x, 0);
+        
+        this.addToMap(this.statusBar);
 
         let self = this
         requestAnimationFrame(function () {

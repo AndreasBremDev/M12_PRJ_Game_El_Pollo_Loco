@@ -1,9 +1,8 @@
-class MovableObject {
-    // x = 200;
-    y = 270;
-    img;
-    imageCache = [];
-    currentImage = 0;
+class MovableObject extends DrawableObject {
+
+
+
+
     speedX = 1;
     otherDirection = false;
     speedY = 0;
@@ -34,35 +33,6 @@ class MovableObject {
         return this.y < 235;
     }
 
-    loadImage(path) {
-        this.img = new Image(); // this.img = document.getElementById('image') <img id="image" src="...">;
-        this.img.src = path;
-    }
-
-    loadImages(arr) {
-        arr.forEach((path) => {
-            let img = new Image();
-            img.src = path;
-            this.imageCache[path] = img;
-        });
-    }
-
-    draw(ctx) {
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-    }
-
-    drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-            ctx.beginPath();
-            ctx.lineWidth = '1';
-            if (this instanceof Character) {ctx.strokeStyle = 'blue'};
-            if (this instanceof Chicken) { ctx.strokeStyle = 'red'};
-            if (this instanceof Endboss) { ctx.strokeStyle = 'green'};
-            ctx.rect(this.x + this.offset.left, this.y + this.offset.top, this.width - this.offset.left - this.offset.right, this.height - this.offset.top - this.offset.bottom);
-            ctx.stroke();
-        }
-    }
-
     // character.isColliding(chicken);
     isColliding(mo) {
         return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
@@ -74,7 +44,7 @@ class MovableObject {
     hit() {
         this.energy -= 2;
         console.log('Character Energy: ', this.energy);
-        
+
         if (this.energy <= 0) {
             this.energy = 0;
         } else {
@@ -85,7 +55,7 @@ class MovableObject {
     isHurt() {
         let timePassed = new Date().getTime() - this.lastHit;
         // console.log(timePassed);
-        
+
         return timePassed < 1000;
     }
 
