@@ -23,7 +23,14 @@ class DrawableObject {
 
     draw(ctx) {
         if (this.img && this.img.complete && this.img.naturalWidth > 0) {
+        // try {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        // } catch (e) {
+        //     console.warn('Error while drawing image: ', e);
+        //     console.log('could not load image,', this.img.src);
+        //     debugger;
+        //     //index läuft raus? / typo.verschrieben?
+        // }
         }
     }
 

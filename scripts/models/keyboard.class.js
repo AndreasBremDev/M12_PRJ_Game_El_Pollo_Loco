@@ -2,22 +2,14 @@ class Keyboard {
     LEFT = false;
     RIGHT = false;
     UP = false;
+    DOWN = false;
     SPACE = false;
+    F = false;
+    isAnyKeyHeldDown = false;
+    
 
     constructor() {
 
-    }
-
-    keyDownHandler(e) {
-        if (e.key === 'ArrowLeft' || e.key === 'A') {
-            this.LEFT = true;
-        }
-    }
-
-    keyUpHandler(e) {
-        if (e.key === 'ArrowLeft' || e.key === 'A') {
-            this.LEFT = false;
-        }
     }
 
 }

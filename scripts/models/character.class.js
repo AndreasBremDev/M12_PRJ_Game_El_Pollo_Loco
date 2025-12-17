@@ -27,6 +27,19 @@ class Character extends MovableObject {
         '../assets/img/2_character_pepe/1_idle/idle/I-10.png'
     ];
 
+    IMAGES_LONG_IDLE = [
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-11.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-12.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-13.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-14.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-15.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-16.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-17.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-18.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-19.png',
+        '../assets/img/2_character_pepe/1_idle/long_idle/I-20.png'
+    ]
+
     IMAGES_JUMPING = [
         '../assets/img/2_character_pepe/3_jump/J-31.png',
         '../assets/img/2_character_pepe/3_jump/J-32.png',
@@ -75,6 +88,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_IDLE);
+        this.loadImages(this.IMAGES_LONG_IDLE);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.applyGravity();
@@ -112,21 +126,17 @@ class Character extends MovableObject {
         setInterval(() => {
             if (this.currentStatus !== this.nextStatus) {
                 this.resetAnimation();
-                console.log('reset ');
+                // console.log('reset ');
             }
             this.currentStatus = this.nextStatus;
 
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
                 this.nextStatus = 'dead';
-
             } else if (this.isHurt()) {
-                // console.log(this.energy);
-
                 this.playAnimation(this.IMAGES_HURT);
                 this.nextStatus = 'hurt';
             } else if (this.isAboveGround()) {
-
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.nextStatus = 'jumping';
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
@@ -135,6 +145,10 @@ class Character extends MovableObject {
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
                 this.nextStatus = 'idle';
+                // setTimeout(() => {
+                //     this.playAnimation(this.IMAGES_LONG_IDLE);
+                //     this.nextStatus = 'long_idle';
+                // }, 5000);
             }
 
         }, 1000 / 25);
@@ -148,6 +162,8 @@ class Character extends MovableObject {
         this.currentImage = 0;
     }
 
+    throw() {
 
+    }
 
 }

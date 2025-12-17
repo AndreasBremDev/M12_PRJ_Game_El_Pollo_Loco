@@ -6,6 +6,7 @@ class World {
     keyboard;
     camera_x = 0;
     statusBar = new StatusBar();
+    throwableObjects = []
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -14,7 +15,7 @@ class World {
         this.draw();
         this.setWorld();
         // this.collisionIntervalId = null;
-        this.checkCollisions();
+        this.run();
 
     }
 
@@ -22,22 +23,36 @@ class World {
         this.character.world = this;
     }
 
-    checkCollisions() {
-        /* this.collisionIntervalId =  */setInterval(() => {
-        this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy)) {
+    run() {
+    /* this.collisionIntervalId =  */
+    setInterval(() => {
 
-                this.character.hit();
-                // console.log('collision - character remaining energy: ', this.character.energy);
-                this.statusBar.setPercentage(this.character.energy);
+        this.checkCollisions();
 
-            }
-        });
+        this.checkThrowObjects();
+
         // if (this.character.energy <= 0) {
         //     clearInterval(this.collisionIntervalId);
         //     console.log('Game Over');
         // }
+
     }, 100);
+}
+
+    checkThrowObjects() {
+        if (this.keyboard.F) {
+            let bottle = new ThrowableObject(this.character.x +50, this.character.y +100);
+            this.throwableObjects.push(bottle);
+        }
+    }
+
+    checkCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                this.character.hit();
+                this.statusBar.setPercentage(this.character.energy);
+            }
+        });
     }
 
     draw() {
@@ -48,10 +63,11 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character);
-        
+
         this.ctx.translate(-this.camera_x, 0);
-        
+
         this.addToMap(this.statusBar);
 
         let self = this

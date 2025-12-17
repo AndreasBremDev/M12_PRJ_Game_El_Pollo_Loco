@@ -12,8 +12,16 @@ body {
 
 canvas {
     background-color: black;
-    /* background: url(assets/img/5_background/layers/air.png); */
-    /* background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center; */
+}
+
+@media only screen and (max-width: 720px) {
+    canvas {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-height: 480px) {
+    canvas {
+        height: 100vh;
+    }
 }

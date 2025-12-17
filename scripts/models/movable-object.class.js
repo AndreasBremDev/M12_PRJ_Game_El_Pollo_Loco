@@ -1,8 +1,5 @@
 class MovableObject extends DrawableObject {
 
-
-
-
     speedX = 1;
     otherDirection = false;
     speedY = 0;
@@ -30,7 +27,11 @@ class MovableObject extends DrawableObject {
     }
 
     isAboveGround() {
-        return this.y < 235;
+        if (this instanceof ThrowableObject) {
+            return true;
+        } else {
+            return this.y < 235;
+        }
     }
 
     // character.isColliding(chicken);
