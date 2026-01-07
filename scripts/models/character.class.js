@@ -126,15 +126,14 @@ class Character extends MovableObject {
         setInterval(() => {
             if (this.currentStatus !== this.nextStatus) {
                 this.resetAnimation();
-                // console.log('reset ');
             }
             this.currentStatus = this.nextStatus;
 
             if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
+                this.playAnimation(this.IMAGES_DEAD, 3);
                 this.nextStatus = 'dead';
             } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
+                this.playAnimation(this.IMAGES_HURT, 1);
                 this.nextStatus = 'hurt';
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
@@ -145,10 +144,6 @@ class Character extends MovableObject {
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
                 this.nextStatus = 'idle';
-                // setTimeout(() => {
-                //     this.playAnimation(this.IMAGES_LONG_IDLE);
-                //     this.nextStatus = 'long_idle';
-                // }, 5000);
             }
 
         }, 1000 / 25);
