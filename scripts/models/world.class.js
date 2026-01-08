@@ -31,7 +31,7 @@ class World {
 
         this.checkThrowObjects();
 
-        // if (this.character.energy <= 0) {
+        // if (this.character.health <= 0) {
         //     clearInterval(this.collisionIntervalId);
         //     console.log('Game Over');
         // }
@@ -50,7 +50,7 @@ class World {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
                 this.character.hit();
-                this.statusBar.setPercentage(this.character.energy);
+                this.statusBar.setPercentage(this.character.health);
             }
         });
     }

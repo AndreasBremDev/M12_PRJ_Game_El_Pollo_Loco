@@ -4,7 +4,7 @@ class MovableObject extends DrawableObject {
     otherDirection = false;
     speedY = 0;
     acceleration = 2.5;
-    energy = 100;
+    health = 100;
     lastHit = 0;
 
     offset = {
@@ -43,11 +43,17 @@ class MovableObject extends DrawableObject {
     }
 
     hit() {
-        this.energy -= 2;
-        console.log('Character Energy: ', this.energy);
-
-        if (this.energy <= 0) {
-            this.energy = 0;
+        if (this.health <= 100 && this.health > 0) {
+            this.health -= 20;
+            console.log('Character health: ', this.health);
+            for(let i = 0; i < 10; i++) {
+                this.x += /* this.otherDirection ? 20 : */ -20;
+            // push back
+            // only one hit at a time (indirectly done)
+            }
+        }
+        if (this.health <= 0) {
+            this.health = 0;
         } else {
             this.lastHit = new Date().getTime();
         }
@@ -61,7 +67,7 @@ class MovableObject extends DrawableObject {
     }
 
     isDead() {
-        return this.energy == 0;
+        return this.health == 0;
     }
 
 

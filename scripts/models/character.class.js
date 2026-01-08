@@ -1,9 +1,9 @@
 class Character extends MovableObject {
     x = 100;
-    y = 135; // was 235
+    y = 235; // was 135 (to show falling)
     height = 200;
     width = 100;
-    speedX = 10;
+    speedX = 8;
 
     IMAGES_WALKING = [
         '../assets/img/2_character_pepe/2_walk/W-21.png',
@@ -100,24 +100,20 @@ class Character extends MovableObject {
         setInterval(() => {
             // this.walking_sound.pause();
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                // this.currentStatus = 'walking';
                 this.moveRight();
                 this.otherDirection = false;
                 // this.walking_sound.play();
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
-                // this.currentStatus = 'walking';
                 this.moveLeft();
                 this.otherDirection = true;
                 // this.walking_sound.play();
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                // this.currentStatus = 'jumping';
                 this.jump();
             }
-
 
             this.world.camera_x = -this.x + 100;
 
@@ -128,7 +124,6 @@ class Character extends MovableObject {
                 this.resetAnimation();
             }
             this.currentStatus = this.nextStatus;
-
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD, 3);
                 this.nextStatus = 'dead';
