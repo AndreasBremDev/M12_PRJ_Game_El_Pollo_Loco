@@ -34,6 +34,15 @@ function initLevel() {
         [
             new Cloud()
         ],
-        backgroundObjects
+        backgroundObjects,
+        [
+            new Coins(150, 300),
+            new Coins(210, 210),
+            new Coins(290, 170),
+            new Coins(390, 150),
+            new Coins(490, 170),
+            new Coins(570, 210),
+            new Coins(630, 300),
+        ]
     );
 }

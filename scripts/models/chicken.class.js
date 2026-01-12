@@ -3,6 +3,7 @@ class Chicken extends MovableObject {
     width = 50;
     height = 50;
     y = 380;
+    
     IMAGES_WALKING = [
         '../assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
         '../assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',

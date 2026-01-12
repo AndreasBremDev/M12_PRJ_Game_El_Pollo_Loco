@@ -122,7 +122,7 @@ class Character extends MovableObject {
 
         setInterval(() => {
             this.startIdle = new Date().getTime();
-            console.log(this.startIdle);
+            // console.log(this.startIdle);
             if (this.currentStatus !== this.nextStatus) {
                 this.resetAnimation();
             }
@@ -152,7 +152,7 @@ class Character extends MovableObject {
 
     startLongIdle() {
         let timePassed = new Date().getTime() - this.startIdle;
-        console.log(timePassed > 2000);
+        // console.log(timePassed > 2000);
 
         return timePassed > 2000;
     }

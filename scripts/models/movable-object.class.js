@@ -20,7 +20,6 @@ class MovableObject extends DrawableObject {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
             } else {
-                // this.y = 235;
                 this.speedY = 0;
             };
         }, 1000 / 25);
@@ -49,7 +48,7 @@ class MovableObject extends DrawableObject {
             for(let i = 0; i < 10; i++) {
                 this.x += -20;
             // push back
-            // only one hit at a time (indirectly done)
+            // only one hit at a time (indirectly (!) - still open task here)
             }
         }
         if (this.health <= 0) {

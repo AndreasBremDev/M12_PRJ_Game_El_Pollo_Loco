@@ -5,10 +5,15 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
-    statusBar = new StatusBar();
+    statusBarHealth = new StatusBarHealth();
+    statusBarCoins = new StatusBarCoins();
+    statusBarBottles = new StatusBarBottles();
     throwableObjects = [];
     lastThrowTime = 0;
     throwCooldown = 500;
+    coins;
+    coinsCollected = 0;
+
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -29,14 +34,11 @@ class World {
         /* this.collisionIntervalId =  */
         setInterval(() => {
 
-            this.checkCollisions();
+            this.checkCollisionsEnemy();
 
             this.checkThrowObjects();
 
-            // if (this.character.health <= 0) {
-            //     clearInterval(this.collisionIntervalId);
-            //     console.log('Game Over');
-            // }
+            this.checkCollisionsCoins();
 
         }, 1000 / 10);
     }
@@ -54,11 +56,22 @@ class World {
         return currentTime - this.lastThrowTime >= this.throwCooldown;
     }
 
-    checkCollisions() {
+    checkCollisionsEnemy() {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
                 this.character.hit();
-                this.statusBar.setPercentage(this.character.health);
+                this.statusBarHealth.setPercentage(this.character.health);
+            }
+        });
+    }
+    checkCollisionsCoins() {
+        this.level.coins.forEach((coin) => {
+            if (this.character.isColliding(coin)) {
+                this.coinsCollected += 20;
+                console.log('collected coins: ', this.coinsCollected);
+                
+                this.level.coins.splice(this.level.coins.indexOf(coin), 1);
+                this.statusBarCoins.setPercentage(this.coinsCollected);
             }
         });
     }
@@ -72,11 +85,14 @@ class World {
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
+        this.addObjectsToMap(this.level.coins);
         this.addToMap(this.character);
 
         this.ctx.translate(-this.camera_x, 0);
 
-        this.addToMap(this.statusBar);
+        this.addToMap(this.statusBarHealth);
+        this.addToMap(this.statusBarCoins);
+        this.addToMap(this.statusBarBottles);
 
         let self = this
         requestAnimationFrame(function () {
