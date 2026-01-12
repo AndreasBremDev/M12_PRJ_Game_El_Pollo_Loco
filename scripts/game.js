@@ -14,8 +14,6 @@ function init() {
 }
 
 document.addEventListener('keydown', (e) => {
-    // console.log(e);
-
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {
         keyboard.UP = true;
         isAnyKeyHeldDown = true;

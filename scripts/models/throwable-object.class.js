@@ -8,16 +8,13 @@ class ThrowableObject extends MovableObject {
         this.y = y;
         this.width = 50;
         this.height = 50;
-        this.throw();
+        this.hasLanded = false;
     }
     
     throw() {
         this.speedX = 15;
         this.speedY = 20;
         this.applyGravity();
-        setInterval(() => {
-            this.x += this.speedX;
-        }, 1000 / 25);
     };
     
 

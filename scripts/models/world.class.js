@@ -6,7 +6,9 @@ class World {
     keyboard;
     camera_x = 0;
     statusBar = new StatusBar();
-    throwableObjects = []
+    throwableObjects = [];
+    lastThrowTime = 0;
+    throwCooldown = 500;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -24,26 +26,32 @@ class World {
     }
 
     run() {
-    /* this.collisionIntervalId =  */
-    setInterval(() => {
+        /* this.collisionIntervalId =  */
+        setInterval(() => {
 
-        this.checkCollisions();
+            this.checkCollisions();
 
-        this.checkThrowObjects();
+            this.checkThrowObjects();
 
-        // if (this.character.health <= 0) {
-        //     clearInterval(this.collisionIntervalId);
-        //     console.log('Game Over');
-        // }
+            // if (this.character.health <= 0) {
+            //     clearInterval(this.collisionIntervalId);
+            //     console.log('Game Over');
+            // }
 
-    }, 100);
-}
+        }, 1000 / 10);
+    }
 
     checkThrowObjects() {
-        if (this.keyboard.F) {
-            let bottle = new ThrowableObject(this.character.x +50, this.character.y +100);
-            this.throwableObjects.push(bottle);
+        if (this.keyboard.F && this.cooldown()) {
+                let bottle = new Bottle(this.character.x + 50, this.character.y + 100, this.keyboard);
+                this.throwableObjects.push(bottle);
+                this.lastThrowTime = new Date().getTime();
         }
+    }
+
+    cooldown() {
+        let currentTime = new Date().getTime();
+        return currentTime - this.lastThrowTime >= this.throwCooldown;
     }
 
     checkCollisions() {

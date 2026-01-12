@@ -20,7 +20,7 @@ class MovableObject extends DrawableObject {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
             } else {
-                this.y = 235;
+                // this.y = 235;
                 this.speedY = 0;
             };
         }, 1000 / 25);
@@ -47,7 +47,7 @@ class MovableObject extends DrawableObject {
             this.health -= 20;
             console.log('Character health: ', this.health);
             for(let i = 0; i < 10; i++) {
-                this.x += /* this.otherDirection ? 20 : */ -20;
+                this.x += -20;
             // push back
             // only one hit at a time (indirectly done)
             }
@@ -61,8 +61,6 @@ class MovableObject extends DrawableObject {
 
     isHurt() {
         let timePassed = new Date().getTime() - this.lastHit;
-        // console.log(timePassed);
-
         return timePassed < 1000;
     }
 

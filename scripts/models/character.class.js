@@ -81,6 +81,7 @@ class Character extends MovableObject {
     currentStatus = 'idle';
     nextStatus = '';
     currStatusChanged = false;
+    startIdle;
 
     constructor() {
         super();
@@ -120,6 +121,8 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         setInterval(() => {
+            this.startIdle = new Date().getTime();
+            console.log(this.startIdle);
             if (this.currentStatus !== this.nextStatus) {
                 this.resetAnimation();
             }
@@ -136,12 +139,22 @@ class Character extends MovableObject {
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.nextStatus = 'walking';
-            } else {
+            } else if (!this.startLongIdle()) {
                 this.playAnimation(this.IMAGES_IDLE);
                 this.nextStatus = 'idle';
-            }
 
+            } else {
+                this.playAnimation(this.IMAGES_LONG_IDLE);
+                this.nextStatus = 'longIdle';
+            }
         }, 1000 / 25);
+    }
+
+    startLongIdle() {
+        let timePassed = new Date().getTime() - this.startIdle;
+        console.log(timePassed > 2000);
+
+        return timePassed > 2000;
     }
 
     jump() {

@@ -9,7 +9,7 @@ class DrawableObject {
 
 
     loadImage(path) {
-        this.img = new Image(); // this.img = document.getElementById('image') <img id="image" src="...">;
+        this.img = new Image(); // what does new Image(): this.img = document.getElementById('image') <img id="image" src="...">;
         this.img.src = path;
     }
 
@@ -23,24 +23,18 @@ class DrawableObject {
 
     draw(ctx) {
         if (this.img && this.img.complete && this.img.naturalWidth > 0) {
-        // try {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        // } catch (e) {
-        //     console.warn('Error while drawing image: ', e);
-        //     console.log('could not load image,', this.img.src);
-        //     debugger;
-        //     //index läuft raus? / typo.verschrieben?
-        // }
         }
     }
 
     drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject) {
             ctx.beginPath();
             ctx.lineWidth = '1';
             if (this instanceof Character) { ctx.strokeStyle = 'blue' };
             if (this instanceof Chicken) { ctx.strokeStyle = 'red' };
             if (this instanceof Endboss) { ctx.strokeStyle = 'green' };
+            if (this instanceof ThrowableObject) { ctx.strokeStyle = 'orange' };
             ctx.rect(this.x + this.offset.left, this.y + this.offset.top, this.width - this.offset.left - this.offset.right, this.height - this.offset.top - this.offset.bottom);
             ctx.stroke();
         }
