@@ -3,7 +3,8 @@ class Chicken extends MovableObject {
     width = 50;
     height = 50;
     y = 380;
-    
+    health = 20;
+
     IMAGES_WALKING = [
         '../assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
         '../assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
@@ -29,7 +30,7 @@ class Chicken extends MovableObject {
 
     animate() {
         setInterval(() => {
-            // this.moveLeft();
+            this.moveLeft();
         }, 1000 / 60);
 
         setInterval(() => {

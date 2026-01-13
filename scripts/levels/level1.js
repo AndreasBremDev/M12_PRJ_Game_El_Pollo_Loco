@@ -36,13 +36,25 @@ function initLevel() {
         ],
         backgroundObjects,
         [
-            new Coins(150, 300),
-            new Coins(210, 210),
-            new Coins(290, 170),
-            new Coins(390, 150),
-            new Coins(490, 170),
-            new Coins(570, 210),
-            new Coins(630, 300),
+            // new Coins(150, 300),
+            // new Coins(210, 210),
+            // new Coins(290, 170),
+            // new Coins(390, 150),
+            // new Coins(490, 170),
+            // new Coins(570, 210),
+            // new Coins(630, 300),
+
+            new Coins(150, 250),
+            new Coins(200, 250),
+            new Coins(150, 200),
+            new Coins(200, 200)
+
+        ],
+        [
+            new Bottles(0, 350),
+            new Bottles(200, 350),
+            new Bottles(300, 350),
+            new Bottles(400, 350),
         ]
     );
 }

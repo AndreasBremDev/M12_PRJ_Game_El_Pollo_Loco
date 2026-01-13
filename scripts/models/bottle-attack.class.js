@@ -33,11 +33,7 @@ class Bottle extends ThrowableObject {
         this.hasSplashed = false;
         this.splashFrameCount = 0;
         this.animate();
-        this.throw();
-    }
-
-    isAboveGround() {
-        return this.y < 380;
+        this.attackOne();
     }
 
     animate() {
@@ -60,7 +56,7 @@ class Bottle extends ThrowableObject {
         }, 1000 / 25);
     }
 
-    throw() {
+    attackOne() {
         this.speedX = 15;
         this.speedY = 20;
         this.applyGravity();

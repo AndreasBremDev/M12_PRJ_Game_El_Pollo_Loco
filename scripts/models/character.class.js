@@ -165,8 +165,17 @@ class Character extends MovableObject {
         this.currentImage = 0;
     }
 
-    throw() {
-
+    attackOne() {
+        this.speedX = 15;
+        this.speedY = 20;
+        this.applyGravity();
+        this.throwInterval = setInterval(() => {
+            if (!this.hasSplashed) {
+                this.x += this.speedX;
+            } else {
+                clearInterval(this.throwInterval);
+            }
+        }, 1000 / 25);
     }
 
 }

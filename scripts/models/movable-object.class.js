@@ -41,14 +41,20 @@ class MovableObject extends DrawableObject {
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     }
 
+    isCollidingTop(mo) {
+        return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+            this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
+            this.y + this.height - this.offset.bottom < mo.y + mo.offset.top + 20 &&
+            this.x + this.offset.left < mo.x + mo.width - mo.offset.right
+    }
+
     hit() {
         if (this.health <= 100 && this.health > 0) {
             this.health -= 20;
             console.log('Character health: ', this.health);
-            for(let i = 0; i < 10; i++) {
+            for (let i = 0; i < 10; i++) {
                 this.x += -20;
-            // push back
-            // only one hit at a time (indirectly (!) - still open task here)
+                // only one hit at a time (indirectly (!) - still open task here - // issue: character can be hit multiple times within isHurt())
             }
         }
         if (this.health <= 0) {
