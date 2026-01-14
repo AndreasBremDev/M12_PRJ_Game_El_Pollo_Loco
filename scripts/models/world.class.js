@@ -55,17 +55,15 @@ class World {
         }
     }
 
-    // Endboss collisions:
-    // Character collides with endboss -> Character loses health (done)
-    // Bottle collides with endboss -> endboss hit() / looses health (to do)
-
-
     // Endboss appear:
     // only appears, when character at this.x (1200) position (to do)
 
     checkCollisionsEnemy() {
+        // for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+        //     let enemy = this.level.enemies[i];
         this.level.enemies.forEach((enemy, index) => {
             if (this.character.isCollidingTop(enemy) && enemy instanceof Chicken && this.isFalling()) {
+                this.character.jump(15);
                 this.level.enemies.splice(index, 1);
             } else if (this.character.isColliding(enemy)) {
                 this.character.hit();

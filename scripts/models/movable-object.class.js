@@ -27,13 +27,12 @@ class MovableObject extends DrawableObject {
 
     isAboveGround() {
         if (this instanceof ThrowableObject) {
-            return true;
+            return this.y < 380;
         } else {
             return this.y < 235;
         }
     }
 
-    // character.isColliding(chicken);
     isColliding(mo) {
         return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
             this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
@@ -44,7 +43,7 @@ class MovableObject extends DrawableObject {
     isCollidingTop(mo) {
         return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
             this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
-            this.y + this.height - this.offset.bottom < mo.y + mo.offset.top + 20 &&
+            this.y + this.height - this.offset.bottom < mo.y + mo.offset.top + 30 &&
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right
     }
 
