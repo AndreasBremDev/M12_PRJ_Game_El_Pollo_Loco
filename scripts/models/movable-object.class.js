@@ -15,7 +15,7 @@ class MovableObject extends DrawableObject {
     };
 
     applyGravity() {
-        setInterval(() => {
+        let gravity = setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
@@ -51,10 +51,12 @@ class MovableObject extends DrawableObject {
     hit() {
         if (this.health <= 100 && this.health > 0) {
             this.health -= 20;
-            console.log('Character health: ', this.health);
-            for (let i = 0; i < 10; i++) {
-                this.x += -20;
-                // only one hit at a time (indirectly (!) - still open task here - // issue: character can be hit multiple times within isHurt())
+            if (this instanceof Character) {
+                ;
+                for (let i = 0; i < 10; i++) {
+                    this.x += -20;
+                    // only one hit at a time (indirectly (!) - still open task here - // issue: character can be hit multiple times within isHurt())
+                }
             }
         }
         if (this.health <= 0) {

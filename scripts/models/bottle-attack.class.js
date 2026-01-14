@@ -25,7 +25,7 @@ class Bottle extends ThrowableObject {
 
     constructor(x, y, keyboard) {
         super(x, y);
-        this.loadImage('../assets/img/6_salsa_bottle/salsa_bottle.png');
+        this.loadImage('./assets/img/6_salsa_bottle/salsa_bottle.png');
         this.keyboard = keyboard;
         this.loadImages(this.IMAGES_ROTATE);
         this.loadImages(this.IMAGES_SQUEEZE);
@@ -46,11 +46,15 @@ class Bottle extends ThrowableObject {
                 this.playAnimation(this.IMAGES_SPLASH, 4);
                 this.splashFrameCount++;
                 
+                // BUG: splash/Bottle fällt (y wieder <> 0) nach Splash-Animation 
+                // BUG: bottle wird nicht aus level gespliced nach splash-Animation
+
                 // Nach vollständiger Splash-Animation stoppen
                 if (this.splashFrameCount >= this.IMAGES_SPLASH.length * 4) {
                     this.hasSplashed = true;
                     this.splashAnimationComplete = true;
                     clearInterval(this.animationInterval); // Animation komplett stoppen
+                    
                 }
             }
         }, 1000 / 25);

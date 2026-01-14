@@ -8,6 +8,7 @@ class World {
     statusBarHealth = new StatusBarHealth();
     statusBarCoins = new StatusBarCoins();
     statusBarBottles = new StatusBarBottles();
+    statusBarEndbossHealth = new StatusBarEndbossHealth();
     throwableObjects = [];
     lastThrowTime = 0;
     throwCooldown = 750;
@@ -22,7 +23,6 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        // this.collisionIntervalId = null;
         this.run();
 
     }
@@ -32,11 +32,9 @@ class World {
     }
 
     run() {
-        /* this.collisionIntervalId =  */
         setInterval(() => {
 
             this.checkCollisionsEnemy();
-            // this.checkCollisionsEnemyTop();
 
             this.checkThrowObjects();
 
@@ -57,6 +55,14 @@ class World {
         }
     }
 
+    // Endboss collisions:
+    // Character collides with endboss -> Character loses health (done)
+    // Bottle collides with endboss -> endboss hit() / looses health (to do)
+
+
+    // Endboss appear:
+    // only appears, when character at this.x (1200) position (to do)
+
     checkCollisionsEnemy() {
         this.level.enemies.forEach((enemy, index) => {
             if (this.character.isCollidingTop(enemy) && enemy instanceof Chicken && this.isFalling()) {
@@ -64,10 +70,14 @@ class World {
             } else if (this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.health);
-            } else if (this.throwableObjects.length > 0 && this.throwableObjects[0].isColliding(enemy)) {
+            } else if (this.throwableObjects.length > 0 && this.throwableObjects[this.throwableObjects.length - 1].isColliding(enemy) && enemy instanceof Chicken) {
                 this.level.enemies.splice(index, 1);
                 this.throwableObjects.splice(0, 1);
-            }  
+            } else if (this.throwableObjects.length > 0 && this.throwableObjects[this.throwableObjects.length - 1].isColliding(enemy) && enemy instanceof Endboss) {
+                enemy.hit();
+                this.throwableObjects.splice(0, 1);
+                this.statusBarEndbossHealth.setPercentage(enemy.health);
+            }
         });
     }
 
@@ -110,6 +120,9 @@ class World {
         this.addToMap(this.statusBarHealth);
         this.addToMap(this.statusBarCoins);
         this.addToMap(this.statusBarBottles);
+        if (this.character.x >= 1200) {
+        this.addToMap(this.statusBarEndbossHealth);
+        }
 
         let self = this
         requestAnimationFrame(function () {
