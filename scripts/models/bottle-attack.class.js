@@ -25,7 +25,7 @@ class Bottle extends ThrowableObject {
 
     constructor(x, y, keyboard) {
         super(x, y);
-        this.loadImage('./assets/img/6_salsa_bottle/salsa_bottle.png');
+        this.loadImage('../../assets/img/6_salsa_bottle/salsa_bottle.png');
         this.keyboard = keyboard;
         this.loadImages(this.IMAGES_ROTATE);
         this.loadImages(this.IMAGES_SQUEEZE);
