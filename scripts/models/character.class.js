@@ -4,6 +4,23 @@ class Character extends MovableObject {
     height = 200;
     width = 100;
     speedX = 8;
+    
+    currentImage = 0;
+    world;
+
+    offset = {
+        top: 90,
+        left: 30,
+        right: 25,
+        bottom: 10
+    };
+
+    currentStatus = 'idle';
+    nextStatus = '';
+    currStatusChanged = false;
+    startIdle;
+
+    throwableObject = new ThrowableObject(this.x, this.y + 100);
 
     IMAGES_WALKING = [
         './assets/img/2_character_pepe/2_walk/W-21.png',
@@ -68,20 +85,6 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/5_dead/D-57.png'
     ];
 
-    currentImage = 0;
-    world;
-
-    offset = {
-        top: 90,
-        left: 30,
-        right: 25,
-        bottom: 10
-    };
-
-    currentStatus = 'idle';
-    nextStatus = '';
-    currStatusChanged = false;
-    startIdle;
 
     constructor() {
         super();
@@ -139,6 +142,9 @@ class Character extends MovableObject {
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.nextStatus = 'walking';
+
+            // hier funktioniert das LongIdle noch nicht richtig !!!
+
             } else if (!this.startLongIdle()) {
                 this.playAnimation(this.IMAGES_IDLE);
                 this.nextStatus = 'idle';
@@ -165,14 +171,15 @@ class Character extends MovableObject {
         this.currentImage = 0;
     }
 
-    attackOne() {
-        this.speedX = 15;
-        this.speedY = 20;
-        this.applyGravity();
+    attackOne(throwableObject) {
+        throwableObject.speedX = 15;
+        throwableObject.speedY = 20;
+        throwableObject.applyGravity();
         this.throwInterval = setInterval(() => {
-            if (!this.hasSplashed) {
-                this.x += this.speedX;
+            if (!throwableObject.hasCollided) {
+                throwableObject.x += throwableObject.speedX;
             } else {
+                throwableObject.speedX = 0;
                 clearInterval(this.throwInterval);
             }
         }, 1000 / 25);

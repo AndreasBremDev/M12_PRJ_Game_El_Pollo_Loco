@@ -12,6 +12,8 @@ class World {
     throwableObjects = [];
     lastThrowTime = 0;
     throwCooldown = 750;
+    lastJumpTime = 0;
+    jumpProtectionTime = 300;
     coins;
     coinsCollected = 0;
     bottlesCollected = 0;
@@ -37,6 +39,7 @@ class World {
             this.checkCollisionsEnemy();
 
             this.checkThrowObjects();
+            this.checkBottleCollisions();
 
             this.ckeckCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
@@ -59,37 +62,96 @@ class World {
     // only appears, when character at this.x (1200) position (to do)
 
     checkCollisionsEnemy() {
-        // for (let i = this.level.enemies.length - 1; i >= 0; i--) {
-        //     let enemy = this.level.enemies[i];
-        this.level.enemies.forEach((enemy, index) => {
-            if (this.character.isCollidingTop(enemy) && enemy instanceof Chicken && this.isFalling()) {
-                this.character.jump(15);
-                this.level.enemies.splice(index, 1);
-            } else if (this.character.isColliding(enemy)) {
-                this.character.hit();
-                this.statusBarHealth.setPercentage(this.character.health);
-            } else if (this.throwableObjects.length > 0 && this.throwableObjects[this.throwableObjects.length - 1].isColliding(enemy) && enemy instanceof Chicken) {
-                this.level.enemies.splice(index, 1);
-                this.throwableObjects.splice(0, 1);
-            } else if (this.throwableObjects.length > 0 && this.throwableObjects[this.throwableObjects.length - 1].isColliding(enemy) && enemy instanceof Endboss) {
-                enemy.hit();
-                this.throwableObjects.splice(0, 1);
-                this.statusBarEndbossHealth.setPercentage(enemy.health);
+        let currentTime = new Date().getTime();
+        let isJumpProtected = currentTime - this.lastJumpTime < this.jumpProtectionTime;
+        let jumpedThisFrame = false;
+        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+            let enemy = this.level.enemies[i];
+            if (this.criteriaTopCollisionWithChicken(enemy)) {
+                jumpedThisFrame = this.actionsTopCollisionWithChicken(i, currentTime);
+            } else if (this.criteriaGeneralCollisionWithEnemy(enemy, isJumpProtected, jumpedThisFrame)) {
+                this.actionsGeneralCollisionEnemy();
+            } else if (this.criteriaThrowableCollisionsWithChicken(enemy)) {
+                this.actionsThrowableCollisionsWithChicken(i);
+            } else if (this.criteriaThrowableCollisionsWithEndboss(enemy)) {
+                this.actionsThrowableCollisionsWithEndboss(enemy);
             }
-        });
+        }
     }
 
-    isFalling() {
-        return this.character.speedY < 0;
+
+
+    criteriaThrowableCollisionsWithChicken(enemy) {
+        return this.throwableObjects.length > 0 && this.throwableObjects[this.throwableObjects.length - 1].isColliding(enemy) && enemy instanceof Chicken;
+    }
+
+    actionsThrowableCollisionsWithChicken(i) {
+        this.level.enemies.splice(i, 1);
+        this.throwableObjects[this.throwableObjects.length - 1].hasCollided = true;
+    }
+
+    criteriaThrowableCollisionsWithEndboss(enemy) {
+        return this.throwableObjects.length > 0 && this.throwableObjects[this.throwableObjects.length - 1].isColliding(enemy) && enemy instanceof Endboss;
+    }
+
+    actionsThrowableCollisionsWithEndboss(enemy) {
+        enemy.hit();
+        this.throwableObjects[this.throwableObjects.length - 1].hasCollided = true;
+        this.statusBarEndbossHealth.setPercentage(enemy.health);
+    }
+
+    criteriaGeneralCollisionWithEnemy(enemy, isJumpProtected, jumpedThisFrame) {
+        return this.character.isColliding(enemy) && !isJumpProtected && !jumpedThisFrame;
+    }
+
+    actionsGeneralCollisionEnemy() {
+        this.character.hit();
+        this.statusBarHealth.setPercentage(this.character.health);
+    }
+
+    criteriaTopCollisionWithChicken(enemy) {
+        return this.character.isCollidingTop(enemy) && enemy instanceof Chicken && this.character.speedY < 0;
+    }
+
+    actionsTopCollisionWithChicken(i, currentTime) {
+        this.character.jump(15);
+        this.level.enemies.splice(i, 1);
+        this.lastJumpTime = currentTime;
+        return true;
     }
 
     checkThrowObjects() {
         if (this.keyboard.F && this.cooldown() && this.bottlesCollected > 0) {
             this.lastThrowTime = new Date().getTime();
-            let bottle = new Bottle(this.character.x + 50, this.character.y + 100, this.keyboard);
+            let bottle = new ThrownBottle(this.character.x + 50, this.character.y + 100);
+            this.character.attackOne(bottle);
             this.throwableObjects.push(bottle);
             this.bottlesCollected -= 20;
             this.statusBarBottles.setPercentage(this.bottlesCollected);
+        }
+    }
+
+    checkBottleCollisions() {
+        for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
+            let bottle = this.throwableObjects[i];
+            
+            // Prüfe ThrownBottle nur auf Boden-Kollision
+            if (bottle instanceof ThrownBottle && !bottle.hasCollided) {
+                if (bottle.y >= 380) {
+                    bottle.hasCollided = true;
+                }
+            }
+            
+            // ThrownBottle → SplashBottle wechsel
+            if (bottle instanceof ThrownBottle && bottle.hasCollided) {
+                this.throwableObjects.splice(i, 1);
+                let splash = new SplashBottle(bottle.x, bottle.y);
+                this.throwableObjects.push(splash);
+            }
+            // SplashBottle nach Animation entfernen  
+            else if (bottle instanceof SplashBottle && bottle.animationComplete) {
+                this.throwableObjects.splice(i, 1);
+            }
         }
     }
 
@@ -119,7 +181,7 @@ class World {
         this.addToMap(this.statusBarCoins);
         this.addToMap(this.statusBarBottles);
         if (this.character.x >= 1200) {
-        this.addToMap(this.statusBarEndbossHealth);
+            this.addToMap(this.statusBarEndbossHealth);
         }
 
         let self = this
