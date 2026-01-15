@@ -4,7 +4,7 @@ class Character extends MovableObject {
     height = 200;
     width = 100;
     speedX = 8;
-    
+
     currentImage = 0;
     world;
 
@@ -117,6 +117,7 @@ class Character extends MovableObject {
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
+                // this.jump_sound.play();
             }
 
             this.world.camera_x = -this.x + 100;
@@ -143,7 +144,7 @@ class Character extends MovableObject {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.nextStatus = 'walking';
 
-            // hier funktioniert das LongIdle noch nicht richtig !!!
+                // hier funktioniert das LongIdle noch nicht richtig !!!
 
             } else if (!this.startLongIdle()) {
                 this.playAnimation(this.IMAGES_IDLE);
@@ -183,6 +184,32 @@ class Character extends MovableObject {
                 clearInterval(this.throwInterval);
             }
         }, 1000 / 25);
+    }
+
+    attackTwo(throwableObject) {
+        throwableObject.speedX = 15;
+        this.throwInterval = setInterval(() => {
+            if (!throwableObject.hasCollided) {
+                throwableObject.x += throwableObject.speedX;
+            } else {
+                throwableObject.speedX = 0;
+                clearInterval(this.throwInterval);
+            }
+        }, 1000 / 25);
+    }
+
+    cooldown() {
+        let currentTime = new Date().getTime();
+        return currentTime - this.world.lastThrowTime >= this.world.throwCooldown;
+    }
+
+    characterAttackOne() {
+        this.world.lastThrowTime = new Date().getTime();
+        let bottle = new ThrownBottle(this.x + 50, this.y + 100);
+        this.attackOne(bottle);
+        this.world.throwableObjects.push(bottle);
+        this.world.bottlesCollected -= 20;
+        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
     }
 
 }
