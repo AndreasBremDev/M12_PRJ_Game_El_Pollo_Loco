@@ -51,7 +51,6 @@ class MovableObject extends DrawableObject {
         if (this.health <= 100 && this.health > 0) {
             this.health -= 20;
             if (this instanceof Character) {
-                ;
                 for (let i = 0; i < 10; i++) {
                     this.x += -20;
                     // only one hit at a time (indirectly (!) - still open task here - // issue: character can be hit multiple times within isHurt())
@@ -71,7 +70,7 @@ class MovableObject extends DrawableObject {
     }
 
     isDead() {
-        return this.health == 0;
+        return this.health < 20;
     }
 
 
@@ -95,7 +94,10 @@ class MovableObject extends DrawableObject {
         this.x -= this.speedX;
     }
 
-
-
+    isIdle(time) {
+        let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
+        if (time === 'short') {return timePassed < 5000;}
+        if (time === 'long') {return timePassed >= 5000;}
+    }
 
 }

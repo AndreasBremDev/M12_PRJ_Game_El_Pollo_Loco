@@ -7,8 +7,15 @@ class ChickenDead extends MovableObject {
     CHICKEN_NORMAL_DEAD = [
         './assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png'
     ];
+    
     CHICKEN_SMALL_DEAD = [
         './assets/img/3_enemies_chicken/chicken_small/2_dead/dead.png'
+    ];
+
+    CHICKEN_ENDBOSS_DEAD = [
+        './assets/img/4_enemie_boss_chicken/5_dead/G24.png',
+        './assets/img/4_enemie_boss_chicken/5_dead/G25.png',
+        './assets/img/4_enemie_boss_chicken/5_dead/G26.png'
     ];
 
     offset = {
@@ -25,9 +32,18 @@ class ChickenDead extends MovableObject {
         this.applyGravity();
         if (chickenType instanceof ChickenSmall) {
             this.loadImage(this.CHICKEN_SMALL_DEAD[0]);
-        } else {
+        } else if (chickenType instanceof Chicken) {
             this.loadImage(this.CHICKEN_NORMAL_DEAD[0]);
-        } 
+        } else if (chickenType instanceof Endboss) {
+            this.loadImage(this.CHICKEN_ENDBOSS_DEAD[0]);
+            // this.animate()
+        }
         this.createdTime = new Date().getTime(); // Zeitstempel für automatisches Entfernen
+    }
+
+    animate() {
+        setInterval(() => {
+            this.playAnimation(this.CHICKEN_ENDBOSS_DEAD);
+        }, 100);
     }
 }

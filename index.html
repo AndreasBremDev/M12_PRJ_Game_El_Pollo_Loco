@@ -1,19 +1,31 @@
 <!DOCTYPE html>
 <html translate="no">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <link rel="icon" href="./assets/icon/icon.png" type="image/png">
     <title>El Pollo Loco</title>
 
     <link rel="stylesheet" href="style.css">
 
+    <script>
+        let intervalIds = [];
+        function stopGame() {
+            intervalIds.forEach(clearInterval);
+        }
+        function setStoppableInterval(fn, time) {
+            let id = setInterval(fn, time);
+            intervalIds.push(id);
+            return id;
+        }
+    </script>
     <!-- Base classes first -->
     <script src="./scripts/models/drawable-object.class.js"></script>
     <script src="./scripts/models/movable-object.class.js"></script>
     <script src="./scripts/models/throwable-object.class.js"></script>
-    
+
     <!-- Game objects -->
     <script src="./scripts/models/background-object.class.js"></script>
     <script src="./scripts/models/character.class.js"></script>
@@ -26,13 +38,13 @@
     <script src="./scripts/models/bottles.class.js"></script>
     <script src="./scripts/models/thrown-bottle.class.js"></script>
     <script src="./scripts/models/splash-bottle.class.js"></script>
-    
+
     <!-- UI elements -->
     <script src="./scripts/models/status-bar-health.class.js"></script>
     <script src="./scripts/models/status-bar-coins.class.js"></script>
     <script src="./scripts/models/status-bar-bottles.class.js"></script>
     <script src="./scripts/models/status-bar-endboss-health.class.js"></script>
-    
+
     <!-- Game logic -->
     <script src="./scripts/models/keyboard.class.js"></script>
     <script src="./scripts/models/level.class.js"></script>
@@ -40,12 +52,34 @@
     <script src="./scripts/levels/level1.js"></script>
     <script src="./scripts/game.js" defer></script>
 </head>
+
 <body onload="init()">
-    
+
     <h1>El Pollo Loco</h1>
 
-    <canvas id="canvas" width="720" height="480">
+    <canvas id="canvas" width="720" height="480"></canvas> <!-- 720x480 -->
 
-    </canvas>
+    <!-- Overlay PortraitToLandscapeImage -->
+
+    <!-- Canvas Size -->
+    <div id="overlays" class="all-overlays">
+        <!-- Overlay Startscreen: Buttons: PLAY, STORY, CONTROLS, IMPRINT* -->
+        <div id="start-screen" class="overlay-screen">
+            <button id="btnPlay" class="btn">PLAY</button>
+            <button id="btnStory" class="btn">STORY</button>
+            <button id="btnSound" class="btn">SOUND</button>
+            <button id="btnControls" class="btn">CONTROLS</button>
+            <button id="btnImprint" class="btn">IMPRINT</button>
+        </div>
+        <!-- Overlay Setting -->
+        <!-- Overlay Controls -->
+        <!-- Overlay MOBILE Controls -->
+        <!-- Overlay Imrint* (and/or LegalNotice / PrivacyPolicy) -->
+
+        <!-- Overlay Loading Spinner (before start/init()) -->
+        <!-- Overlay WIN: REPLAY, MENU -->
+        <!-- Overlay LOOSE/GameOver: REPLAY, MENU -->
+    </div>
 </body>
+
 </html>

@@ -15,12 +15,6 @@ class Character extends MovableObject {
         bottom: 10
     };
 
-    currentStatus = 'idle';
-    nextStatus = '';
-    currStatusChanged = false;
-    startIdle;
-
-    throwableObject = new ThrowableObject(this.x, this.y + 100);
 
     IMAGES_WALKING = [
         './assets/img/2_character_pepe/2_walk/W-21.png',
@@ -84,7 +78,10 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/5_dead/D-56.png',
         './assets/img/2_character_pepe/5_dead/D-57.png'
     ];
-
+    
+    currentStatus = 'idle';
+    nextStatus = '';
+    currStatusChanged = false;
 
     constructor() {
         super();
@@ -125,8 +122,6 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         setInterval(() => {
-            this.startIdle = new Date().getTime();
-            // console.log(this.startIdle);
             if (this.currentStatus !== this.nextStatus) {
                 this.resetAnimation();
             }
@@ -143,25 +138,14 @@ class Character extends MovableObject {
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.nextStatus = 'walking';
-
-                // hier funktioniert das LongIdle noch nicht richtig !!!
-
-            } else if (!this.startLongIdle()) {
-                this.playAnimation(this.IMAGES_IDLE);
-                this.nextStatus = 'idle';
-
-            } else {
+            } else if (this.isIdle('long')) {
                 this.playAnimation(this.IMAGES_LONG_IDLE);
                 this.nextStatus = 'longIdle';
+            } else {
+                this.playAnimation(this.IMAGES_IDLE);
+                this.nextStatus = 'idle';
             }
         }, 1000 / 25);
-    }
-
-    startLongIdle() {
-        let timePassed = new Date().getTime() - this.startIdle;
-        // console.log(timePassed > 2000);
-
-        return timePassed > 2000;
     }
 
     jump(speedY = 30) {
@@ -186,6 +170,21 @@ class Character extends MovableObject {
         }, 1000 / 25);
     }
 
+    
+    throwCooldown() {
+        let currentTime = new Date().getTime();
+        return currentTime - this.world.lastThrowTime >= this.world.throwCooldownLimit;
+    }
+
+    characterAttackOne() {
+        this.world.lastThrowTime = new Date().getTime();
+        let bottle = new ThrownBottle(this.x + 50, this.y + 100);
+        this.attackOne(bottle);
+        this.world.throwableObjects.push(bottle);
+        this.world.bottlesCollected -= 20;
+        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
+    }
+
     attackTwo(throwableObject) {
         throwableObject.speedX = 15;
         this.throwInterval = setInterval(() => {
@@ -198,18 +197,6 @@ class Character extends MovableObject {
         }, 1000 / 25);
     }
 
-    cooldown() {
-        let currentTime = new Date().getTime();
-        return currentTime - this.world.lastThrowTime >= this.world.throwCooldown;
-    }
 
-    characterAttackOne() {
-        this.world.lastThrowTime = new Date().getTime();
-        let bottle = new ThrownBottle(this.x + 50, this.y + 100);
-        this.attackOne(bottle);
-        this.world.throwableObjects.push(bottle);
-        this.world.bottlesCollected -= 20;
-        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
-    }
-
+    
 }

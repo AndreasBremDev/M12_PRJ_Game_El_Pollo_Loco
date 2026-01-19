@@ -11,8 +11,9 @@ class World {
     statusBarEndbossHealth = new StatusBarEndbossHealth();
     throwableObjects = [];
     deadEnemies = [];
+    endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
     lastThrowTime = 0;
-    throwCooldown = 750;
+    throwCooldownLimit = 750;
     lastJumpTime = 0;
     jumpProtectionTime = 300;
     coins;
@@ -32,6 +33,19 @@ class World {
 
     setWorld() {
         this.character.world = this;
+    }
+
+    endWorld() {
+        // Alle eigenen Timer stoppen
+        clearInterval(this.gameLoopId);
+
+        // Alle Arrays leeren
+        this.level.enemies = [];
+        this.throwableObjects = [];
+        this.deadEnemies = [];
+
+        // Canvas leeren
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     run() {
@@ -66,7 +80,7 @@ class World {
         this.addToMap(this.statusBarHealth);
         this.addToMap(this.statusBarCoins);
         this.addToMap(this.statusBarBottles);
-        if (this.character.x >= 1200) {
+        if (this.endboss.x - this.character.x < 600) {
             this.addToMap(this.statusBarEndbossHealth);
         }
 
@@ -147,14 +161,14 @@ class World {
     }
 
     actionsTopCollisionWithChicken(i, currentTime) {
-        this.character.jump(15);
+        this.character.jump(10);
         this.killChicken(i);
         this.lastJumpTime = currentTime;
         return true;
     }
 
     checkThrowObjects() {
-        if (this.keyboard.F && this.character.cooldown() && this.bottlesCollected > 0) {
+        if (this.keyboard.F && this.character.throwCooldown() && this.bottlesCollected > 0) {
             this.character.characterAttackOne();
         }
     }
@@ -185,6 +199,9 @@ class World {
                 bottle.hasCollided = true;
                 enemy.hit();
                 this.statusBarEndbossHealth.setPercentage(enemy.health);
+                if (enemy.health < 20) {
+                    this.killChicken(j);
+                }
             }
         }
     }
@@ -198,16 +215,14 @@ class World {
         let splash = new SplashBottle(bottle.x, bottle.y);
         this.throwableObjects.push(splash);
     }
-    
+
     killChicken(enemyIndex) {
         let enemy = this.level.enemies[enemyIndex];
-        if (enemy instanceof Chicken || enemy instanceof ChickenSmall) {
-            let chickenDead = new ChickenDead(enemy.x, enemy.y - 20, enemy);
-            this.deadEnemies.push(chickenDead);
-        }
+        let chickenDead = new ChickenDead(enemy.x, enemy.y - 20, enemy);
+        this.deadEnemies.push(chickenDead);
         this.level.enemies.splice(enemyIndex, 1);
     }
-    
+
     cleanupDeadEnemies() {
         let currentTime = new Date().getTime();
         for (let i = this.deadEnemies.length - 1; i >= 0; i--) {

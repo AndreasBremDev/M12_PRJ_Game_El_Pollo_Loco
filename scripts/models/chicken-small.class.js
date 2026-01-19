@@ -32,7 +32,7 @@ class ChickenSmall extends MovableObject {
 
     animate() {
         setInterval(() => {
-            this.moveLeft();
+            // this.moveLeft();
             this.checkRandomJump();
         }, 1000 / 60);
 

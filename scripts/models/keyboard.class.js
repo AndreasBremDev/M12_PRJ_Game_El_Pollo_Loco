@@ -6,8 +6,7 @@ class Keyboard {
     SPACE = false;
     F = false;
     R = false;
-    isAnyKeyHeldDown = false;
-    
+    lastKeyPressedTime = 0;
 
     constructor() {
 
