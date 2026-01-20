@@ -69,7 +69,10 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.bottles);
-        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.enemies.filter(enemy => enemy !== this.endboss));
+        if (this.endboss.x - this.character.x < 600) {
+            this.addObjectsToMap(this.level.enemies.filter(enemy => enemy === this.endboss));
+        }
         this.addObjectsToMap(this.deadEnemies);
         this.addObjectsToMap(this.throwableObjects);
         this.addObjectsToMap(this.level.coins);

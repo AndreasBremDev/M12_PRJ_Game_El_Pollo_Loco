@@ -1,9 +1,8 @@
-let canvas;
+let canvas = document.getElementById('canvas');
 let world;
 let keyboard = new Keyboard();
 
 function init() {
-    canvas = document.getElementById('canvas');
     initLevel();
     keyboard.lastKeyPressedTime = new Date().getTime();
     world = new World(canvas, keyboard)
@@ -29,7 +28,7 @@ function cleanUp() {
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {
-        keyboard.UP = true;
+        keyboard.SPACE = true;
     }
     if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
         keyboard.LEFT = true;
@@ -55,7 +54,7 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
 
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {
-        keyboard.UP = false;
+        keyboard.SPACE = false;
     }
     if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
         keyboard.LEFT = false;
