@@ -1,5 +1,5 @@
 let titleBg = 'url(./assets/img/9_intro_outro_screens/start/startscreen_1.png';
-let menueBg = 'url(./assets/img/5_background/second_half_background.png)'
+let menueBg = 'url(./assets/img/5_background/second_half_background.png)';
 let midSection = document.getElementById('middleSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
@@ -8,9 +8,6 @@ let musicVolumeMuted = false;
 let currentEffectVolume;
 let currentMusicVolume;
 
-function setMidSectionBackground(background) {
-    midSection.style.backgroundImage = background;
-}
 
 function playGame() {
     toggleCanvas('block');
@@ -27,7 +24,7 @@ function showMenuTab(tabName, background = menueBg) {
 }
 
 function toggleCanvas(display) {
-    canvas.style.display = display;
+    document.getElementById('canvas').style.display = display;
 }
 
 function toggleAllOverlays(display) {
@@ -42,9 +39,14 @@ function hideTabs() {
         tab[i].ariaSelected = "false";
     }
 }
+
 function showTab(tabName) {
     document.getElementById(tabName).style.display = "flex";
     document.getElementById(tabName).ariaSelected = "true";
+}
+
+function setMidSectionBackground(background) {
+    midSection.style.backgroundImage = background;
 }
 
 function setVolumeControl(elementToControl, upOrDown, step) {
