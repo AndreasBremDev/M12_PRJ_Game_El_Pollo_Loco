@@ -59,8 +59,8 @@ function setVolumeControl(elementToControl, upOrDown, step) {
         element.style.width = Math.min(100, current - step) + '%';
     }
     if (upOrDown == 'mute') {
-        if (elementToControl == 'volumeEffectProgress') {currentEffectVolume = parseInt(element.style.width);}
-        if (elementToControl == 'volumeMusicProgress'){currentMusicVolume = parseInt(element.style.width);}
+        if (elementToControl == 'volumeEffectProgress') {currentEffectVolume = current;}
+        if (elementToControl == 'volumeMusicProgress'){currentMusicVolume = current;}
         element.style.width = step +'%';
     }
     if (upOrDown == 'unmute') {
