@@ -3,6 +3,10 @@ let menueBg = 'url(./assets/img/5_background/second_half_background.png)'
 let midSection = document.getElementById('middleSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
+let effectVolumeMuted = false;
+let musicVolumeMuted = false;
+let currentEffectVolume;
+let currentMusicVolume;
 
 function setMidSectionBackground(background) {
     midSection.style.backgroundImage = background;
@@ -55,15 +59,33 @@ function setVolumeControl(elementToControl, upOrDown, step) {
         element.style.width = Math.min(100, current - step) + '%';
     }
     if (upOrDown == 'mute') {
-        element.style.width = '0%';
+        if (elementToControl == 'volumeEffectProgress') {currentEffectVolume = parseInt(element.style.width);}
+        if (elementToControl == 'volumeMusicProgress'){currentMusicVolume = parseInt(element.style.width);}
+        element.style.width = step +'%';
+    }
+    if (upOrDown == 'unmute') {
+        if (elementToControl == 'volumeEffectProgress' && currentEffectVolume !== undefined) {
+            element.style.width = currentEffectVolume + '%';
+        } else if (elementToControl == 'volumeMusicProgress' && currentMusicVolume !== undefined) {
+            element.style.width = currentMusicVolume + '%';
+        }
     }
 };
 
-function setVolumeMute(show, noShow, elementToControl, upOrDown, step) {
-    let elementShow = document.getElementById(show);
-    let elementNoShow = document.getElementById(noShow);
-    elementShow.style.display = 'block';
-    elementNoShow.style.display = 'none';
-    setVolumeControl(elementToControl, upOrDown, step);
+function setVolumeMute(unshow, show, elementToControl, mute, zeroVolume) {
+    let elementON = document.getElementById(show);
+    let elementOFF = document.getElementById(unshow);
+    if (effectVolumeMuted) {
+        toggleDisplayElementMute(elementON, elementOFF, elementToControl, false);
+    } else {
+        toggleDisplayElementMute(elementON, elementOFF, elementToControl, true);
+    }
+    setVolumeControl(elementToControl, mute, zeroVolume);
+}
 
+function toggleDisplayElementMute(elementON, elementOFF, elementToControl, muted) {
+    elementON.style.display = 'block';
+    elementOFF.style.display = 'none';
+    if(elementToControl == 'volumeEffectProgress'){ effectVolumeMuted = muted};
+    if(elementToControl == 'volumeMusicProgress'){ musicVolumeMuted = muted};
 }
