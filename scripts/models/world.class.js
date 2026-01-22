@@ -13,7 +13,8 @@ class World {
     deadEnemies = [];
     endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
     lastThrowTime = 0;
-    throwCooldownLimit = 750;
+    attackOneCooldown = 750;
+    attackTwoCooldown = 1500;
     lastJumpTime = 0;
     jumpProtectionTime = 300;
     coins;
@@ -171,8 +172,11 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.F && this.character.throwCooldown() && this.bottlesCollected > 0) {
-            this.character.characterAttackOne();
+        if (this.keyboard.F && this.character.throwCooldown('one') && this.bottlesCollected > 0) {
+            this.character.characterAttack('one');
+        }
+        if (this.keyboard.R && this.character.throwCooldown('two') && this.bottlesCollected > 0) {
+            this.character.characterAttack('two');
         }
     }
 

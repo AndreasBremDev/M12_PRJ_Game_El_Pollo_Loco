@@ -86,6 +86,23 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    playAttackTwoAnimation(images, speed = 2) {
+        if (!this.animationCounter) this.animationCounter = 0;
+        this.animationCounter++;
+        let i = this.currentImage % images.length;
+        let currentSpeed = speed * Math.pow(2, i);
+
+        if (this.animationCounter >= currentSpeed) {
+            this.animationCounter = 0;
+            let path = images[i];
+            this.img = this.imageCache[path];
+            if (this.currentImage == images.length -1) {
+            } else {
+                this.currentImage++; 
+            }
+        }
+    }
+
     moveRight() {
         this.x += this.speedX;
     }

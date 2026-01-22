@@ -78,7 +78,7 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/5_dead/D-56.png',
         './assets/img/2_character_pepe/5_dead/D-57.png'
     ];
-    
+
     currentStatus = 'idle';
     nextStatus = '';
     currStatusChanged = false;
@@ -156,6 +156,15 @@ class Character extends MovableObject {
         this.currentImage = 0;
     }
 
+    characterAttack(attackType) {
+        this.world.lastThrowTime = new Date().getTime();
+        let bottle = new ThrownBottle(this.x + 50, this.y + 100, attackType);
+        attackType === 'one' ? this.attackOne(bottle) : this.attackTwo(bottle);
+        this.world.throwableObjects.push(bottle);
+        this.world.bottlesCollected -= 20;
+        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
+    }
+
     attackOne(throwableObject) {
         throwableObject.speedX = 15;
         throwableObject.speedY = 20;
@@ -170,21 +179,6 @@ class Character extends MovableObject {
         }, 1000 / 25);
     }
 
-    
-    throwCooldown() {
-        let currentTime = new Date().getTime();
-        return currentTime - this.world.lastThrowTime >= this.world.throwCooldownLimit;
-    }
-
-    characterAttackOne() {
-        this.world.lastThrowTime = new Date().getTime();
-        let bottle = new ThrownBottle(this.x + 50, this.y + 100);
-        this.attackOne(bottle);
-        this.world.throwableObjects.push(bottle);
-        this.world.bottlesCollected -= 20;
-        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
-    }
-
     attackTwo(throwableObject) {
         throwableObject.speedX = 15;
         this.throwInterval = setInterval(() => {
@@ -197,6 +191,17 @@ class Character extends MovableObject {
         }, 1000 / 25);
     }
 
+    throwCooldown(attackType) {
+        let currentTime = new Date().getTime();
+        if (attackType === 'one') {
+            return currentTime - this.world.lastThrowTime >= this.world.attackOneCooldown;
+        } else {
+            return currentTime - this.world.lastThrowTime >= this.world.attackTwoCooldown;
+        }
+    }
 
-    
+
+
+
+
 }
