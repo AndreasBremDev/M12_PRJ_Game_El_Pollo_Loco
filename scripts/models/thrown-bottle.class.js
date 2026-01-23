@@ -30,7 +30,7 @@ class ThrownBottle extends ThrowableObject {
             if (this.attackType === 'one') {
                 this.playAnimation(this.IMAGES_ROTATE, 1);
             } else if (this.attackType === 'two') {
-                this.playAttackTwoAnimation(this.IMAGES_SQUEEZE, 2);
+                this.playAttackTwoAnimation(this.IMAGES_SQUEEZE, 1);
             }
             if (this.hasCollided) {
                 clearInterval(this.animationInterval);

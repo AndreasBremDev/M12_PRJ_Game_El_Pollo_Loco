@@ -91,7 +91,6 @@ class MovableObject extends DrawableObject {
         this.animationCounter++;
         let i = this.currentImage % images.length;
         let currentSpeed = speed * Math.pow(2, i);
-
         if (this.animationCounter >= currentSpeed) {
             this.animationCounter = 0;
             let path = images[i];

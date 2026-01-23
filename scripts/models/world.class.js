@@ -54,7 +54,7 @@ class World {
 
             this.checkCharacterEnemyCollisions();
             this.checkThrowObjects();
-            this.checkBottleCollisions();
+            this.checkBottleCollisionAttackOne();
             this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
@@ -180,7 +180,7 @@ class World {
         }
     }
 
-    checkBottleCollisions() {
+    checkBottleCollisionAttackOne() {
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             let bottle = this.throwableObjects[i];
             this.handleBottleEnemyCollision(bottle);
