@@ -206,7 +206,7 @@ class World {
                 bottle.hasCollided = true;
                 enemy.hit();
                 this.statusBarEndbossHealth.setPercentage(enemy.health);
-                if (enemy.health < 20) {
+                if (enemy.health < 20 && enemy.animationCompleted) {
                     this.killChicken(j);
                 }
             }

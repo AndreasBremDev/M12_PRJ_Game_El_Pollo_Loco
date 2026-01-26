@@ -48,11 +48,13 @@ class Endboss extends MovableObject {
         let i = 0;
         setInterval(() => {
             
-            // if (this.health < 20) {
-            //     this.playAnimation(this.IMAGES_DEAD);
-            // } else {
+            if (this.health < 20) {
+                if (!this.animationCompleted) { // ← Nur wenn noch nicht abgeschlossen
+                    this.playAnimation(this.IMAGES_DEAD, 3, true, 3);
+                }
+            } else {
                 this.playAnimation(this.IMAGES_ALERT);
-            // }
+            }
         }, 100);
     }
 

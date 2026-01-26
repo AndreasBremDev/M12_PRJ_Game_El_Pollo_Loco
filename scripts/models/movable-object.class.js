@@ -6,6 +6,7 @@ class MovableObject extends DrawableObject {
     acceleration = 2.5;
     health = 100;
     lastHit = 0;
+    animationCompleted = false;
 
     offset = {
         top: 0,
@@ -73,16 +74,32 @@ class MovableObject extends DrawableObject {
         return this.health < 20;
     }
 
-
-    playAnimation(images, speed = 4) {
+    /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////
+    playAnimation(images, speed = 4, playOnce = false, loops = 1) {
         if (!this.animationCounter) this.animationCounter = 0;
+        
+        // EINFACHE LÖSUNG: Immer bei 0 starten + Flags zurücksetzen
+        if (!this.animationStarted || this.currentImage >= images.length * loops) {
+            this.currentImage = 0;
+            this.animationStarted = true;
+            this.animationCompleted = false; // ← RESET für neue Animation
+        }
+        
         this.animationCounter++;
         if (this.animationCounter >= speed) {
             this.animationCounter = 0;
             let i = this.currentImage % images.length;
             let path = images[i];
             this.img = this.imageCache[path];
+            
+            // Erhöhe currentImage ZUERST
             this.currentImage++;
+            
+            // DANN prüfe, ob Animation komplett ist (mit Durchläufen)
+            if (playOnce === true && this.currentImage >= images.length * loops) {
+                this.animationCompleted = true;
+                return this.animationCompleted;
+            }
         }
     }
 
@@ -95,25 +112,33 @@ class MovableObject extends DrawableObject {
             this.animationCounter = 0;
             let path = images[i];
             this.img = this.imageCache[path];
-            if (this.currentImage == images.length -1) {
+            if (this.currentImage == images.length - 1) {
             } else {
-                this.currentImage++; 
+                this.currentImage++;
             }
         }
     }
 
     moveRight() {
-        this.x += this.speedX;
+        if (this.currentStatus === 'crouching') {
+            this.x += this.speedX / 2;
+        } else {
+            this.x += this.speedX;
+        }
     }
 
     moveLeft() {
-        this.x -= this.speedX;
+        if (this.currentStatus === 'crouching') {
+            this.x -= this.speedX / 2;
+        } else {
+            this.x -= this.speedX;
+        }
     }
 
     isIdle(time) {
         let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') {return timePassed < 5000;}
-        if (time === 'long') {return timePassed >= 5000;}
+        if (time === 'short') { return timePassed < 5000; }
+        if (time === 'long') { return timePassed >= 5000; }
     }
 
 }

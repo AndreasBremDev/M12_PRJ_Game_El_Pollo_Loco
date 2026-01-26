@@ -84,10 +84,10 @@ class Character extends MovableObject {
     ]
 
     IMAGES_CROUCHING = [
-        './assets/img/2_character_pepe/5_crouch/C-1.png',
         './assets/img/2_character_pepe/5_crouch/C-2.png',
         './assets/img/2_character_pepe/5_crouch/C-3.png',
-        './assets/img/2_character_pepe/5_crouch/C-4.png'
+        './assets/img/2_character_pepe/5_crouch/C-4.png',
+        './assets/img/2_character_pepe/5_crouch/C-1.png'
     ];
 
     currentStatus = 'idle';
@@ -105,6 +105,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_CROUCH);
+        this.loadImages(this.IMAGES_CROUCHING);
         this.applyGravity();
         this.animate();
     }
@@ -140,7 +141,9 @@ class Character extends MovableObject {
             }
             this.currentStatus = this.nextStatus;
             if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD, 3);
+                if (!this.animationCompleted) { // ← Nur wenn noch nicht abgeschlossen
+                    this.playAnimation(this.IMAGES_DEAD, 3, true);
+                }
                 this.nextStatus = 'dead';
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT, 1);
@@ -148,15 +151,15 @@ class Character extends MovableObject {
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.nextStatus = 'jumping';
-            } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT && !this.world.keyboard.DOWN) {
+            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.nextStatus = 'walking';
+            }else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
+                this.playAnimation(this.IMAGES_CROUCHING, 2);
+                this.nextStatus = 'crouching';
             } else if (this.world.keyboard.DOWN) {
                 this.playAnimation(this.IMAGES_CROUCH);
                 this.nextStatus = 'crouch';
-            }else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
-                this.playAnimation(this.IMAGES_CROUCHING, 4);
-                this.nextStatus = 'crouching';
             } else if (this.isIdle('long')) {
                 this.playAnimation(this.IMAGES_LONG_IDLE);
                 this.nextStatus = 'longIdle';

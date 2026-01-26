@@ -30,20 +30,15 @@ class ChickenDead extends MovableObject {
         this.x = x;
         this.y = y;
         this.applyGravity();
+        // this.animate();
         if (chickenType instanceof ChickenSmall) {
             this.loadImage(this.CHICKEN_SMALL_DEAD[0]);
         } else if (chickenType instanceof Chicken) {
             this.loadImage(this.CHICKEN_NORMAL_DEAD[0]);
         } else if (chickenType instanceof Endboss) {
             this.loadImage(this.CHICKEN_ENDBOSS_DEAD[0]);
-            // this.animate()
         }
         this.createdTime = new Date().getTime(); // Zeitstempel für automatisches Entfernen
     }
 
-    animate() {
-        setInterval(() => {
-            this.playAnimation(this.CHICKEN_ENDBOSS_DEAD);
-        }, 100);
-    }
 }
