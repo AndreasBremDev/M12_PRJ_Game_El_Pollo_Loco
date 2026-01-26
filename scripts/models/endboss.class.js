@@ -26,7 +26,7 @@ class Endboss extends MovableObject {
         './assets/img/4_enemie_boss_chicken/5_dead/G26.png'
     ];
 
-    offset = { 
+    offset = {
         top: 55,
         left: 35,
         right: 30,
@@ -46,11 +46,14 @@ class Endboss extends MovableObject {
 
     animate() {
         let i = 0;
-        setInterval(() => {
-            
+        let endbossAnimations = setStoppableInterval(() => {
+
             if (this.health < 20) {
-                if (!this.animationCompleted) { // ← Nur wenn noch nicht abgeschlossen
+                if (!this.animationCompleted) {
                     this.playAnimation(this.IMAGES_DEAD, 3, true, 3);
+                } else {
+                    endGame();
+                    showMenuTab('win', winBg + ',' + menuBg);
                 }
             } else {
                 this.playAnimation(this.IMAGES_ALERT);
@@ -58,5 +61,5 @@ class Endboss extends MovableObject {
         }, 100);
     }
 
-    
+
 }

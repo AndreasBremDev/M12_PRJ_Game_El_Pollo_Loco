@@ -2,27 +2,19 @@ let canvas = document.getElementById('canvas');
 let world;
 let keyboard = new Keyboard();
 
-function init() {
+function startGame() {
     initLevel();
     keyboard.lastKeyPressedTime = new Date().getTime();
     world = new World(canvas, keyboard)
 }
 
-function cleanUp() {
-    // 1. Alle Timer stoppen // noch NICHT implementiert
+function endGame() {
     stopGame();
-    // 2. World "zerstören"
     if (world) {
+        world.endWorld();
         world = null;
     }
-    // 3. Level zurücksetzen  
     level1 = null;
-    // 4. Canvas leeren
-    if (canvas) {
-        let ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    // 5. Keyboard zurücksetzen
     keyboard = new Keyboard();
 }
 

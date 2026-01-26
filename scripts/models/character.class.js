@@ -112,7 +112,7 @@ class Character extends MovableObject {
 
     animate() {
 
-        setInterval(() => {
+        let characterMovements = setStoppableInterval(() => {
             // this.walking_sound.pause();
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
@@ -135,14 +135,17 @@ class Character extends MovableObject {
 
         }, 1000 / 60);
 
-        setInterval(() => {
+        let characterAnimations = setStoppableInterval(() => {
             if (this.currentStatus !== this.nextStatus) {
                 this.resetAnimation();
             }
             this.currentStatus = this.nextStatus;
             if (this.isDead()) {
-                if (!this.animationCompleted) { // ← Nur wenn noch nicht abgeschlossen
+                if (!this.animationCompleted) {
                     this.playAnimation(this.IMAGES_DEAD, 3, true);
+                } else {
+                    endGame();
+                    showMenuTab('gameover', gameoverBg + ',' + menuBg);
                 }
                 this.nextStatus = 'dead';
             } else if (this.isHurt()) {
@@ -154,7 +157,7 @@ class Character extends MovableObject {
             } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
                 this.playAnimation(this.IMAGES_WALKING);
                 this.nextStatus = 'walking';
-            }else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
+            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
                 this.playAnimation(this.IMAGES_CROUCHING, 2);
                 this.nextStatus = 'crouching';
             } else if (this.world.keyboard.DOWN) {
@@ -191,24 +194,24 @@ class Character extends MovableObject {
         throwableObject.speedX = 15;
         throwableObject.speedY = 20;
         throwableObject.applyGravity();
-        this.throwInterval = setInterval(() => {
+        this.attackOneInterval = setStoppableInterval(() => {
             if (!throwableObject.hasCollided) {
                 throwableObject.x += throwableObject.speedX;
             } else {
                 throwableObject.speedX = 0;
-                clearInterval(this.throwInterval);
+                clearInterval(this.attackOneInterval);
             }
         }, 1000 / 25);
     }
 
     attackTwo(throwableObject) {
         throwableObject.speedX = 15;
-        this.throwInterval = setInterval(() => {
+        this.attackTwoInterval = setStoppableInterval(() => {
             if (!throwableObject.hasCollided) {
                 throwableObject.x += throwableObject.speedX;
             } else {
                 throwableObject.speedX = 0;
-                clearInterval(this.throwInterval);
+                clearInterval(this.attackTwoInterval);
             }
         }, 1000 / 25);
     }

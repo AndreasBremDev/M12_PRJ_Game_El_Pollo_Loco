@@ -42,7 +42,7 @@ canvas {
 .middle-section {
     box-sizing: border-box;
     flex: 1;
-    background-image: url(./assets/img/9_intro_outro_screens/start/startscreen_1.png);
+    background-image: url('./assets/img/9_intro_outro_screens/start/startscreen_1.png');
     background-position: center;
     background-size: cover;
     padding: 0 16px;
@@ -184,7 +184,7 @@ canvas {
     gap: 20px;
 }
 
-
+#gameover,
 #controls {
     justify-content: center;
 }
@@ -206,6 +206,11 @@ canvas {
 .sound-text {
     width: 150px;
     line-height: 48px;
+}
+
+#gameover img {
+    padding: unset;
+    height: calc(480px - 164px);
 }
 
 @keyframes buttonPulse {

@@ -19,11 +19,9 @@ class SplashBottle extends ThrowableObject {
     }
 
     animate() {
-        this.animationInterval = setInterval(() => {
+        this.bottleSplashAnimation = setStoppableInterval(() => {
             this.playAnimation(this.IMAGES_SPLASH, 4);
             this.splashFrameCount++;
-            
-            // Nach vollständiger Splash-Animation stoppen
             if (this.splashFrameCount >= this.IMAGES_SPLASH.length * 4) {
                 this.animationComplete = true;
                 clearInterval(this.animationInterval);

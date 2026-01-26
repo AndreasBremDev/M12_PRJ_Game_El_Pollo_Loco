@@ -13,13 +13,13 @@
 
     <script>
         let intervalIds = [];
-        function stopGame() {
-            intervalIds.forEach(clearInterval);
-        }
         function setStoppableInterval(fn, time) {
             let id = setInterval(fn, time);
             intervalIds.push(id);
             return id;
+        }
+        function stopGame() {
+            intervalIds.forEach(clearInterval);
         }
     </script>
     <script src="./scripts/models/drawable-object.class.js"></script>
@@ -61,15 +61,11 @@
 
     <!-- Overlay PortraitToLandscapeImage -->
 
-    <!-- Canvas Size -->
     <div id="overlays" class="all-overlays canvas">
-        <!-- Overlay Startscreen: Buttons: PLAY, STORY, CONTROLS, IMPRINT* -->
         <div id="start-screen" class="overlay-screen">
             <div id="topSection" class="top-section">
-                <button id="btnTitle" class="epl-btn" onclick="showMenuTab('title', titleBg)">TITLE</button>
-                <button id="btnStory" class="epl-btn" onclick="showMenuTab('story')">STORY</button>
-                <button id="btnControls" class="epl-btn" onclick="showMenuTab('controls')">CONTROLS</button>
-                <button id="btnSound" class="epl-btn" onclick="showMenuTab('sounds')">SOUND</button>
+                <!-- <button id="gameover" class="epl-btn" onclick="showMenuTab('gameover', gameoverBg + ',' + menuBg)">GAMEOVER</button>
+                <button id="win" class="epl-btn" onclick="showMenuTab('win', winBg + ',' + menuBg)">WIN</button> -->
             </div>
             <div id="middleSection" class="middle-section">
                 <div id="title"></div>
@@ -154,18 +150,19 @@
 
                 </div>
 
+                <div id="gameover" class="tab" style="display:none"></div>
+                <div id="win" class="tab" style="display:none"></div>
+
             </div>
             <div id="bottomSection" class="bottom-section">
                 <button id="btnPlay" class="epl-btn epl-btn-imprint epl-btn-animated" onclick="playGame()">PLAY</button>
                 <button id="btnImprint" class="epl-btn epl-btn-imprint">IMPRINT</button>
             </div>
         </div>
-        <!-- Overlay Setting -->
-        <!-- Overlay Controls -->
         <!-- Overlay MOBILE Controls -->
         <!-- Overlay Imrint* (and/or LegalNotice / PrivacyPolicy) -->
 
-        <!-- Overlay Loading Spinner (before start/init()) -->
+        <!-- Overlay Loading Spinner (before start/startGame()) -->
         <!-- Overlay WIN: REPLAY, MENU -->
         <!-- Overlay LOOSE/GameOver: REPLAY, MENU -->
     </div>

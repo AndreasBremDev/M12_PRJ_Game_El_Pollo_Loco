@@ -5,6 +5,7 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    gameRunning = true;
     statusBarHealth = new StatusBarHealth();
     statusBarCoins = new StatusBarCoins();
     statusBarBottles = new StatusBarBottles();
@@ -37,20 +38,15 @@ class World {
     }
 
     endWorld() {
-        // Alle eigenen Timer stoppen
-        clearInterval(this.gameLoopId);
-
-        // Alle Arrays leeren
+        this.gameRunning = false;
         this.level.enemies = [];
         this.throwableObjects = [];
         this.deadEnemies = [];
-
-        // Canvas leeren
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     run() {
-        setInterval(() => {
+        let gameloop = setStoppableInterval(() => {
 
             this.checkCharacterEnemyCollisions();
             this.checkThrowObjects();
@@ -63,6 +59,8 @@ class World {
     }
 
     draw() {
+        if (!this.gameRunning) return; 
+        
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
@@ -70,6 +68,7 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.bottles);
+
         this.addObjectsToMap(this.level.enemies.filter(enemy => enemy !== this.endboss));
         if (this.endboss.x - this.character.x < 600) {
             this.addObjectsToMap(this.level.enemies.filter(enemy => enemy === this.endboss));
@@ -186,6 +185,7 @@ class World {
             this.handleBottleEnemyCollision(bottle);
             if (bottle instanceof ThrownBottle && !bottle.hasCollided) {
                 if (bottle.y >= 380) { bottle.hasCollided = true }
+                else if (Math.abs(bottle.x - this.character.x) > 720) { bottle.hasCollided = true }
             }
             if (bottle instanceof ThrownBottle && bottle.hasCollided) {
                 this.turnThrownBottleToSplashBottle(bottle, i);
@@ -206,7 +206,7 @@ class World {
                 bottle.hasCollided = true;
                 enemy.hit();
                 this.statusBarEndbossHealth.setPercentage(enemy.health);
-                if (enemy.health < 20 && enemy.animationCompleted) {
+                if (enemy.health < 20 && enemy.animationCompleted) { ///// hier ist noch ein Fehler: wird nicht true /////
                     this.killChicken(j);
                 }
             }

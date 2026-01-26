@@ -16,7 +16,7 @@ class MovableObject extends DrawableObject {
     };
 
     applyGravity() {
-        let gravity = setInterval(() => {
+        let gravity = setStoppableInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
@@ -58,7 +58,7 @@ class MovableObject extends DrawableObject {
                 }
             }
         }
-        if (this.health <= 0) {
+        if (this.health < 20) {
             this.health = 0;
         } else {
             this.lastHit = new Date().getTime();
@@ -71,30 +71,31 @@ class MovableObject extends DrawableObject {
     }
 
     isDead() {
+        // endGame();
         return this.health < 20;
     }
 
     /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////
     playAnimation(images, speed = 4, playOnce = false, loops = 1) {
         if (!this.animationCounter) this.animationCounter = 0;
-        
+
         // EINFACHE LÖSUNG: Immer bei 0 starten + Flags zurücksetzen
         if (!this.animationStarted || this.currentImage >= images.length * loops) {
             this.currentImage = 0;
             this.animationStarted = true;
             this.animationCompleted = false; // ← RESET für neue Animation
         }
-        
+
         this.animationCounter++;
         if (this.animationCounter >= speed) {
             this.animationCounter = 0;
             let i = this.currentImage % images.length;
             let path = images[i];
             this.img = this.imageCache[path];
-            
+
             // Erhöhe currentImage ZUERST
             this.currentImage++;
-            
+
             // DANN prüfe, ob Animation komplett ist (mit Durchläufen)
             if (playOnce === true && this.currentImage >= images.length * loops) {
                 this.animationCompleted = true;

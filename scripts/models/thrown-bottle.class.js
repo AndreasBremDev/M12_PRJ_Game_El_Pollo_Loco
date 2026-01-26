@@ -26,7 +26,7 @@ class ThrownBottle extends ThrowableObject {
     }
 
     animate() {
-        this.animationInterval = setInterval(() => {
+        this.thrownBottleAnimations = setStoppableInterval(() => {
             if (this.attackType === 'one') {
                 this.playAnimation(this.IMAGES_ROTATE, 1);
             } else if (this.attackType === 'two') {

@@ -31,12 +31,12 @@ class ChickenSmall extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
+        let smallChickenMovements = setStoppableInterval(() => {
             // this.moveLeft();
             this.checkRandomJump();
         }, 1000 / 60);
 
-        setInterval(() => {
+        let smallChickenAnimations = setStoppableInterval(() => {
             this.playAnimation(this.IMAGES_WALKING);
         }, 100);
     }
