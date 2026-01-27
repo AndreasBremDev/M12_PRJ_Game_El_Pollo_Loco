@@ -53,7 +53,7 @@ class Endboss extends MovableObject {
                     this.playAnimation(this.IMAGES_DEAD, 3, true, 3);
                 } else {
                     endGame();
-                    showMenuTab('win', winBg + ',' + menuBg);
+                    showMenuTab('win');
                 }
             } else {
                 this.playAnimation(this.IMAGES_ALERT);

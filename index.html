@@ -57,18 +57,18 @@
 
     <h1 class="sr-only">El Pollo Loco</h1>
 
-    <canvas id="canvas" width="720" height="480" class="canvas" style="display:none;"></canvas> <!-- 720x480 -->
+    <canvas id="canvas" width="720" height="480" class="canvas" style="display:none;"></canvas>
 
     <!-- Overlay PortraitToLandscapeImage -->
 
     <div id="overlays" class="all-overlays canvas">
         <div id="start-screen" class="overlay-screen">
             <div id="topSection" class="top-section">
-                <!-- <button id="gameover" class="epl-btn" onclick="showMenuTab('gameover', gameoverBg + ',' + menuBg)">GAMEOVER</button>
-                <button id="win" class="epl-btn" onclick="showMenuTab('win', winBg + ',' + menuBg)">WIN</button> -->
             </div>
             <div id="middleSection" class="middle-section">
+                
                 <div id="title"></div>
+
                 <div id="story" class="tab game-text" style="display:none">
                     <p>Once upon a time our hero, Pepe, the lonely ranger, wandered the sun-scorched Mexican deserts
                         under his tilted sombrero.</p>
@@ -82,6 +82,7 @@
                     <p>Moral <br>
                         Even the maddest foes can be friends when tamed with right hot sauce...</p>
                 </div>
+
                 <div id="controls" class="tab game-text" style="display:none">
                     <div>
                         <p><span class="w200">Move left</span><span class="control-icon">A</span>or<span
@@ -96,6 +97,7 @@
                         <p><span class="w200">Throw Attack Two</span><span class="control-icon">R</span></p>
                     </div>
                 </div>
+
                 <div id="sounds" class="tab game-text" style="display: none;">
                     <div class="sound-wrapper">
                         <div class="sound-text">Effect-sound</div>
@@ -150,8 +152,13 @@
 
                 </div>
 
-                <div id="gameover" class="tab" style="display:none"></div>
-                <div id="win" class="tab" style="display:none"></div>
+                <div id="gameover" class="tab" style="display:none">
+                    <img src="./assets/img/You won, you lost/Game Over.png" alt="Game Over">
+                </div>
+                
+                <div id="win" class="tab" style="display:none">
+                    <img src="./assets/img/You won, you lost/You Win A.png" alt="Game Over">
+                </div>
 
             </div>
             <div id="bottomSection" class="bottom-section">
@@ -159,6 +166,8 @@
                 <button id="btnImprint" class="epl-btn epl-btn-imprint">IMPRINT</button>
             </div>
         </div>
+        <button onclick="showMenuTab('gameover')">GAME OVER</button>
+        <button onclick="showMenuTab('win')">YOU WON</button>
         <!-- Overlay MOBILE Controls -->
         <!-- Overlay Imrint* (and/or LegalNotice / PrivacyPolicy) -->
 

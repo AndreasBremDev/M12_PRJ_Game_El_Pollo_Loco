@@ -145,7 +145,7 @@ class Character extends MovableObject {
                     this.playAnimation(this.IMAGES_DEAD, 3, true);
                 } else {
                     endGame();
-                    showMenuTab('gameover', gameoverBg + ',' + menuBg);
+                    showMenuTab('gameover');
                 }
                 this.nextStatus = 'dead';
             } else if (this.isHurt()) {

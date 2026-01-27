@@ -42,6 +42,7 @@ canvas {
 .middle-section {
     box-sizing: border-box;
     flex: 1;
+    /* background-image: url("./assets/img/You won, you lost/Game Over.png"),url("./assets/img/5_background/second_half_background.png"); */
     background-image: url('./assets/img/9_intro_outro_screens/start/startscreen_1.png');
     background-position: center;
     background-size: cover;
@@ -51,9 +52,9 @@ canvas {
 }
 
 .middle-section img {
+    height: 310px;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    object-fit: scale-down;
 }
 
 .bottom-section {

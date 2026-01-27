@@ -138,8 +138,8 @@ class MovableObject extends DrawableObject {
 
     isIdle(time) {
         let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') { return timePassed < 5000; }
-        if (time === 'long') { return timePassed >= 5000; }
+        if (time === 'short') { return timePassed < 7000; }
+        if (time === 'long') { return timePassed >= 7000; }
     }
 
 }

@@ -1,7 +1,5 @@
 let titleBg = 'url("./assets/img/9_intro_outro_screens/start/startscreen_1.png")';
 let menuBg = 'url("./assets/img/5_background/second_half_background.png")';
-let gameoverBg = 'url("./assets/img/You won, you lost/Game Over.png")';
-let winBg = 'url("./assets/img/You won, you lost/You won A.png")';
 let midSection = document.getElementById('middleSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
