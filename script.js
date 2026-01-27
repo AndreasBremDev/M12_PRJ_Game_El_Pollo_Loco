@@ -1,6 +1,8 @@
 let titleBg = 'url("./assets/img/9_intro_outro_screens/start/startscreen_1.png")';
 let menuBg = 'url("./assets/img/5_background/second_half_background.png")';
+let topSection = document.getElementById('topSection');
 let midSection = document.getElementById('middleSection');
+let bottomSection = document.getElementById('bottomSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
 let volumeMuted = {
@@ -25,10 +27,11 @@ function showMenuTab(tabName, background = menuBg) {
     toggleAllOverlays('block');
     hideTabs();
     showTab(tabName);
-    (tabName !== 'gameover' || tabName !== 'win' || tabName !== 'sounds') && updateStandardTopAndBottomSection();
-    (tabName === 'gameover' || tabName === 'win') && updateGameoverWinTopAndBottomSection();
+    (tabName !== 'gameover' || tabName !== 'win' || tabName !== 'sounds') && titleTopAndBottomSection();
+    (tabName === 'gameover' || tabName === 'win') && gameoverWinTopAndBottomSection();
     (tabName === 'sounds') && setDefaultSoundOptions();
-        ///////// make Mute button von JS abhängig /////////
+    ///////// make Mute button von JS abhängig /////////
+    (tabName === 'rotateYourPhone') && rotateYourPhoneTopAndBottomSection();
 }
 
 function setDefaultSoundOptions() {
@@ -66,18 +69,19 @@ function setMidSectionBg(background) {
     midSection.style.backgroundImage = background;
 }
 
-function updateStandardTopAndBottomSection() {
-    let topSection = document.getElementById('topSection');
-    let bottomSection = document.getElementById('bottomSection');
+function titleTopAndBottomSection() {
     topSection.innerHTML = topSectionStandardTemplate();
     bottomSection.innerHTML = bottomSectionStandardTemplate();
 }
 
-function updateGameoverWinTopAndBottomSection() {
-    let topSection = document.getElementById('topSection');
-    let bottomSection = document.getElementById('bottomSection');
+function gameoverWinTopAndBottomSection() {
     topSection.innerHTML = topSectionGameoverWinTemplate();
     bottomSection.innerHTML = bottomSectionGameoverWinTemplate();
+}
+
+function rotateYourPhoneTopAndBottomSection() {
+    topSection.innerHTML = '';
+    bottomSection.innerHTML = '';
 }
 
 // #endregion
@@ -163,3 +167,18 @@ function setVolumeMuted(elementToControl, bool) {
     return volumeMuted[elementToControl];
 }
 
+document.addEventListener('DOMContentLoaded', turnYourPhone);
+window.addEventListener('resize', turnYourPhone);
+
+function turnYourPhone() {
+    const isPortrait = window.innerWidth < window.innerHeight;
+    const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480; 
+    
+    if (isTooSmall && isPortrait) {
+        document.getElementById('middleSection').style.borderRadius= '15px';
+        showMenuTab('rotateYourPhone');
+    } else {
+        document.getElementById('middleSection').style.borderRadius= 'unset';
+        showMenuTab('title', titleBg)
+    }
+}
