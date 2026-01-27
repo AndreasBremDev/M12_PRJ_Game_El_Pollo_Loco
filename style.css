@@ -24,14 +24,12 @@ body {
 canvas {
     background-color: black;
     border-radius: 15px;
-    /* border: 1px solid green; */
 }
 
 .all-overlays {
     width: 720px;
-    height: 480px !important;
+    height: 480px;
     border-radius: 15px;
-    border: 1px solid red;
 }
 
 .top-section {
