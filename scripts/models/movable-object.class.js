@@ -7,6 +7,7 @@ class MovableObject extends DrawableObject {
     health = 100;
     lastHit = 0;
     animationCompleted = false;
+    isCurrentlyHurt = false;
 
     offset = {
         top: 0,
@@ -52,9 +53,9 @@ class MovableObject extends DrawableObject {
         if (this.health <= 100 && this.health > 0) {
             this.health -= 20;
             if (this instanceof Character) {
+                this.isCurrentlyHurt = true
                 for (let i = 0; i < 10; i++) {
                     this.x += -20;
-                    // only one hit at a time (indirectly (!) - still open task here - // issue: character can be hit multiple times within isHurt())
                 }
             }
         }
@@ -67,6 +68,9 @@ class MovableObject extends DrawableObject {
 
     isHurt() {
         let timePassed = new Date().getTime() - this.lastHit;
+        if (timePassed > 1000) {
+            this.isCurrentlyHurt = false;
+        }
         return timePassed < 1000;
     }
 

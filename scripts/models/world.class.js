@@ -5,6 +5,8 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    camera_target_x = 0;
+    camera_speed = 0.1;
     gameRunning = true;
     statusBarHealth = new StatusBarHealth();
     statusBarCoins = new StatusBarCoins();
@@ -21,6 +23,7 @@ class World {
     coins;
     coinsCollected = 0;
     bottlesCollected = 0;
+    lastOtherDirection = this.character.otherDirection;
 
 
     constructor(canvas, keyboard) {
@@ -55,6 +58,15 @@ class World {
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
 
+            // this.updateCameraTargetX();
+            // if (this.character.otherDirection !== this.lastOtherDirection) {
+            //     this.updateCameraTargetX();
+            //     this.lastOtherDirection = this.character.otherDirection;
+            // }
+            // this.updateCameraX();
+
+            // this.camera_x = Math.round(-this.character.x + 100);
+
         }, 1000 / 60);
     }
 
@@ -63,7 +75,8 @@ class World {
         
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.ctx.translate(this.camera_x, 0);
+        this.camera_x = Math.round(-this.character.x + 100);
+        this.ctx.translate(Math.round(this.camera_x), 0);
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
@@ -78,7 +91,7 @@ class World {
         this.addObjectsToMap(this.level.coins);
         this.addToMap(this.character);
 
-        this.ctx.translate(-this.camera_x, 0);
+        this.ctx.translate(-Math.round(this.camera_x), 0);
 
         this.addToMap(this.statusBarHealth);
         this.addToMap(this.statusBarCoins);
@@ -103,7 +116,9 @@ class World {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
-
+        if (mo instanceof Character) {
+            console.log('Char draw:', mo.x, 'camera_x:', mo.world ? mo.world.camera_x : undefined);
+        }
         mo.draw(this.ctx);
 
         mo.drawFrame(this.ctx);
@@ -123,6 +138,19 @@ class World {
     flipImageBack(mo) {
         mo.x = mo.x * -1;
         this.ctx.restore();
+    }
+
+    updateCameraTargetX() {
+        if (this.otherDirection === false) {
+            this.camera_target_x = -this.character.x + 100;
+        } else {
+            this.camera_target_x = -this.character.x + 300;
+        }
+    }
+
+    updateCameraX() {
+        this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
+        this.camera_x = Math.round(this.camera_x);
     }
 
     ckeckCollectableCollisions(array, statusBar, collected) {
@@ -155,7 +183,7 @@ class World {
     }
 
     actionsGeneralCollisionEnemy() {
-        this.character.hit();
+        if (!this.character.isCurrentlyHurt) {this.character.hit();}
         this.statusBarHealth.setPercentage(this.character.health);
     }
 
@@ -239,6 +267,8 @@ class World {
             }
         }
     }
+
+
 
 
 

@@ -5,7 +5,7 @@ class Character extends MovableObject {
     width = 100;
     speedX = 8;
 
-    currentImage = 0;
+    // currentImage = 0;
     world;
 
     offset = {
@@ -90,9 +90,9 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/5_crouch/C-1.png'
     ];
 
-    currentStatus = 'idle';
-    nextStatus = '';
-    currStatusChanged = false;
+    // currentStatus = 'idle';
+    // nextStatus = '';
+    // currStatusChanged = false;
 
     constructor() {
         super();
@@ -131,15 +131,38 @@ class Character extends MovableObject {
                 // this.jump_sound.play();
             }
 
-            this.world.camera_x = -this.x + 100;
+            // ursprünglicher Code 
+            // this.world.camera_x = -this.x + 100;
+
+
+            // VOR Änderung camera_target_x, camera_speed und diesen Funktionen in WORLD.class.js:
+            //     updateCameraTargetX() {
+            //     if (this.otherDirection === false) {
+            //         this.camera_target_x = -this.character.x + 100;
+            //     } else {
+            //         this.camera_target_x = -this.character.x + 300;
+            //     }
+            // }
+
+            // updateCameraX() {
+            //     this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
+            //     this.camera_x = Math.round(this.camera_x);
+            // }
+
+
+            
+
+
+
+
 
         }, 1000 / 60);
 
         let characterAnimations = setStoppableInterval(() => {
-            if (this.currentStatus !== this.nextStatus) {
-                this.resetAnimation();
-            }
-            this.currentStatus = this.nextStatus;
+            // if (this.currentStatus !== this.nextStatus) {
+            //     this.resetAnimation();
+            // }
+            // this.currentStatus = this.nextStatus;
             if (this.isDead()) {
                 if (!this.animationCompleted) {
                     this.playAnimation(this.IMAGES_DEAD, 3, true);
@@ -147,28 +170,28 @@ class Character extends MovableObject {
                     endGame();
                     showMenuTab('gameover');
                 }
-                this.nextStatus = 'dead';
+                // this.nextStatus = 'dead';
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT, 1);
-                this.nextStatus = 'hurt';
+                // this.nextStatus = 'hurt';
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
-                this.nextStatus = 'jumping';
+                // this.nextStatus = 'jumping';
             } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
                 this.playAnimation(this.IMAGES_WALKING);
-                this.nextStatus = 'walking';
+                // this.nextStatus = 'walking';
             } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
                 this.playAnimation(this.IMAGES_CROUCHING, 2);
-                this.nextStatus = 'crouching';
+                // this.nextStatus = 'crouching';
             } else if (this.world.keyboard.DOWN) {
                 this.playAnimation(this.IMAGES_CROUCH);
-                this.nextStatus = 'crouch';
+                // this.nextStatus = 'crouch';
             } else if (this.isIdle('long')) {
                 this.playAnimation(this.IMAGES_LONG_IDLE);
-                this.nextStatus = 'longIdle';
+                // this.nextStatus = 'longIdle';
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
-                this.nextStatus = 'idle';
+                // this.nextStatus = 'idle';
             }
         }, 1000 / 25);
     }
@@ -177,13 +200,13 @@ class Character extends MovableObject {
         this.speedY = speedY;
     }
 
-    resetAnimation() {
-        this.currentImage = 0;
-    }
+    // resetAnimation() {
+    //     this.currentImage = 0;
+    // }
 
     characterAttack(attackType) {
         this.world.lastThrowTime = new Date().getTime();
-        let bottle = new ThrownBottle(this.x + 50, this.y + 100, attackType);
+        let bottle = this.otherDirection === false ? new ThrownBottle(this.x + 50, this.y + 100, attackType): new ThrownBottle(this.x , this.y + 100, attackType) ;
         attackType === 'one' ? this.attackOne(bottle) : this.attackTwo(bottle);
         this.world.throwableObjects.push(bottle);
         this.world.bottlesCollected -= 20;
@@ -191,9 +214,9 @@ class Character extends MovableObject {
     }
 
     attackOne(throwableObject) {
-        throwableObject.speedX = 15;
-        throwableObject.speedY = 20;
         throwableObject.applyGravity();
+        throwableObject.speedY = 20;
+        this.otherDirection === false ? throwableObject.speedX = 15 : throwableObject.speedX = -15;
         this.attackOneInterval = setStoppableInterval(() => {
             if (!throwableObject.hasCollided) {
                 throwableObject.x += throwableObject.speedX;
@@ -205,7 +228,7 @@ class Character extends MovableObject {
     }
 
     attackTwo(throwableObject) {
-        throwableObject.speedX = 15;
+        this.otherDirection === false ? throwableObject.speedX = 15 : throwableObject.speedX = -15;
         this.attackTwoInterval = setStoppableInterval(() => {
             if (!throwableObject.hasCollided) {
                 throwableObject.x += throwableObject.speedX;
