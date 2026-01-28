@@ -75,7 +75,6 @@ class MovableObject extends DrawableObject {
     }
 
     isDead() {
-        // endGame();
         return this.health < 20;
     }
 
@@ -125,7 +124,7 @@ class MovableObject extends DrawableObject {
     }
 
     moveRight() {
-        if (this.currentStatus === 'crouching') {
+        if (this.currentStatus === 'crouching') { ////////// CROUCHING to be FIXED /////////
             this.x += this.speedX / 2;
         } else {
             this.x += this.speedX;

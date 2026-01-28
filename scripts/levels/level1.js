@@ -1,7 +1,5 @@
 let level1;
 
-// when press START (or else) call function initLevel
-
 function initLevel() {
 
     let backgroundObjects = [];

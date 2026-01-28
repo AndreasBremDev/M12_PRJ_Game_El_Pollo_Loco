@@ -7,6 +7,9 @@ class World {
     camera_x = 0;
     camera_target_x = 0;
     camera_speed = 0.1;
+    camera_offset = 100;
+    distanceToTarget = Math.abs(this.camera_x - this.camera_target_x);
+    cameraInterpolationCompleted = false;
     gameRunning = true;
     statusBarHealth = new StatusBarHealth();
     statusBarCoins = new StatusBarCoins();
@@ -51,24 +54,23 @@ class World {
 
     run() {
         let gameloop = setStoppableInterval(() => {
-
             this.checkCharacterEnemyCollisions();
             this.checkThrowObjects();
             this.checkBottleCollisionAttackOne();
             this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
-
-            this.checkCameraMovement();
-            this.updateCameraX();
-
         }, 1000 / 60);
     }
 
     draw() {
         if (!this.gameRunning) return;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        this.checkCameraMovement();
+        console.log('cameraInterpolationCompleted: ', this.cameraInterpolationCompleted);
+        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(Math.round(this.camera_x), 0);
 
         this.addObjectsToMap(this.level.backgroundObjects);
@@ -100,28 +102,39 @@ class World {
     }
 
     checkCameraMovement() {
-        if (this.character.otherDirection !== this.lastOtherDirection || this.character.x !== this.lastCharX) {
-            console.log('Character otherDirection',this.character.otherDirection, 'vs lastOtherDirection', this.lastOtherDirection);
-            
-            this.updateCameraTargetX();
+        // Offset und Ziel NUR beim Richtungswechsel setzen!
+        if (this.character.otherDirection !== this.lastOtherDirection) {
+            this.camera_offset = this.character.otherDirection ? 300 : 100;
+            this.camera_target_x = -this.character.x + this.camera_offset;
             this.lastOtherDirection = this.character.otherDirection;
-            this.lastCharX = this.character.x;
+            this.cameraInterpolationCompleted = false;
+            console.log('[CAM] Richtungswechsel erkannt:', this.character.otherDirection, 'Offset:', this.camera_offset);
+            console.log('[CAM] Interpolation gestartet. camera_target_x:', this.camera_target_x, 'camera_x:', this.camera_x);
         }
     }
 
-    updateCameraTargetX() {
-        if (this.character.otherDirection === false) {
-            this.camera_target_x = -this.character.x + 100;
+    cameraInterpolation() {
+        if (Math.abs(this.camera_x - this.camera_target_x) < 1) {
+            console.log('[CAM] Interpolation ENDE. camera_x:', this.camera_x, 'target:', this.camera_target_x);
+            this.camera_x = this.camera_target_x;
+            this.cameraInterpolationCompleted = true;
+            return;
         } else {
-            this.camera_target_x = -this.character.x + 300;
+            this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
+            console.log('[CAM] Interpoliert: camera_x:', this.camera_x, 'target:', this.camera_target_x);
+            // this.camera_x = Math.round(this.camera_x);
         }
     }
 
-    updateCameraX() {
-        this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
-        this.camera_x = Math.round(this.camera_x);
-        // this.camera_x = this.camera_target_x;
+    cameraFixValue(offset) {
+        if (this.cameraInterpolationCompleted === true && this.character.x !== this.lastCharacterX) {
+            console.log('[CAM] Fixwert gesetzt! camera_x:', this.camera_x, '->', Math.round(-this.character.x + offset));
+            this.camera_x = Math.round(-this.character.x + offset);
+            this.lastCharacterX = this.character.x;
+        }
     }
+
+
 
     addObjectsToMap(objects) {
         objects.forEach(o => {
@@ -133,12 +146,6 @@ class World {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
-
-        // CONSOLE LOG FOR DEBUGGING PURPOSES
-        if (mo instanceof Character) {
-            console.log('Char draw:', mo.x, 'camera_x:', mo.world ? mo.world.camera_x : undefined);
-        }
-        
         mo.draw(this.ctx);
         mo.drawFrame(this.ctx);
         if (mo.otherDirection) {
