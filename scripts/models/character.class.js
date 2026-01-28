@@ -132,6 +132,7 @@ class Character extends MovableObject {
             }
 
             // ursprünglicher Code 
+            // this.world.camera_x = Math.round(-this.character.x + 100);
             // this.world.camera_x = -this.x + 100;
 
 

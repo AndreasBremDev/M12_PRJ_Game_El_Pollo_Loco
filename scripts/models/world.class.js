@@ -24,6 +24,7 @@ class World {
     coinsCollected = 0;
     bottlesCollected = 0;
     lastOtherDirection = this.character.otherDirection;
+    lastCharacterX = this.character.x;
 
 
     constructor(canvas, keyboard) {
@@ -58,24 +59,16 @@ class World {
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
 
-            // this.updateCameraTargetX();
-            // if (this.character.otherDirection !== this.lastOtherDirection) {
-            //     this.updateCameraTargetX();
-            //     this.lastOtherDirection = this.character.otherDirection;
-            // }
-            // this.updateCameraX();
-
-            // this.camera_x = Math.round(-this.character.x + 100);
+            this.checkCameraMovement();
+            this.updateCameraX();
 
         }, 1000 / 60);
     }
 
     draw() {
-        if (!this.gameRunning) return; 
-        
+        if (!this.gameRunning) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.camera_x = Math.round(-this.character.x + 100);
         this.ctx.translate(Math.round(this.camera_x), 0);
 
         this.addObjectsToMap(this.level.backgroundObjects);
@@ -91,7 +84,7 @@ class World {
         this.addObjectsToMap(this.level.coins);
         this.addToMap(this.character);
 
-        this.ctx.translate(-Math.round(this.camera_x), 0);
+        this.ctx.translate(Math.round(-this.camera_x), 0);
 
         this.addToMap(this.statusBarHealth);
         this.addToMap(this.statusBarCoins);
@@ -106,6 +99,30 @@ class World {
         });
     }
 
+    checkCameraMovement() {
+        if (this.character.otherDirection !== this.lastOtherDirection || this.character.x !== this.lastCharX) {
+            console.log('Character otherDirection',this.character.otherDirection, 'vs lastOtherDirection', this.lastOtherDirection);
+            
+            this.updateCameraTargetX();
+            this.lastOtherDirection = this.character.otherDirection;
+            this.lastCharX = this.character.x;
+        }
+    }
+
+    updateCameraTargetX() {
+        if (this.character.otherDirection === false) {
+            this.camera_target_x = -this.character.x + 100;
+        } else {
+            this.camera_target_x = -this.character.x + 300;
+        }
+    }
+
+    updateCameraX() {
+        this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
+        this.camera_x = Math.round(this.camera_x);
+        // this.camera_x = this.camera_target_x;
+    }
+
     addObjectsToMap(objects) {
         objects.forEach(o => {
             this.addToMap(o);
@@ -116,13 +133,14 @@ class World {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
+
+        // CONSOLE LOG FOR DEBUGGING PURPOSES
         if (mo instanceof Character) {
             console.log('Char draw:', mo.x, 'camera_x:', mo.world ? mo.world.camera_x : undefined);
         }
+        
         mo.draw(this.ctx);
-
         mo.drawFrame(this.ctx);
-
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
@@ -140,18 +158,20 @@ class World {
         this.ctx.restore();
     }
 
-    updateCameraTargetX() {
-        if (this.otherDirection === false) {
-            this.camera_target_x = -this.character.x + 100;
-        } else {
-            this.camera_target_x = -this.character.x + 300;
-        }
-    }
 
-    updateCameraX() {
-        this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
-        this.camera_x = Math.round(this.camera_x);
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ckeckCollectableCollisions(array, statusBar, collected) {
         for (let i = array.length - 1; i >= 0; i--) {
@@ -183,7 +203,7 @@ class World {
     }
 
     actionsGeneralCollisionEnemy() {
-        if (!this.character.isCurrentlyHurt) {this.character.hit();}
+        if (!this.character.isCurrentlyHurt) { this.character.hit(); }
         this.statusBarHealth.setPercentage(this.character.health);
     }
 
