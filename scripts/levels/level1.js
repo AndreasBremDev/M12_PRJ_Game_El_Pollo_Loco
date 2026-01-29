@@ -30,7 +30,7 @@ function initLevel() {
             // new ChickenSmall(1300),
 
 
-            new Endboss()
+            new Endboss(1800)
         ],
         [
             new Cloud()

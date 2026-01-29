@@ -1,11 +1,12 @@
 let canvas = document.getElementById('canvas');
 let world;
 let keyboard = new Keyboard();
+let sounds = new Sounds();
 
 function startGame() {
     initLevel();
     keyboard.lastKeyPressedTime = new Date().getTime();
-    world = new World(canvas, keyboard)
+    world = new World(canvas, keyboard, sounds)
 }
 
 function endGame() {

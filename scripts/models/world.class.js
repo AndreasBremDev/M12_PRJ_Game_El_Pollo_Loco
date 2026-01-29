@@ -31,18 +31,19 @@ class World {
     bottlesCollected = 0;
     lastOtherDirection = this.character.otherDirection;
     lastCharacterX = this.character.x;
+    backgroundSound = new Audio('./assets/audio/background_game.m4a')
 
-    START_interpolation;
-    END_interpolation;
-
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, sounds) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
+        // this.character = new Character(sounds);
         this.draw();
         this.setWorld();
         this.run();
-
+        this.backgroundSound.volume = 0.1;
+        this.backgroundSound.loop = true;
+        this.backgroundSound.play();
     }
 
     setWorld() {
