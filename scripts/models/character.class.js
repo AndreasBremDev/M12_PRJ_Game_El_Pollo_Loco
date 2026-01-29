@@ -4,8 +4,8 @@ class Character extends MovableObject {
     height = 200;
     width = 100;
     speedX = 8;
+    crouching = false;
 
-    // currentImage = 0;
     world;
 
     offset = {
@@ -114,13 +114,13 @@ class Character extends MovableObject {
 
         let characterMovements = setStoppableInterval(() => {
             // this.walking_sound.pause();
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x && this.world.cameraInterpolationCompleted) {
                 this.moveRight();
                 this.otherDirection = false;
                 // this.walking_sound.play();
             }
 
-            if (this.world.keyboard.LEFT && this.x > 0) {
+            if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
                 this.moveLeft();
                 this.otherDirection = true;
                 // this.walking_sound.play();
@@ -130,40 +130,11 @@ class Character extends MovableObject {
                 this.jump();
                 // this.jump_sound.play();
             }
-
-            // ursprünglicher Code 
-            // this.world.camera_x = Math.round(-this.character.x + 100);
-            // this.world.camera_x = -this.x + 100;
-
-
-            // VOR Änderung camera_target_x, camera_speed und diesen Funktionen in WORLD.class.js:
-            //     updateCameraTargetX() {
-            //     if (this.otherDirection === false) {
-            //         this.camera_target_x = -this.character.x + 100;
-            //     } else {
-            //         this.camera_target_x = -this.character.x + 300;
-            //     }
-            // }
-
-            // updateCameraX() {
-            //     this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
-            //     this.camera_x = Math.round(this.camera_x);
-            // }
-
-
+            this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
             
-
-
-
-
-
         }, 1000 / 60);
 
         let characterAnimations = setStoppableInterval(() => {
-            // if (this.currentStatus !== this.nextStatus) {
-            //     this.resetAnimation();
-            // }
-            // this.currentStatus = this.nextStatus;
             if (this.isDead()) {
                 if (!this.animationCompleted) {
                     this.playAnimation(this.IMAGES_DEAD, 3, true);
@@ -171,28 +142,28 @@ class Character extends MovableObject {
                     endGame();
                     showMenuTab('gameover');
                 }
-                // this.nextStatus = 'dead';
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT, 1);
-                // this.nextStatus = 'hurt';
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
-                // this.nextStatus = 'jumping';
             } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMAGES_WALKING);
-                // this.nextStatus = 'walking';
+                if (this.world.keyboard.RIGHT && this.world.keyboard.LEFT) {
+                    this.playAnimation(this.IMAGES_IDLE);
+                } else {
+                    this.playAnimation(this.IMAGES_WALKING);
+                }
             } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
-                this.playAnimation(this.IMAGES_CROUCHING, 2);
-                // this.nextStatus = 'crouching';
+                if (this.world.keyboard.RIGHT && this.world.keyboard.LEFT) {
+                    this.playAnimation(this.IMAGES_CROUCH);
+                } else {
+                    this.playAnimation(this.IMAGES_CROUCHING, 2);
+                }
             } else if (this.world.keyboard.DOWN) {
                 this.playAnimation(this.IMAGES_CROUCH);
-                // this.nextStatus = 'crouch';
             } else if (this.isIdle('long')) {
                 this.playAnimation(this.IMAGES_LONG_IDLE);
-                // this.nextStatus = 'longIdle';
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
-                // this.nextStatus = 'idle';
             }
         }, 1000 / 25);
     }
@@ -201,13 +172,9 @@ class Character extends MovableObject {
         this.speedY = speedY;
     }
 
-    // resetAnimation() {
-    //     this.currentImage = 0;
-    // }
-
     characterAttack(attackType) {
         this.world.lastThrowTime = new Date().getTime();
-        let bottle = this.otherDirection === false ? new ThrownBottle(this.x + 50, this.y + 100, attackType): new ThrownBottle(this.x , this.y + 100, attackType) ;
+        let bottle = this.otherDirection === false ? new ThrownBottle(this.x + 50, this.y + 100, attackType) : new ThrownBottle(this.x, this.y + 100, attackType);
         attackType === 'one' ? this.attackOne(bottle) : this.attackTwo(bottle);
         this.world.throwableObjects.push(bottle);
         this.world.bottlesCollected -= 20;

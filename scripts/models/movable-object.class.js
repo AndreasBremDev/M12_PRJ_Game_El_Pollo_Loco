@@ -124,7 +124,7 @@ class MovableObject extends DrawableObject {
     }
 
     moveRight() {
-        if (this.currentStatus === 'crouching') { ////////// CROUCHING to be FIXED /////////
+        if (this.crouching === true) {
             this.x += this.speedX / 2;
         } else {
             this.x += this.speedX;
@@ -132,7 +132,7 @@ class MovableObject extends DrawableObject {
     }
 
     moveLeft() {
-        if (this.currentStatus === 'crouching') {
+        if (this.crouching === true) {
             this.x -= this.speedX / 2;
         } else {
             this.x -= this.speedX;

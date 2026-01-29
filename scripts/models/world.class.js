@@ -5,8 +5,11 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    camera_start_x = 0;
+    camera_progress = 0;
+    camera_progress_speed = 0.05;
     camera_target_x = 0;
-    camera_speed = 0.1;
+    camera_speed = 0.2;
     camera_offset = 100;
     distanceToTarget = Math.abs(this.camera_x - this.camera_target_x);
     cameraInterpolationCompleted = false;
@@ -29,6 +32,8 @@ class World {
     lastOtherDirection = this.character.otherDirection;
     lastCharacterX = this.character.x;
 
+    START_interpolation;
+    END_interpolation;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -67,8 +72,6 @@ class World {
         if (!this.gameRunning) return;
 
         this.checkCameraMovement();
-        console.log('cameraInterpolationCompleted: ', this.cameraInterpolationCompleted);
-        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(Math.round(this.camera_x), 0);
@@ -102,38 +105,35 @@ class World {
     }
 
     checkCameraMovement() {
-        // Offset und Ziel NUR beim Richtungswechsel setzen!
         if (this.character.otherDirection !== this.lastOtherDirection) {
             this.camera_offset = this.character.otherDirection ? 300 : 100;
-            this.camera_target_x = -this.character.x + this.camera_offset;
             this.lastOtherDirection = this.character.otherDirection;
             this.cameraInterpolationCompleted = false;
-            console.log('[CAM] Richtungswechsel erkannt:', this.character.otherDirection, 'Offset:', this.camera_offset);
-            console.log('[CAM] Interpolation gestartet. camera_target_x:', this.camera_target_x, 'camera_x:', this.camera_x);
         }
+        this.camera_target_x = -this.character.x + this.camera_offset;
+        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
     }
 
     cameraInterpolation() {
-        if (Math.abs(this.camera_x - this.camera_target_x) < 1) {
-            console.log('[CAM] Interpolation ENDE. camera_x:', this.camera_x, 'target:', this.camera_target_x);
+        if (Math.abs(this.camera_x - this.camera_target_x) <= 16) {
             this.camera_x = this.camera_target_x;
             this.cameraInterpolationCompleted = true;
             return;
         } else {
-            this.camera_x += (this.camera_target_x - this.camera_x) * this.camera_speed;
-            console.log('[CAM] Interpoliert: camera_x:', this.camera_x, 'target:', this.camera_target_x);
-            // this.camera_x = Math.round(this.camera_x);
+            this.camera_start_x = this.camera_x;
+            this.camera_progress = 0;
+            this.camera_progress += this.camera_progress_speed;
+            let easeIn = 1 - Math.exp(-6 * this.camera_progress);
+            this.camera_x = this.camera_start_x + (this.camera_target_x - this.camera_start_x) * easeIn;
         }
     }
 
     cameraFixValue(offset) {
         if (this.cameraInterpolationCompleted === true && this.character.x !== this.lastCharacterX) {
-            console.log('[CAM] Fixwert gesetzt! camera_x:', this.camera_x, '->', Math.round(-this.character.x + offset));
             this.camera_x = Math.round(-this.character.x + offset);
             this.lastCharacterX = this.character.x;
         }
     }
-
 
 
     addObjectsToMap(objects) {
