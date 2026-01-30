@@ -32,6 +32,7 @@ function showMenuTab(tabName, background = menuBg) {
     (tabName === 'sounds') && setDefaultSoundOptions();
     ///////// make Mute button von JS abhängig /////////
     (tabName === 'rotateYourPhone') && rotateYourPhoneTopAndBottomSection();
+    window.sounds.stop(window.sounds.BACKGROUND_GAME)
 }
 
 function setDefaultSoundOptions() {
@@ -110,11 +111,14 @@ function soundControl(elementToControl, value) {
     if (volumeMuted[elementToControl] && volumeCurrent[elementToControl] > 20 && volumeCurrent[elementToControl] <= 100 && value > 0) {
         volumeCurrent[elementToControl] = 20;
         muteUnmute(elementToControl);
+        elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
     } else if ((volumeMuted[elementToControl] && value > 0) || (!volumeMuted[elementToControl] && volumeCurrent[elementToControl] === 20 && value < 0)) {
         muteUnmute(elementToControl);
     } else if ((volumeMuted[elementToControl] && value < 0) || (volumeCurrent[elementToControl] === 100 && value > 0)) {
+        elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
         return;
     } else {
+        elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
         volumeCurrent[elementToControl] += value;
         setVolumeInHTML(elementToControl);
     }
@@ -131,6 +135,7 @@ function muteUnmute(elementToControl) {
 function setVolumeInHTML(elementToControl) {
     let progressBar = document.getElementById(elementToControl + 'VolumeProgressBar');
     progressBar.style.width = volumeCurrent[elementToControl] + '%';
+    elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
 }
 
 function toggleMuteIcons(elementToControl) {
@@ -153,6 +158,7 @@ function setVolumeBarToZero(elementToControl) {
         return;
     }
     let progressBar = document.getElementById(elementToControl + 'VolumeProgressBar');
+    elementToControl === 'effect' ? window.sounds.stop(window.sounds.MENU_CLICK) : window.sounds.stop(window.sounds.BACKGROUND_GAME);
     progressBar.style.width = '0%';
 }
 
@@ -172,13 +178,13 @@ window.addEventListener('resize', turnYourPhone);
 
 function turnYourPhone() {
     const isPortrait = window.innerWidth < window.innerHeight;
-    const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480; 
-    
+    const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480;
+
     if (isTooSmall && isPortrait) {
-        document.getElementById('middleSection').style.borderRadius= '15px';
+        document.getElementById('middleSection').style.borderRadius = '15px';
         showMenuTab('rotateYourPhone');
     } else {
-        document.getElementById('middleSection').style.borderRadius= 'unset';
+        document.getElementById('middleSection').style.borderRadius = 'unset';
         showMenuTab('title', titleBg)
     }
 }

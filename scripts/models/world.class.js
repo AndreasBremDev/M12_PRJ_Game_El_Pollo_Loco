@@ -1,5 +1,4 @@
 class World {
-    character = new Character();
     level = level1;
     canvas;
     ctx;
@@ -29,21 +28,17 @@ class World {
     coins;
     coinsCollected = 0;
     bottlesCollected = 0;
-    lastOtherDirection = this.character.otherDirection;
-    lastCharacterX = this.character.x;
-    backgroundSound = new Audio('./assets/audio/background_game.m4a')
 
     constructor(canvas, keyboard, sounds) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-        // this.character = new Character(sounds);
+        this.character = new Character(sounds);
+        this.lastOtherDirection = this.character.otherDirection;
+        this.lastCharacterX = this.character.x;
         this.draw();
         this.setWorld();
         this.run();
-        this.backgroundSound.volume = 0.1;
-        this.backgroundSound.loop = true;
-        this.backgroundSound.play();
     }
 
     setWorld() {

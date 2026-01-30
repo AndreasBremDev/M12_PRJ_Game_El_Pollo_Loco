@@ -25,7 +25,7 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/2_walk/W-26.png'
     ];
 
-    SOUND_WALKING = new Audio('./assets/audio/character_walk.m4a');
+    
 
     IMAGES_IDLE = [
         './assets/img/2_character_pepe/1_idle/idle/I-1.png',
@@ -53,8 +53,6 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/1_idle/long_idle/I-20.png'
     ]
 
-    SOUND_LONG_IDLE = ['./assets/audio/character_long_idle.m4a'];
-
     IMAGES_JUMPING = [
         './assets/img/2_character_pepe/3_jump/J-31.png',
         './assets/img/2_character_pepe/3_jump/J-32.png',
@@ -66,8 +64,6 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/3_jump/J-38.png',
         './assets/img/2_character_pepe/3_jump/J-39.png'
     ];
-
-    SOUND_JUMP = new Audio('./assets/audio/character_jump.m4a');
 
     IMAGES_HURT = [
         './assets/img/2_character_pepe/4_hurt/H-41.png',
@@ -97,8 +93,9 @@ class Character extends MovableObject {
     ];
 
 
-    constructor() {
+    constructor(sounds) {
         super();
+        this.sounds = sounds;
         this.loadImage('./assets/img/2_character_pepe/2_walk/W-21.png');
         this.loadImage('./assets/img/2_character_pepe/5_crouch/C-1.png')
         this.loadImages(this.IMAGES_WALKING);
@@ -116,22 +113,22 @@ class Character extends MovableObject {
     animate() {
 
         let characterMovements = setStoppableInterval(() => {
-            // this.walking_sound.pause();
+            this.sounds.pause(this.sounds.CHARACTER_WALK);
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x && this.world.cameraInterpolationCompleted) {
                 this.moveRight();
                 this.otherDirection = false;
-                this.SOUND_WALKING.play();
+                this.sounds.play(this.sounds.CHARACTER_WALK,1);
             }
 
             if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
                 this.moveLeft();
                 this.otherDirection = true;
-                this.SOUND_WALKING.play();
+                this.sounds.play(this.sounds.CHARACTER_WALK,1);
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
-                this.SOUND_JUMP.play();
+                this.sounds.play(this.sounds.CHARACTER_JUMP,0.3);
             }
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
             

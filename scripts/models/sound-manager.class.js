@@ -1,28 +1,66 @@
 class Sounds {
 
-    constructor(src, volume = 0.2, loop = false) {
-        this.audio = new Audio(src);
-        this.audio.volume = volume;
-        this.audio.loop = loop;
+    constructor() {
+        this.isMuted = false;
+        this.generalVolume = 0.1;
+
+        this.BACKGROUND_GAME = new Audio('./assets/audio/background_game.m4a');
+        this.BACKGROUND_ENDBOSS = new Audio('./assets/audio/background_endboss.m4a');
+
+        this.BOTTLE_SPLASH = new Audio('./assets/audio/bottle_splash_2.m4a');
+        this.BOTTLE_SQUEEZE = new Audio('./assets/audio/bottle_squeeze.m4a');
+        this.BOTTLE_THROW = new Audio('./assets/audio/bottle_throw_1.m4a');
+
+        this.CHARACTER_CROUCHING = new Audio('./assets/audio/character_crouching.m4a');
+        this.CHARACTER_DEAD = new Audio('./assets/audio/character_dead.m4a');
+        this.CHARACTER_HURT = new Audio('./assets/audio/character_hurt.m4a');
+        this.CHARACTER_JUMP = new Audio('./assets/audio/character_jump.m4a');
+        this.CHARACTER_LONG_IDLE = new Audio('./assets/audio/character_long_idle.m4a');
+        this.CHARACTER_WALK = new Audio('./assets/audio/character_walk.m4a');
+
+        this.CHICKEN_DEAD = new Audio('./assets/audio/chicken_dead.m4a');
+        this.CHICKEN_DEAD_2 = new Audio('./assets/audio/chicken_dead_2.m4a');
+        this.CHICKEN_NORMAL = new Audio('./assets/audio/chicken_gacker_gacker_medium.m4a');
+
+        this.CHICKEN_ENDBOSS_ALERT = new Audio('./assets/audio/chicken_Endboss_alert_gack_gack_gaaaack_medium.m4a');
+        this.CHICKEN_ENDBOSS_ATTACK = new Audio('./assets/audio/chicken_Endboss_attack_gack_gaaaack_loud.m4a');
+        this.CHICKEN_ENDBOSS_DEAD = new Audio('./assets/audio/chicken_Endboss_dead_1.m4a');
+
+        this.CHICKEN_SMALL = new Audio('./assets/audio/chicken_Small_chirp.m4a');
+
+        this.COLLECT_BOTTLE = new Audio('./assets/audio/collect_bottle.m4a');
+        this.COLLECT_COIN = new Audio('./assets/audio/collect_coin.m4a');
+
+        this.ENDGAME_WIN_1 = new Audio('./assets/audio/screen_WIN_tadaa_1.m4a');
+        this.ENDGAME_WIN_2 = new Audio('./assets/audio/screen_WIN_win-2.m4a');
+        this.ENDGAME_LOOSE = new Audio('./assets/audio/screen_LOOSE_4s.m4a');
+
+        this.MENU_CLICK = new Audio('./assets/audio/menu_click.m4a');
     }
 
-    play() {
-        this.audio.currentTime = 0;
-        this.audio.play();
+    //play mit Unterbrechung
+
+    play(obj, setVolume = this.generalVolume, isLoop = false) {
+        obj.volume = setVolume;
+        obj.loop = isLoop;
+        obj.currentTime = 0;
+        obj.play();
     }
 
-    pause() {
-        this.audio.pause();
+    pause(obj) {
+        obj.pause();
     }
 
-    stop() {
-        this.audio.pause();
-        this.audio.currentTime = 0;
+    stop(obj) {
+        obj.pause();
+        obj.currentTime = 0;
     }
 
     setVolume(volume) {
         this.audio.volume = volume;
     }
+
+    // Idee: hintergrundmusik (z.B. wenn Endboss) "spielt" trotz mute "ab", sodass bei unmute direkt die entsprechende stelle abgespielt wird
 
     mute() {
         this.audio.muted = true;
