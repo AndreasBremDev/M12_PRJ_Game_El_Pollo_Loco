@@ -30,7 +30,6 @@ class ChickenDead extends MovableObject {
         this.x = x;
         this.y = y;
         this.applyGravity();
-        // this.animate();
         if (chickenType instanceof ChickenSmall) {
             this.loadImage(this.CHICKEN_SMALL_DEAD[0]);
         } else if (chickenType instanceof Chicken) {

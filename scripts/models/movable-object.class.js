@@ -52,17 +52,20 @@ class MovableObject extends DrawableObject {
     hit() {
         if (this.health <= 100 && this.health > 0) {
             this.health -= 20;
-            if (this instanceof Character) {
+            if (this instanceof Character && this.health >= 20) {
+                this.sounds.playOnce(this.sounds.CHARACTER_HURT);
                 this.isCurrentlyHurt = true
-                for (let i = 0; i < 10; i++) {
-                    this.x += -20;
-                }
+                for (let i = 0; i < 10; i++) { this.x += -20; }
             }
+            if (this instanceof Endboss && this.health >= 20) {
+                this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
+            }
+            this.lastHit = new Date().getTime();
         }
         if (this.health < 20) {
+            this instanceof Character && this.sounds.playOnce(this.sounds.CHARACTER_DEAD);
+            this instanceof Endboss && this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
             this.health = 0;
-        } else {
-            this.lastHit = new Date().getTime();
         }
     }
 
@@ -141,8 +144,14 @@ class MovableObject extends DrawableObject {
 
     isIdle(time) {
         let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') { return timePassed < 7000; }
-        if (time === 'long') { return timePassed >= 7000; }
+        if (time === 'short') {
+            this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
+            return timePassed < 7000;
+        }
+        if (time === 'long') {
+            this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE)
+            return timePassed >= 7000;
+        }
     }
 
 }

@@ -1,8 +1,17 @@
 class Sounds {
+    isMuted = false;
+
+    generalVolume = 0.2;
 
     constructor() {
-        this.isMuted = false;
-        this.generalVolume = 0.1;
+        this.volumeMuted = {
+            'effect': true,
+            'music': true
+        };
+        this.volumeCurrent = {
+            'effect': 0.2,
+            'music': 0.2
+        };
 
         this.BACKGROUND_GAME = new Audio('./assets/audio/background_game.m4a');
         this.BACKGROUND_ENDBOSS = new Audio('./assets/audio/background_endboss.m4a');
@@ -16,7 +25,7 @@ class Sounds {
         this.CHARACTER_HURT = new Audio('./assets/audio/character_hurt.m4a');
         this.CHARACTER_JUMP = new Audio('./assets/audio/character_jump.m4a');
         this.CHARACTER_LONG_IDLE = new Audio('./assets/audio/character_long_idle.m4a');
-        this.CHARACTER_WALK = new Audio('./assets/audio/character_walk.m4a');
+        this.CHARACTER_WALK = new Audio('./assets/audio/character_walk1.m4a');
 
         this.CHICKEN_DEAD = new Audio('./assets/audio/chicken_dead.m4a');
         this.CHICKEN_DEAD_2 = new Audio('./assets/audio/chicken_dead_2.m4a');
@@ -25,8 +34,10 @@ class Sounds {
         this.CHICKEN_ENDBOSS_ALERT = new Audio('./assets/audio/chicken_Endboss_alert_gack_gack_gaaaack_medium.m4a');
         this.CHICKEN_ENDBOSS_ATTACK = new Audio('./assets/audio/chicken_Endboss_attack_gack_gaaaack_loud.m4a');
         this.CHICKEN_ENDBOSS_DEAD = new Audio('./assets/audio/chicken_Endboss_dead_1.m4a');
+        this.CHICKEN_ENDBOSS_HURT = new Audio('./assets/audio/chicken_Endboss_hurt_gack_gaaaack_loud.m4a');
 
-        this.CHICKEN_SMALL = new Audio('./assets/audio/chicken_Small_chirp.m4a');
+        this.CHICKEN_SMALL = new Audio('./assets/audio/chicken_small_chirp.m4a');
+        this.CHICKEN_SMALL_DEAD = new Audio('./assets/audio/chicken_small_dead.m4a');
 
         this.COLLECT_BOTTLE = new Audio('./assets/audio/collect_bottle.m4a');
         this.COLLECT_COIN = new Audio('./assets/audio/collect_coin.m4a');
@@ -40,24 +51,38 @@ class Sounds {
 
     //play mit Unterbrechung
 
-    play(obj, setVolume = this.generalVolume, isLoop = false) {
-        obj.volume = setVolume;
-        obj.loop = isLoop;
-        obj.currentTime = 0;
-        obj.play();
+    playOnce(audioObj, elementToControl = 'effect') {
+        if (this.volumeMuted[elementToControl]) {
+            return;
+        } else {
+            audioObj.volume = this.volumeCurrent[elementToControl];
+            audioObj.currentTime = 0;
+            audioObj.loop = false
+            audioObj.play();
+        }
     }
 
-    pause(obj) {
-        obj.pause();
+    playLoop(audioObj, elementToControl = 'effect') {
+        if (this.volumeMuted[elementToControl]) {
+            return;
+        } else {
+            audioObj.volume = this.volumeCurrent[elementToControl];
+            audioObj.loop = true;
+            audioObj.play();
+        }
     }
 
-    stop(obj) {
-        obj.pause();
-        obj.currentTime = 0;
+    pause(audioObj) {
+        audioObj.pause();
     }
 
-    setVolume(volume) {
-        this.audio.volume = volume;
+    stop(audioObj) {
+        audioObj.pause();
+        audioObj.currentTime = 0;
+    }
+
+    setVolume(audioObj, setVolume = this.generalVolume) {
+        audioObj.volume = setVolume;
     }
 
     // Idee: hintergrundmusik (z.B. wenn Endboss) "spielt" trotz mute "ab", sodass bei unmute direkt die entsprechende stelle abgespielt wird

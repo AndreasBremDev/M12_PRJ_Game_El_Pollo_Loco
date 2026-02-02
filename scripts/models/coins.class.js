@@ -15,8 +15,9 @@ class Coins extends MovableObject {
         bottom: 35
     };
 
-    constructor(x, y) {
+    constructor(x, y, sounds) {
         super();
+        this.sounds = sounds;
         this.loadImage('./assets/img/8_coin/coin_1.png');
         this.x = x;
         this.y = y;

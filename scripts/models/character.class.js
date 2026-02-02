@@ -25,7 +25,7 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/2_walk/W-26.png'
     ];
 
-    
+
 
     IMAGES_IDLE = [
         './assets/img/2_character_pepe/1_idle/idle/I-1.png',
@@ -112,27 +112,34 @@ class Character extends MovableObject {
 
     animate() {
 
-        let characterMovements = setStoppableInterval(() => {
+        let characterSounds = setStoppableInterval(() => {
             this.sounds.pause(this.sounds.CHARACTER_WALK);
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x && this.world.cameraInterpolationCompleted) {
+            this.sounds.pause(this.sounds.CHARACTER_CROUCHING);
+            if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.world.cameraInterpolationCompleted && !this.isAboveGround() && !this.world.keyboard.DOWN) {
+                this.sounds.playLoop(this.sounds.CHARACTER_WALK);
+            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
+                this.sounds.playLoop(this.sounds.CHARACTER_CROUCHING);
+            }
+        }, 1000 / 60);
+
+        let characterMovements = setStoppableInterval(() => {
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.enemies.find(enemy => enemy instanceof Endboss).x && this.world.cameraInterpolationCompleted) {
                 this.moveRight();
                 this.otherDirection = false;
-                this.sounds.play(this.sounds.CHARACTER_WALK,1);
             }
-
             if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
                 this.moveLeft();
                 this.otherDirection = true;
-                this.sounds.play(this.sounds.CHARACTER_WALK,1);
             }
-
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
-                this.sounds.play(this.sounds.CHARACTER_JUMP,0.3);
+                this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
-            
-            if (this.x > 1200){
+            if (this.world.endboss.x - this.x < 600) {
+                this.world.endboss.hadFirstContact = true;
+                console.log('this.x < this.world.endboss.x');
+
                 // this.endboss_sound.play();
             }
 
@@ -153,7 +160,7 @@ class Character extends MovableObject {
                 this.playAnimation(this.IMAGES_CROUCH);
             } else if (this.isIdle('long')) {
                 this.playAnimation(this.IMAGES_LONG_IDLE);
-            } else {
+            } else if (this.isIdle('short')) {
                 this.playAnimation(this.IMAGES_IDLE);
             }
         }, 1000 / 25);

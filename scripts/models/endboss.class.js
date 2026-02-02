@@ -51,23 +51,31 @@ class Endboss extends MovableObject {
         bottom: 15
     };
 
-    hadFirstContact = false;
 
-    constructor() {
+    constructor(x, sounds) {
         super();
+        this.sounds = sounds;
         this.loadImage('./assets/img/4_enemie_boss_chicken/2_alert/G5.png');
-        this.x = 1800;
+        this.x = x;
         this.loadImages(this.IMAGES_ALERT);
         this.loadImages(this.IMAGES_WALK);
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.animate();
+        this.applyGravity();
+        this.hadFirstContact = false;
     }
 
     animate() {
-        let i = 0;
+        let endbossMovements = setStoppableInterval(() => {
+            if (this.hadFirstContact && this.x > 1200) {
+                this.moveLeft();
+            }
+        }, 1000 / 60);
+
         let endbossAnimations = setStoppableInterval(() => {
+                // this.playAnimation(this.IMAGES_WALK);
 
             if (this.health < 20) {
                 if (!this.animationCompleted) {
@@ -76,11 +84,14 @@ class Endboss extends MovableObject {
                     endGame();
                     showMenuTab('win');
                 }
-            } else {
+            } else if (this.isCurrentlyHurt) {
+                this.playAnimation(this.IMAGES_HURT);
+            } else if (this.hadFirstContact && this.x < 1800) {
+                this.playAnimation(this.IMAGES_WALK);
+        }else {
                 this.playAnimation(this.IMAGES_ALERT);
             }
         }, 100);
     }
-
 
 }

@@ -18,8 +18,9 @@ class ChickenSmall extends MovableObject {
         bottom: 5
     };
 
-    constructor(x) {
+    constructor(x,sounds) {
         super();
+        this.sounds = sounds;
         this.x = x + Math.random() * 100;
         this.loadImages(this.IMAGES_WALKING);
         this.animate();
@@ -43,6 +44,7 @@ class ChickenSmall extends MovableObject {
 
     jump() {
         this.speedY = 20;
+
     }
 
     getRandomJumpDelay() {

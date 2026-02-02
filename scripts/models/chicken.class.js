@@ -18,8 +18,9 @@ class Chicken extends MovableObject {
         bottom: 5
     };
 
-    constructor(x) {
+    constructor(x, sounds) {
         super();
+        this.sounds = sounds;
         this.x = x + Math.random() * 320;
         this.loadImages(this.IMAGES_WALKING);
         this.animate();
@@ -37,7 +38,4 @@ class Chicken extends MovableObject {
         }, 100);
     }
 
-    eat() {
-        console.log("The chicken is eating!");
-    }
 }

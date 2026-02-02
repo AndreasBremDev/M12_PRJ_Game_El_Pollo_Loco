@@ -9,8 +9,10 @@ class SplashBottle extends ThrowableObject {
         'assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
 
-    constructor(x, y) {
+    constructor(x, y, sounds) {
         super(x, y);
+        this.sounds = sounds;
+        this.sounds.playOnce(this.sounds.BOTTLE_SPLASH);
         this.loadImage('./assets/img/6_salsa_bottle/salsa_bottle.png');
         this.loadImages(this.IMAGES_SPLASH);
         this.splashFrameCount = 0;
@@ -24,7 +26,7 @@ class SplashBottle extends ThrowableObject {
             this.splashFrameCount++;
             if (this.splashFrameCount >= this.IMAGES_SPLASH.length * 4) {
                 this.animationComplete = true;
-                clearInterval(this.animationInterval);
+                clearInterval(this.bottleSplashAnimation);
             }
         }, 1000 / 25);
     }

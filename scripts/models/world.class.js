@@ -33,12 +33,14 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
+        this.sounds = sounds;
         this.character = new Character(sounds);
         this.lastOtherDirection = this.character.otherDirection;
         this.lastCharacterX = this.character.x;
         this.draw();
         this.setWorld();
         this.run();
+        this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
     }
 
     setWorld() {
@@ -61,6 +63,7 @@ class World {
             this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
+            this.checkCharacterEndbossDistance();
         }, 1000 / 60);
     }
 
@@ -143,7 +146,7 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
-        mo.drawFrame(this.ctx);
+        // mo.drawFrame(this.ctx);
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
@@ -161,25 +164,15 @@ class World {
         this.ctx.restore();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     ckeckCollectableCollisions(array, statusBar, collected) {
         for (let i = array.length - 1; i >= 0; i--) {
             let element = array[i];
             if (this.character.isColliding(element)) {
+                if (element instanceof Coins) {
+                    this.sounds.playOnce(this.sounds.COLLECT_COIN);
+                } else if (element instanceof Bottles) {
+                    this.sounds.playOnce(this.sounds.COLLECT_BOTTLE);
+                }
                 this[collected] += 20;
                 array.splice(i, 1);
                 statusBar.setPercentage(this[collected]);
@@ -257,9 +250,7 @@ class World {
                 bottle.hasCollided = true;
                 enemy.hit();
                 this.statusBarEndbossHealth.setPercentage(enemy.health);
-                if (enemy.health < 20 && enemy.animationCompleted) { ///// hier ist noch ein Fehler: wird nicht true /////
-                    this.killChicken(j);
-                }
+
             }
         }
     }
@@ -270,15 +261,26 @@ class World {
 
     turnThrownBottleToSplashBottle(bottle, i) {
         this.throwableObjects.splice(i, 1);
-        let splash = new SplashBottle(bottle.x, bottle.y);
+        let splash = new SplashBottle(bottle.x, bottle.y, sounds);
         this.throwableObjects.push(splash);
     }
 
     killChicken(enemyIndex) {
         let enemy = this.level.enemies[enemyIndex];
         let chickenDead = new ChickenDead(enemy.x, enemy.y - 20, enemy);
+        this.killedChickenPlaySounds(enemy);
         this.deadEnemies.push(chickenDead);
         this.level.enemies.splice(enemyIndex, 1);
+    }
+
+    killedChickenPlaySounds(enemy) {
+        if (enemy instanceof Chicken) {
+            this.sounds.playOnce(this.sounds.CHICKEN_DEAD);
+        } else if (enemy instanceof ChickenSmall) {
+            this.sounds.playOnce(this.sounds.CHICKEN_SMALL_DEAD);
+        } else if (enemy instanceof Endboss) {
+            this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
+        }
     }
 
     cleanupDeadEnemies() {
@@ -291,6 +293,11 @@ class World {
         }
     }
 
+    checkCharacterEndbossDistance() {
+        if (this.endboss.x - this.character.x < 600) {
+            this.endboss.hadFirstContact = true;
+        }
+    }
 
 
 

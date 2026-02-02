@@ -26,27 +26,27 @@ class DrawableObject {
         }
     }
 
-    drawFrame(ctx) {
-        if (this instanceof Character || 
-            this instanceof Chicken || 
-            this instanceof Endboss || 
-            this instanceof ThrowableObject || 
-            this instanceof Coins || 
-            this instanceof Bottles || 
-            this instanceof ChickenDead ||
-            this instanceof ChickenSmall) {
-            ctx.beginPath();
-            ctx.lineWidth = '1';
-            if (this instanceof Bottles) { ctx.strokeStyle = 'purple' };
-            if (this instanceof Coins) { ctx.strokeStyle = 'yellow' };
-            if (this instanceof Character) { ctx.strokeStyle = 'blue' };
-            if (this instanceof Chicken) { ctx.strokeStyle = 'red' };
-            if (this instanceof ChickenSmall) { ctx.strokeStyle = 'darkred' };
-            if (this instanceof Endboss) { ctx.strokeStyle = 'green' };
-            if (this instanceof ThrowableObject) { ctx.strokeStyle = 'orange' };
-            if (this instanceof ChickenDead) { ctx.strokeStyle = 'white' };
-            ctx.rect(this.x + this.offset.left, this.y + this.offset.top, this.width - this.offset.left - this.offset.right, this.height - this.offset.top - this.offset.bottom);
-            ctx.stroke();
-        }
-    }
+    // drawFrame(ctx) {
+    //     if (this instanceof Character || 
+    //         this instanceof Chicken || 
+    //         this instanceof Endboss || 
+    //         this instanceof ThrowableObject || 
+    //         this instanceof Coins || 
+    //         this instanceof Bottles || 
+    //         this instanceof ChickenDead ||
+    //         this instanceof ChickenSmall) {
+    //         ctx.beginPath();
+    //         ctx.lineWidth = '1';
+    //         if (this instanceof Bottles) { ctx.strokeStyle = 'purple' };
+    //         if (this instanceof Coins) { ctx.strokeStyle = 'yellow' };
+    //         if (this instanceof Character) { ctx.strokeStyle = 'blue' };
+    //         if (this instanceof Chicken) { ctx.strokeStyle = 'red' };
+    //         if (this instanceof ChickenSmall) { ctx.strokeStyle = 'darkred' };
+    //         if (this instanceof Endboss) { ctx.strokeStyle = 'green' };
+    //         if (this instanceof ThrowableObject) { ctx.strokeStyle = 'orange' };
+    //         if (this instanceof ChickenDead) { ctx.strokeStyle = 'white' };
+    //         ctx.rect(this.x + this.offset.left, this.y + this.offset.top, this.width - this.offset.left - this.offset.right, this.height - this.offset.top - this.offset.bottom);
+    //         ctx.stroke();
+    //     }
+    // }
 }

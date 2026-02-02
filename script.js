@@ -5,17 +5,10 @@ let midSection = document.getElementById('middleSection');
 let bottomSection = document.getElementById('bottomSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
-let volumeMuted = {
-    'effect': true,
-    'music': true
-};
-let volumeCurrent = {
-    'effect': 20,
-    'music': 20
-};
 initialSoundsDone = false;
 
 function playGame() {
+    window.sounds.stop(window.sounds.BACKGROUND_GAME);
     toggleCanvas('block');
     toggleAllOverlays('none');
     startGame();
@@ -30,9 +23,8 @@ function showMenuTab(tabName, background = menuBg) {
     (tabName !== 'gameover' || tabName !== 'win' || tabName !== 'sounds') && titleTopAndBottomSection();
     (tabName === 'gameover' || tabName === 'win') && gameoverWinTopAndBottomSection();
     (tabName === 'sounds') && setDefaultSoundOptions();
-    ///////// make Mute button von JS abhängig /////////
     (tabName === 'rotateYourPhone') && rotateYourPhoneTopAndBottomSection();
-    window.sounds.stop(window.sounds.BACKGROUND_GAME)
+    window.sounds.stop(window.sounds.BACKGROUND_GAME);
 }
 
 function setDefaultSoundOptions() {
@@ -101,26 +93,34 @@ function getVolumeFromLocalStorage() {
 
 function initialSoundSettings(array) {
     // getVolumeFromLocalStorage();
-    toggleMuteIcons(array)
-    setVolumeBarToZero(array)
+    toggleMuteIcons(array);
+    setVolumeBarToZero(array);
+    window.sounds.isMuted = true
     // setVolumeToLocalStorage();
 }
 
 
 function soundControl(elementToControl, value) {
-    if (volumeMuted[elementToControl] && volumeCurrent[elementToControl] > 20 && volumeCurrent[elementToControl] <= 100 && value > 0) {
-        volumeCurrent[elementToControl] = 20;
+    if (window.sounds.volumeMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] > 0.2 && Math.round(window.sounds.volumeCurrent[elementToControl]) <= 1 && value > 0) {
+        window.sounds.volumeCurrent[elementToControl] = 0.2;
         muteUnmute(elementToControl);
-        elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
-    } else if ((volumeMuted[elementToControl] && value > 0) || (!volumeMuted[elementToControl] && volumeCurrent[elementToControl] === 20 && value < 0)) {
+        checkAndPlaySounds(elementToControl);
+    } else if ((window.sounds.volumeMuted[elementToControl] && value > 0) || (!window.sounds.volumeMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] === 0.2 && value < 0)) {
         muteUnmute(elementToControl);
-    } else if ((volumeMuted[elementToControl] && value < 0) || (volumeCurrent[elementToControl] === 100 && value > 0)) {
-        elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
-        return;
+    } else if ((window.sounds.volumeMuted[elementToControl] && value < 0) || (window.sounds.volumeCurrent[elementToControl] === 1 && value > 0)) {
+        checkAndPlaySounds(elementToControl); return;
     } else {
-        elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
-        volumeCurrent[elementToControl] += value;
+        checkAndPlaySounds(elementToControl);
+        window.sounds.volumeCurrent[elementToControl] += value;
         setVolumeInHTML(elementToControl);
+    }
+}
+
+function checkAndPlaySounds(elementToControl) {
+    if (elementToControl === 'effect') {
+        window.sounds.playOnce(window.sounds.MENU_CLICK, elementToControl)
+    } else {
+        window.sounds.playOnce(window.sounds.BACKGROUND_GAME, elementToControl);
     }
 }
 
@@ -128,14 +128,14 @@ function muteUnmute(elementToControl) {
     // getVolumeFromLocalStorage();
     toggleVolumeMuteBoolean(elementToControl);
     toggleMuteIcons(elementToControl);
-    volumeMuted[elementToControl] ? setVolumeBarToZero(elementToControl) : setVolumeInHTML(elementToControl);
+    window.sounds.volumeMuted[elementToControl] ? setVolumeBarToZero(elementToControl) : setVolumeInHTML(elementToControl);
     // setVolumeToLocalStorage();
 }
 
 function setVolumeInHTML(elementToControl) {
     let progressBar = document.getElementById(elementToControl + 'VolumeProgressBar');
-    progressBar.style.width = volumeCurrent[elementToControl] + '%';
-    elementToControl === 'effect' ? window.sounds.play(window.sounds.MENU_CLICK, volumeCurrent[elementToControl] / 100) : window.sounds.play(window.sounds.BACKGROUND_GAME, volumeCurrent[elementToControl] / 100);
+    progressBar.style.width = window.sounds.volumeCurrent[elementToControl] * 100 + '%';
+    checkAndPlaySounds(elementToControl);
 }
 
 function toggleMuteIcons(elementToControl) {
@@ -144,7 +144,7 @@ function toggleMuteIcons(elementToControl) {
         return;
     }
     let [iconON, iconOFF] = ['_on', '_off'].map(suffix => document.getElementById(elementToControl + suffix))
-    volumeMuted[elementToControl] ? toggleMuteElement(iconOFF, iconON) : toggleMuteElement(iconON, iconOFF);
+    window.sounds.volumeMuted[elementToControl] ? toggleMuteElement(iconOFF, iconON) : toggleMuteElement(iconON, iconOFF);
 }
 
 function toggleMuteElement(iconON, iconOFF) {
@@ -163,14 +163,14 @@ function setVolumeBarToZero(elementToControl) {
 }
 
 function toggleVolumeMuteBoolean(elementToControl) {
-    volumeMuted[elementToControl] ? setVolumeMuted(elementToControl, false) : setVolumeMuted(elementToControl, true);
+    window.sounds.volumeMuted[elementToControl] ? setVolumeMuted(elementToControl, false) : setVolumeMuted(elementToControl, true);
     // setVolumeToLocalStorage();
-    return volumeMuted[elementToControl];
+    return window.sounds.volumeMuted[elementToControl];
 }
 
 function setVolumeMuted(elementToControl, bool) {
-    volumeMuted[elementToControl] = bool;
-    return volumeMuted[elementToControl];
+    window.sounds.volumeMuted[elementToControl] = bool;
+    return window.sounds.volumeMuted[elementToControl];
 }
 
 document.addEventListener('DOMContentLoaded', turnYourPhone);
