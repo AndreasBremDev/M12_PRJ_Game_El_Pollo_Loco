@@ -40,11 +40,13 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
-        this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
+        this.sounds.volumeMuted['music'] ? this.sounds.mute(this.sounds.BACKGROUND_GAME) : this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
+        this.lastKeyPressedTime = new Date().getTime();
     }
 
     setWorld() {
         this.character.world = this;
+        this.endboss.world = this;
     }
 
     endWorld() {

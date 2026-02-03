@@ -5,7 +5,7 @@ class Character extends MovableObject {
     width = 100;
     speedX = 8;
     crouching = false;
-
+    endbossMaxLeft = 1200;
     world;
 
     offset = {
@@ -139,7 +139,6 @@ class Character extends MovableObject {
             if (this.world.endboss.x - this.x < 600 && !this.world.endboss.hadFirstContact) {
                 this.sounds.pause(this.sounds.BACKGROUND_GAME);
                 this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS);
-                log('spielt hier CHICKEN_ENDBOSS_ATTACK ab??');
                 this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK);
                 this.world.endboss.hadFirstContact = true;
             } else {
@@ -174,8 +173,15 @@ class Character extends MovableObject {
         if (!this.animationCompleted) {
             this.playAnimation(this.IMAGES_DEAD, 3, true);
         } else {
+            setTimeout(() => {
+            this.sounds.stop(this.sounds.CHARACTER_WALK);
+            this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
+            this.sounds.stop(this.sounds.BACKGROUND_GAME);
+            this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
             endGame();
+            this.sounds.playOnce(this.sounds.ENDGAME_LOOSE);
             showMenuTab('gameover');
+            }, 500);
         }
     }
 

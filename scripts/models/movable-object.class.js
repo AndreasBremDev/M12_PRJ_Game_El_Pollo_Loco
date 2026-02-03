@@ -8,6 +8,7 @@ class MovableObject extends DrawableObject {
     lastHit = 0;
     animationCompleted = false;
     isCurrentlyHurt = false;
+    isAboveGroundOffset = 20;
 
     offset = {
         top: 0,
@@ -22,6 +23,7 @@ class MovableObject extends DrawableObject {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
             } else {
+                this.applyGroundLevel(this);
                 this.speedY = 0;
             };
         }, 1000 / 25);
@@ -29,9 +31,21 @@ class MovableObject extends DrawableObject {
 
     isAboveGround() {
         if (this instanceof ThrowableObject || this instanceof ChickenDead || this instanceof ChickenSmall || this instanceof Chicken) {
-            return this.y < 380;
+            return this.y < 380 - this.isAboveGroundOffset;
         } else if (this instanceof Character) {
-            return this.y < 235;
+            return this.y < 235 - this.isAboveGroundOffset;
+        } else if (this instanceof Endboss) {
+            return this.y < 160 - this.isAboveGroundOffset;
+        }
+    }
+
+    applyGroundLevel(mo) {
+        if (mo instanceof ThrowableObject || mo instanceof ChickenDead || mo instanceof ChickenSmall || mo instanceof Chicken) {
+            mo.y = 380;
+        } else if (mo instanceof Character) {
+            mo.y = 235;
+        } else if (mo instanceof Endboss) {
+            mo.y = 160;
         }
     }
 
@@ -54,15 +68,18 @@ class MovableObject extends DrawableObject {
         if (this.isCurrentlyHurt) {
             return;
         } else {
-            if (this.health <= 100 && this.health >= 20) {
+            if (this.health <= 100 && this.health > 20) {
                 this.health -= 20;
                 this.isCurrentlyHurt = true
                 this.lastHit = new Date().getTime();
                 this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_HURT) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
-                (this instanceof Character) && Array.from({length: 10}).forEach(() => this.x -= 20);
-            }
-            if (this.health < 20) {
-                this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_DEAD) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
+                (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
+            } else if (this.health <= 20) {
+                // this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_DEAD) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
+                if (this instanceof Character) {
+                    console.log('Character -> health <=20 -> HIT()');
+                    this.sounds.playOnce(this.sounds.CHARACTER_DEAD)
+                } else { this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);}
                 this.health = 0;
             }
         }
@@ -150,13 +167,15 @@ class MovableObject extends DrawableObject {
 
     isIdle(time) {
         let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') {
-            this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
-            return timePassed < 7000;
-        }
+        if (time === 'short') { return timePassed < 7000; }
         if (time === 'long') {
-            this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE)
-            return timePassed >= 7000;
+            if (timePassed >= 7000) {
+                this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE);
+                return true;
+            } else {
+                this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
+                return false;
+            }
         }
     }
 

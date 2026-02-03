@@ -68,35 +68,58 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        let endbossMovements = setStoppableInterval(() => {
-            if (this.hadFirstContact && this.x > 1200) {
-                this.moveLeft();
-            } else if (this.hadFirstContact && this.x == 1200 && this.x < 1800) {
-                this.otherDirection = true;
-                this.moveRight();
-            }
-            
-                
-        }, 1000 / 60);
+        // let endbossMovements = setStoppableInterval(() => {
+        //     if (this.hadFirstContact && this.x > 1200) {
+        //         this.moveLeft();
+        //     } else if (this.hadFirstContact && this.x == 1200 && this.x < 1800) {
+        //         this.otherDirection = true;
+        //         this.moveRight();
+        //     }
+
+
+        // }, 1000 / 60);
 
         let endbossAnimations = setStoppableInterval(() => {
-                // this.playAnimation(this.IMAGES_WALK);
 
-            if (this.health < 20) {
+
+
+            if (this.isHurt() && this.health >= 20) {
                 if (!this.animationCompleted) {
-                    this.playAnimation(this.IMAGES_DEAD, 3, true, 3);
-                } else {
-                    endGame();
-                    showMenuTab('win');
+                    this.playAnimation(this.IMAGES_HURT, 6);
+                } else if (this.animationCompleted) {
+                    console.log('check hier - isHurt() & health >=20');
+
+                    this.speedY = 20;
+                    this.speedX = 8;
+                    this.animationCompleted = false;
+                    this.playAnimation(this.IMAGES_ATTACK, 7);
                 }
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.hadFirstContact && this.x < 1800) {
+            } else if (this.health < 20) {
+                if (!this.animationCompleted) {
+                    this.playAnimation(this.IMAGES_DEAD, 8, true, 3);
+                } else {
+                    this.sounds.stop(this.sounds.BACKGROUND_GAME);
+                    this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
+                    setTimeout(() => {
+                        endGame();
+                        this.sounds.playOnce(this.sounds.ENDGAME_WIN_2);
+                        showMenuTab('win');
+                    }, 250);
+                }
+            } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
+                this.playAnimation(this.IMAGES_ALERT, 8);
+            } else if (this.checkIfCharacterWithin(500) && this.hadFirstContact) {
+                this.moveLeft();
+                this.playAnimation(this.IMAGES_ATTACK, 7);
+            } else if (!this.hadFirstContact && this.x < 1800 && this.x > 1200) {
+                // this.moveLeft();
                 this.playAnimation(this.IMAGES_WALK);
-        }else {
-                this.playAnimation(this.IMAGES_ALERT);
             }
-        }, 100);
+        }, 1000 / 60);
+    }
+
+    checkIfCharacterWithin(distance) {
+        return this.world.character.x + distance >= this.x;
     }
 
 }

@@ -1,8 +1,4 @@
 class Sounds {
-    isMuted = false;
-
-    generalVolume = 0.2;
-
     constructor() {
         this.volumeMuted = {
             'effect': true,
@@ -49,8 +45,6 @@ class Sounds {
         this.MENU_CLICK = new Audio('./assets/audio/menu_click.m4a');
     }
 
-    //play mit Unterbrechung
-
     playOnce(audioObj, elementToControl = 'effect') {
         if (this.volumeMuted[elementToControl]) {
             return;
@@ -58,27 +52,42 @@ class Sounds {
             audioObj.volume = this.volumeCurrent[elementToControl];
             audioObj.currentTime = 0;
             audioObj.loop = false
-            audioObj.play();
+            this.checkReadyStateAndPlay(audioObj);
         }
     }
-
+    
     playLoop(audioObj, elementToControl = 'effect') {
-        if (this.volumeMuted[elementToControl]) {
+        if (this.volumeMuted[elementToControl] || isGameOver) {
             return;
         } else {
             audioObj.volume = this.volumeCurrent[elementToControl];
             audioObj.loop = true;
-            audioObj.play();
+            this.checkReadyStateAndPlay(audioObj);
         }
     }
-
+    
     pause(audioObj) {
-        audioObj.pause();
+        try {
+            audioObj.pause();
+        } catch (e) {
+            console.log('Audio konnte nicht pausiert werden.', e, audioObj);
+        }
+    }
+    
+    checkReadyStateAndPlay(audioObj) {
+        if (audioObj.readyState >= 2) {
+            audioObj.play();
+        } else {
+            audioObj.addEventListener('canplaythrough', () => {
+                audioObj.play();
+            });
+        }
     }
 
     stop(audioObj) {
         audioObj.pause();
         audioObj.currentTime = 0;
+        audioObj.loop = false;
     }
 
     setVolume(audioObj, setVolume = this.generalVolume) {
@@ -87,11 +96,11 @@ class Sounds {
 
     // Idee: hintergrundmusik (z.B. wenn Endboss) "spielt" trotz mute "ab", sodass bei unmute direkt die entsprechende stelle abgespielt wird
 
-    mute() {
-        this.audio.muted = true;
+    mute(audioObj) {
+        audioObj.muted = true;
     }
 
     unmute() {
-        this.audio.muted = false;
+        audioObj.muted = false;
     }
 }
