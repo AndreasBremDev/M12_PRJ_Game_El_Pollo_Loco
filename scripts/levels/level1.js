@@ -4,7 +4,7 @@ function initLevel() {
 
     let backgroundObjects = [];
 
-    for (let i = -2; i < 4; i++) {
+    for (let i = -2; i < 6; i++) {
         let imageVariant = (i % 2 === 0) ? '2.png' : '1.png';
         backgroundObjects.push(
             new BackgroundObject(`./assets/img/5_background/layers/air.png`, 720 * i),
@@ -16,20 +16,20 @@ function initLevel() {
 
     level1 = new Level(
         [
-            new Chicken(400, sounds),
-            new Chicken(400, sounds),
-            new Chicken(400, sounds),
-            new ChickenSmall(600, sounds),
-            new Chicken(800, sounds),
-            new Chicken(800, sounds),
-            new Chicken(800, sounds),
-            new ChickenSmall(900, sounds),
-            new Chicken(1200, sounds),
-            new Chicken(1200, sounds),
-            new Chicken(1200, sounds),
-            new ChickenSmall(1300, sounds),
+            // new Chicken(400, sounds),
+            // new Chicken(400, sounds),
+            // new Chicken(400, sounds),
+            // new ChickenSmall(600, sounds),
+            // new Chicken(800, sounds),
+            // new Chicken(800, sounds),
+            // new Chicken(800, sounds),
+            // new ChickenSmall(900, sounds),
+            // new Chicken(1200, sounds),
+            // new Chicken(1200, sounds),
+            // new Chicken(1200, sounds),
+            // new ChickenSmall(1300, sounds),
 
-            new Endboss(1800, sounds)
+            new Endboss(1200, sounds)
         ],
         [
             new Cloud()

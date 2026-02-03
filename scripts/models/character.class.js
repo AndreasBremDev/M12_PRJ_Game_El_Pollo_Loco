@@ -123,7 +123,7 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         let characterMovements = setStoppableInterval(() => {
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.enemies.find(enemy => enemy instanceof Endboss).x && this.world.cameraInterpolationCompleted) {
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.enemies.find(enemy => enemy instanceof Endboss).x + this.width && this.world.cameraInterpolationCompleted) {
                 this.moveRight();
                 this.otherDirection = false;
             }
@@ -136,11 +136,15 @@ class Character extends MovableObject {
                 this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
-            if (this.world.endboss.x - this.x < 600) {
+            if (this.world.endboss.x - this.x < 600 && !this.world.endboss.hadFirstContact) {
+                this.sounds.pause(this.sounds.BACKGROUND_GAME);
+                this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS);
+                log('spielt hier CHICKEN_ENDBOSS_ATTACK ab??');
+                this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK);
                 this.world.endboss.hadFirstContact = true;
-                console.log('this.x < this.world.endboss.x');
-
-                // this.endboss_sound.play();
+            } else {
+                this.sounds.pause(this.sounds.BACKGROUND_ENDBOSS);
+                this.sounds.playLoop(this.sounds.BACKGROUND_GAME)
             }
 
         }, 1000 / 60);

@@ -35,6 +35,7 @@ canvas {
 .top-section {
     background-color: #2fa8cc;
     border-radius: 15px 15px 0 0;
+    min-height: 45px;
 }
 
 .middle-section {
@@ -58,6 +59,7 @@ canvas {
     border-radius: 0 0 15px 15px;
     justify-content: space-between;
     padding: 0 4px;
+    min-height: 45px;
 }
 
 .overlay-screen {
@@ -371,6 +373,7 @@ canvas {
     align-items: center;
     gap: 18px;
     text-align: center;
+    height: 392px;
 }
 
 .rotate-phone {

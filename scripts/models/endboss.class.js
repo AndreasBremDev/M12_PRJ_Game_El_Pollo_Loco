@@ -71,7 +71,12 @@ class Endboss extends MovableObject {
         let endbossMovements = setStoppableInterval(() => {
             if (this.hadFirstContact && this.x > 1200) {
                 this.moveLeft();
+            } else if (this.hadFirstContact && this.x == 1200 && this.x < 1800) {
+                this.otherDirection = true;
+                this.moveRight();
             }
+            
+                
         }, 1000 / 60);
 
         let endbossAnimations = setStoppableInterval(() => {
@@ -84,7 +89,7 @@ class Endboss extends MovableObject {
                     endGame();
                     showMenuTab('win');
                 }
-            } else if (this.isCurrentlyHurt) {
+            } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.hadFirstContact && this.x < 1800) {
                 this.playAnimation(this.IMAGES_WALK);

@@ -49,32 +49,38 @@ class MovableObject extends DrawableObject {
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right
     }
 
+    /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////
     hit() {
-        if (this.health <= 100 && this.health > 0) {
-            this.health -= 20;
-            if (this instanceof Character && this.health >= 20) {
-                this.sounds.playOnce(this.sounds.CHARACTER_HURT);
+        if (this.isCurrentlyHurt) {
+            return;
+        } else {
+            if (this.health <= 100 && this.health >= 20) {
+                this.health -= 20;
                 this.isCurrentlyHurt = true
-                for (let i = 0; i < 10; i++) { this.x += -20; }
+                this.lastHit = new Date().getTime();
+                this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_HURT) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
+                (this instanceof Character) && Array.from({length: 10}).forEach(() => this.x -= 20);
             }
-            if (this instanceof Endboss && this.health >= 20) {
-                this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
+            if (this.health < 20) {
+                this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_DEAD) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
+                this.health = 0;
             }
-            this.lastHit = new Date().getTime();
-        }
-        if (this.health < 20) {
-            this instanceof Character && this.sounds.playOnce(this.sounds.CHARACTER_DEAD);
-            this instanceof Endboss && this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
-            this.health = 0;
         }
     }
 
     isHurt() {
         let timePassed = new Date().getTime() - this.lastHit;
-        if (timePassed > 1000) {
-            this.isCurrentlyHurt = false;
+        if (this instanceof Character) {
+            if (timePassed > 1000) {
+                this.isCurrentlyHurt = false;
+            }
+            return timePassed < 1000;
+        } else if (this instanceof Endboss) {
+            if (timePassed > 3000) {
+                this.isCurrentlyHurt = false;
+            }
+            return timePassed < 3000;
         }
-        return timePassed < 1000;
     }
 
     isDead() {

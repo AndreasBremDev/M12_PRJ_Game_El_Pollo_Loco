@@ -181,10 +181,8 @@ function turnYourPhone() {
     const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480;
 
     if (isTooSmall && isPortrait) {
-        document.getElementById('middleSection').style.borderRadius = '15px';
         showMenuTab('rotateYourPhone');
     } else {
-        document.getElementById('middleSection').style.borderRadius = 'unset';
         showMenuTab('title', titleBg)
     }
 }
