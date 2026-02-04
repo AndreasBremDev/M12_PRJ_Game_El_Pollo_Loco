@@ -26,6 +26,32 @@ canvas {
     border-radius: 15px;
 }
 
+.canvas-wrapper {
+    position: relative;
+    width: 720px;
+    height: 480px;
+    box-sizing: border-box;
+    border: 1px solid blue;
+}
+
+.control-menu,
+.touch-menu{
+    position: absolute;
+    z-index: 99;
+}
+
+.control-menu{
+    top: 0;
+    left: 50%, translateX(-50%);
+    border: 1px solid red;
+}
+
+.touch-menu{
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
 .all-overlays {
     width: 720px;
     height: 480px;
@@ -88,7 +114,7 @@ canvas {
         transform 0.09s ease-out,
         text-shadow 0.09s ease-out,
         filter 0.09s ease-out;
-    border: 1px solid red
+    min-width: 55px;
 }
 .epl-btn {
     cursor: pointer;
@@ -474,6 +500,7 @@ canvas {
 
 @media only screen and (max-width: 720px) {
 
+    .canvasWrapper,
     .all-overlays,
     .canvas {
         width: 100%;
@@ -513,6 +540,7 @@ canvas {
 
 @media only screen and (max-height: 480px) {
 
+    .canvasWrapper,
     .all-overlays,
     .canvas {
         height: 100dvh;

@@ -38,6 +38,7 @@ function addKeyboardListeners() {
 function addTouchListeners() {
     attachTouchHandler('btnLeft', handleLeftTouchStart, handleLeftTouchEnd);
     attachTouchHandler('btnRight', handleRightTouchStart, handleRightTouchEnd);
+    attachTouchHandler('btnDown', handleDownTouchStart, handleDownTouchEnd);
     attachTouchHandler('btnUp', handleJumpTouchStart, handleJumpTouchEnd);
     attachTouchHandler('btnAttOne', handleAttackOneTouchStart, handleAttackOneTouchEnd);
     attachTouchHandler('btnAttTwo', handleAttackTwoTouchStart, handleAttackTwoTouchEnd);
@@ -51,6 +52,7 @@ function removeKeyboardListeners() {
 function removeTouchListeners() {
     unattachTouchHandler('btnLeft', handleLeftTouchStart, handleLeftTouchEnd);
     unattachTouchHandler('btnRight', handleRightTouchStart, handleRightTouchEnd);
+    unattachTouchHandler('btnDown', handleDownTouchStart, handleDownTouchEnd);
     unattachTouchHandler('btnUp', handleJumpTouchStart, handleJumpTouchEnd);
     unattachTouchHandler('btnAttOne', handleAttackOneTouchStart, handleAttackOneTouchEnd);
     unattachTouchHandler('btnAttTwo', handleAttackTwoTouchStart, handleAttackTwoTouchEnd);
@@ -123,6 +125,7 @@ function unattachTouchHandler(elementId, startHandler, endHandler) {
 function handleLeftTouchStart(e) {
     e.preventDefault();
     keyboard.LEFT = true;
+    keyboard.lastKeyPressedTime = new Date().getTime();
 }
 
 function handleLeftTouchEnd(e) {
@@ -133,6 +136,7 @@ function handleLeftTouchEnd(e) {
 function handleRightTouchStart(e) {
     e.preventDefault();
     keyboard.RIGHT = true;
+    keyboard.lastKeyPressedTime = new Date().getTime();
 }
 
 function handleRightTouchEnd(e) {
@@ -140,9 +144,21 @@ function handleRightTouchEnd(e) {
     keyboard.RIGHT = false;
 }
 
+function handleDownTouchStart(e) {
+    e.preventDefault();
+    keyboard.DOWN = true;
+    keyboard.lastKeyPressedTime = new Date().getTime();
+}
+
+function handleDownTouchEnd(e) {
+    e.preventDefault();
+    keyboard.DOWN = false;
+}
+
 function handleJumpTouchStart(e) {
     e.preventDefault();
     keyboard.SPACE = true;
+    keyboard.lastKeyPressedTime = new Date().getTime();
 }
 
 function handleJumpTouchEnd(e) {
@@ -153,6 +169,7 @@ function handleJumpTouchEnd(e) {
 function handleAttackOneTouchStart(e) {
     e.preventDefault();
     keyboard.F = true;
+    keyboard.lastKeyPressedTime = new Date().getTime();
 }
 
 function handleAttackOneTouchEnd(e) {
@@ -163,6 +180,7 @@ function handleAttackOneTouchEnd(e) {
 function handleAttackTwoTouchStart(e) {
     e.preventDefault();
     keyboard.R = true;
+    keyboard.lastKeyPressedTime = new Date().getTime();
 }
 
 function handleAttackTwoTouchEnd(e) {

@@ -8,15 +8,15 @@ const progressMusicFill = document.getElementById('volumeMusicProgress');
 initialSoundsDone = false;
 
 function playGame() {
-    toggleCanvas('block');
-    toggleAllOverlays('none');
+    toggleHtmlElementDisplay('canvasWrapper', 'block');
+    toggleHtmlElementDisplay('overlayMain', 'none');
     startGame();
 }
 
 function showMenuTab(tabName, background = menuBg) {
     setMidSectionBg(background);
-    // toggleCanvas('none');
-    toggleAllOverlays('block');
+    toggleHtmlElementDisplay('canvasWrapper', 'none');
+    toggleHtmlElementDisplay('overlayMain', 'block');
     hideTabs();
     showTab(tabName);
     (tabName !== 'gameover' || tabName !== 'win' || tabName !== 'sounds') && titleTopAndBottomSection();
@@ -28,20 +28,15 @@ function showMenuTab(tabName, background = menuBg) {
 
 function setDefaultSoundOptions() {
     if (!initialSoundsDone) {
-        initialSoundSettings(['effect', 'music']);
+        initialSoundSettings('overlayMain', ['effect', 'music']);
         initialSoundsDone = true;
     }
 }
 
 // #region canvas and overlay
 
-function toggleCanvas(display) {
-    document.getElementById('canvas').style.display = display;
-}
-
-function toggleAllOverlays(display) {
-    allOverlays = document.getElementById('overlays');
-    allOverlays.style.display = display;
+function toggleHtmlElementDisplay(element, display) {
+    document.getElementById(element).style.display = display;
 }
 
 function hideTabs() {
@@ -90,59 +85,69 @@ function getVolumeFromLocalStorage() {
     volumeCurrentFromStorage && (volumeCurrent = volumeCurrentFromStorage);
 }
 
-function initialSoundSettings(array) {
+function initialSoundSettings(htmlDiv, array) {
     // getVolumeFromLocalStorage();
-    toggleMuteIcons(array);
-    setVolumeBarToZero(array);
+    toggleMuteIcons(htmlDiv, array);
+    setVolumeBarToZero(htmlDiv, array);
     window.sounds.isMuted = true
     // setVolumeToLocalStorage();
 }
 
 
-function soundControl(elementToControl, value) {
+function soundControl(htmlDiv, elementToControl, value) {
     if (window.sounds.volumeMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] > 0.2 && Math.round(window.sounds.volumeCurrent[elementToControl]) <= 1 && value > 0) {
         window.sounds.volumeCurrent[elementToControl] = 0.2;
-        muteUnmute(elementToControl);
+        muteUnmute(htmlDiv, elementToControl);
         checkAndPlaySounds(elementToControl);
     } else if ((window.sounds.volumeMuted[elementToControl] && value > 0) || (!window.sounds.volumeMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] === 0.2 && value < 0)) {
-        muteUnmute(elementToControl);
+        muteUnmute(htmlDiv, elementToControl);
     } else if ((window.sounds.volumeMuted[elementToControl] && value < 0) || (window.sounds.volumeCurrent[elementToControl] === 1 && value > 0)) {
         checkAndPlaySounds(elementToControl); return;
     } else {
-        // checkAndPlaySounds(elementToControl);
-        window.sounds.volumeCurrent[elementToControl] += value;
-        setVolumeInHTML(elementToControl);
+        // window.sounds.volumeCurrent[elementToControl] += value; // wurde ersetzt durch volumeSNAP in setVolumeCurrentOfElementToControl() // getestet?
+        setVolumeCurrentOfElementToControl(elementToControl, value)
+        setVolumeInHTML(htmlDiv, elementToControl);
     }
 }
 
-function checkAndPlaySounds(elementToControl) {
+// let step = 0.2;
+function setVolumeCurrentOfElementToControl(elementToControl, value) {
+    window.sounds.volumeCurrent[elementToControl] += value;
+    let step = Math.abs(value) || 0.2;
+    const steps = Math.round(1 / step);
+    const snapped = Math.round(window.sounds.volumeCurrent[elementToControl] * steps) / steps;
+    window.sounds.volumeCurrent[elementToControl] = Math.min(1, Math.max(0, snapped));
+}
+
+function checkAndPlaySounds(htmlDiv, elementToControl) {
     if (elementToControl === 'effect') {
         window.sounds.playOnce(window.sounds.MENU_CLICK, elementToControl)
-    } else {
+    } else if (htmlDiv === 'overlayMain') {
         window.sounds.playOnce(window.sounds.BACKGROUND_GAME, elementToControl);
     }
 }
 
-function muteUnmute(elementToControl) {
+function muteUnmute(htmlDiv, elementToControl) {
     // getVolumeFromLocalStorage();
     toggleVolumeMuteBoolean(elementToControl);
-    toggleMuteIcons(elementToControl);
-    window.sounds.volumeMuted[elementToControl] ? setVolumeBarToZero(elementToControl) : setVolumeInHTML(elementToControl);
+    toggleMuteIcons(htmlDiv, elementToControl);
+    if (htmlDiv === 'overlayMain') { window.sounds.volumeMuted[elementToControl] ? setVolumeBarToZero(htmlDiv, elementToControl) : setVolumeInHTML(htmlDiv, elementToControl); }
+    if (htmlDiv !== 'overlayMain') { checkAndPlaySounds(htmlDiv, elementToControl); }
     // setVolumeToLocalStorage();
 }
 
-function setVolumeInHTML(elementToControl) {
-    let progressBar = document.getElementById(elementToControl + 'VolumeProgressBar');
+function setVolumeInHTML(htmlDiv, elementToControl) {
+    let progressBar = document.getElementById(htmlDiv).querySelector('#' + elementToControl + 'VolumeProgressBar');
     progressBar.style.width = window.sounds.volumeCurrent[elementToControl] * 100 + '%';
-    checkAndPlaySounds(elementToControl);
+    checkAndPlaySounds(htmlDiv, elementToControl);
 }
 
-function toggleMuteIcons(elementToControl) {
+function toggleMuteIcons(htmlDiv, elementToControl) {
     if (Array.isArray(elementToControl)) {
-        elementToControl.forEach(el => toggleMuteIcons(el));
+        elementToControl.forEach(el => toggleMuteIcons(htmlDiv, el));
         return;
     }
-    let [iconON, iconOFF] = ['_on', '_off'].map(suffix => document.getElementById(elementToControl + suffix))
+    let [iconON, iconOFF] = ['_on', '_off'].map(suffix => document.getElementById(htmlDiv).querySelector('#' + elementToControl + suffix))
     window.sounds.volumeMuted[elementToControl] ? toggleMuteElement(iconOFF, iconON) : toggleMuteElement(iconON, iconOFF);
 }
 
@@ -151,12 +156,12 @@ function toggleMuteElement(iconON, iconOFF) {
     iconOFF.style.display = 'none';
 }
 
-function setVolumeBarToZero(elementToControl) {
+function setVolumeBarToZero(htmlDiv, elementToControl) {
     if (Array.isArray(elementToControl)) {
-        elementToControl.forEach(el => setVolumeBarToZero(el));
+        elementToControl.forEach(el => setVolumeBarToZero(htmlDiv, el));
         return;
     }
-    let progressBar = document.getElementById(elementToControl + 'VolumeProgressBar');
+    let progressBar = document.getElementById(htmlDiv).querySelector('#' + elementToControl + 'VolumeProgressBar');
     elementToControl === 'effect' ? window.sounds.stop(window.sounds.MENU_CLICK) : window.sounds.stop(window.sounds.BACKGROUND_GAME);
     progressBar.style.width = '0%';
 }
