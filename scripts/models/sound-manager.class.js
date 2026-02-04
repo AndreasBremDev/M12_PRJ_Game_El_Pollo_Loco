@@ -8,6 +8,7 @@ class Sounds {
             'effect': 0.2,
             'music': 0.2
         };
+        this.canPlayHandlers = new WeakMap();
 
         this.BACKGROUND_GAME = new Audio('./assets/audio/background_game.m4a');
         this.BACKGROUND_ENDBOSS = new Audio('./assets/audio/background_endboss.m4a');
@@ -52,12 +53,12 @@ class Sounds {
             audioObj.volume = this.volumeCurrent[elementToControl];
             audioObj.currentTime = 0;
             audioObj.loop = false
-            this.checkReadyStateAndPlay(audioObj);
+            this.checkReadyStateAndPlay(audioObj, 'play');
         }
     }
     
     playLoop(audioObj, elementToControl = 'effect') {
-        if (this.volumeMuted[elementToControl] || isGameOver) {
+        if (this.volumeMuted[elementToControl] || this.isGameOver) { /// noch nirgends als variable gesetzt
             return;
         } else {
             audioObj.volume = this.volumeCurrent[elementToControl];
@@ -74,33 +75,48 @@ class Sounds {
         }
     }
     
-    checkReadyStateAndPlay(audioObj) {
-        if (audioObj.readyState >= 2) {
-            audioObj.play();
+    checkReadyStateAndPlay(audioObj, action = 'play') {
+        if (audioObj.readyState >= 4) {
+            action === 'pause' ? audioObj.pause() : audioObj.play();
         } else {
-            audioObj.addEventListener('canplaythrough', () => {
-                audioObj.play();
-            });
+            this.detachCanPlayHandler(audioObj);
+            if (action === 'pause') {
+                this.canPlayHandlers.set(audioObj, () => audioObj.pause());
+                audioObj.addEventListener('canplaythrough', this.canPlayHandlers.get(audioObj), { once: true });
+            } else {
+                this.canPlayHandlers.set(audioObj, () => audioObj.play());
+                audioObj.addEventListener('canplaythrough', this.canPlayHandlers.get(audioObj), { once: true });
+            }
         }
     }
 
     stop(audioObj) {
+        this.detachCanPlayHandler(audioObj);
         audioObj.pause();
         audioObj.currentTime = 0;
         audioObj.loop = false;
+    }
+
+    detachCanPlayHandler(audioObj) {
+        const handler = this.canPlayHandlers.get(audioObj);
+        if (handler) {
+            audioObj.removeEventListener('canplaythrough', handler);
+            this.canPlayHandlers.delete(audioObj);
+        }
     }
 
     setVolume(audioObj, setVolume = this.generalVolume) {
         audioObj.volume = setVolume;
     }
 
-    // Idee: hintergrundmusik (z.B. wenn Endboss) "spielt" trotz mute "ab", sodass bei unmute direkt die entsprechende stelle abgespielt wird
-
+    
     mute(audioObj) {
         audioObj.muted = true;
     }
-
+    
     unmute() {
         audioObj.muted = false;
     }
+    
+    // Idee: hintergrundmusik (z.B. wenn Endboss) "spielt ab" trotz/mit mute, sodass bei unmute direkt die entsprechende stelle abgespielt wird
 }

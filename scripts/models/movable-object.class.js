@@ -63,10 +63,8 @@ class MovableObject extends DrawableObject {
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right
     }
 
-    /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////
     hit() {
-        if (this.isCurrentlyHurt) {
-            return;
+        if (this.isCurrentlyHurt) { return;
         } else {
             if (this.health <= 100 && this.health > 20) {
                 this.health -= 20;
@@ -75,11 +73,7 @@ class MovableObject extends DrawableObject {
                 this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_HURT) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
                 (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
             } else if (this.health <= 20) {
-                // this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_DEAD) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
-                if (this instanceof Character) {
-                    console.log('Character -> health <=20 -> HIT()');
-                    this.sounds.playOnce(this.sounds.CHARACTER_DEAD)
-                } else { this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);}
+                this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_DEAD) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
                 this.health = 0;
             }
         }
@@ -93,7 +87,7 @@ class MovableObject extends DrawableObject {
             }
             return timePassed < 1000;
         } else if (this instanceof Endboss) {
-            if (timePassed > 3000) {
+            if (timePassed > 100) {
                 this.isCurrentlyHurt = false;
             }
             return timePassed < 3000;

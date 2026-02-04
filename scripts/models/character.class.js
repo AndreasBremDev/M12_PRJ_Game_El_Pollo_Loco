@@ -170,17 +170,15 @@ class Character extends MovableObject {
     }
 
     animationDeadAndEndGame() {
+        window.removeKeyboardListeners();
+        window.removeTouchListeners();
         if (!this.animationCompleted) {
             this.playAnimation(this.IMAGES_DEAD, 3, true);
         } else {
             setTimeout(() => {
-            this.sounds.stop(this.sounds.CHARACTER_WALK);
-            this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
-            this.sounds.stop(this.sounds.BACKGROUND_GAME);
-            this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
-            endGame();
-            this.sounds.playOnce(this.sounds.ENDGAME_LOOSE);
-            showMenuTab('gameover');
+                endGame();
+                this.sounds.playOnce(this.sounds.ENDGAME_LOOSE);
+                showMenuTab('gameover');
             }, 500);
         }
     }
@@ -207,11 +205,25 @@ class Character extends MovableObject {
 
     characterAttack(attackType) {
         this.world.lastThrowTime = new Date().getTime();
-        let bottle = this.otherDirection === false ? new ThrownBottle(this.x + 50, this.y + 100, attackType) : new ThrownBottle(this.x, this.y + 100, attackType);
+        let bottle = this.checkAttackType(attackType)
+        // this.otherDirection === false ? new ThrownBottle(this.x + 50, this.y + 100, attackType) : new ThrownBottle(this.x, this.y + 100, attackType);
+
         attackType === 'one' ? this.attackOne(bottle) : this.attackTwo(bottle);
         this.world.throwableObjects.push(bottle);
         this.world.bottlesCollected -= 20;
         this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
+    }
+
+    checkAttackType(attackType) {
+        if ((attackType === 'one' || attackType === 'two') && this.otherDirection === false && this.crouching === false) {
+            return new ThrownBottle(this.x + 50, this.y + 100, attackType);
+        } else if ((attackType === 'one' || attackType === 'two') && this.otherDirection === false && this.crouching === true) {
+            return new ThrownBottle(this.x + 50, this.y + 130, attackType);
+        } else if ((attackType === 'one' || attackType === 'two') && this.otherDirection === true && this.crouching === false) {
+            return new ThrownBottle(this.x, this.y + 100, attackType);
+        } else if ((attackType === 'one' || attackType === 'two') && this.otherDirection === true && this.crouching === true) {
+            return new ThrownBottle(this.x, this.y + 130, attackType);
+        }
     }
 
     attackOne(throwableObject) {

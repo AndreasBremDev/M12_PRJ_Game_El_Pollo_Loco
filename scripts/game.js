@@ -6,13 +6,13 @@ function startGame() {
     initLevel();
     keyboard.lastKeyPressedTime = new Date().getTime();
     world = new World(canvas, keyboard, window.sounds)
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    addKeyboardListeners();
+    addTouchListeners();
 }
 
 function endGame() {
-    document.removeEventListener('keydown', handleKeyDown);
-    document.removeEventListener('keyup', handleKeyUp);
+    removeKeyboardListeners();
+    removeTouchListeners();
     stopGame();
     if (world) {
         world.endWorld();
@@ -24,10 +24,39 @@ function endGame() {
         window.sounds.stop(window.sounds.CHARACTER_CROUCHING);
         window.sounds.stop(window.sounds.BACKGROUND_GAME);
         window.sounds.stop(window.sounds.BACKGROUND_ENDBOSS);
+        window.sounds.stop(window.sounds.CHARACTER_LONG_IDLE);
     }
     level1 = null;
     keyboard = new Keyboard();
 }
+
+function addKeyboardListeners() {
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+}
+
+function addTouchListeners() {
+    attachTouchHandler('btnLeft', handleLeftTouchStart, handleLeftTouchEnd);
+    attachTouchHandler('btnRight', handleRightTouchStart, handleRightTouchEnd);
+    attachTouchHandler('btnUp', handleJumpTouchStart, handleJumpTouchEnd);
+    attachTouchHandler('btnAttOne', handleAttackOneTouchStart, handleAttackOneTouchEnd);
+    attachTouchHandler('btnAttTwo', handleAttackTwoTouchStart, handleAttackTwoTouchEnd);
+}
+
+function removeKeyboardListeners() {
+    document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('keyup', handleKeyUp);
+}
+
+function removeTouchListeners() {
+    unattachTouchHandler('btnLeft', handleLeftTouchStart, handleLeftTouchEnd);
+    unattachTouchHandler('btnRight', handleRightTouchStart, handleRightTouchEnd);
+    unattachTouchHandler('btnUp', handleJumpTouchStart, handleJumpTouchEnd);
+    unattachTouchHandler('btnAttOne', handleAttackOneTouchStart, handleAttackOneTouchEnd);
+    unattachTouchHandler('btnAttTwo', handleAttackTwoTouchStart, handleAttackTwoTouchEnd);
+}
+
+
 
 function handleKeyDown(e) {
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {
@@ -78,47 +107,65 @@ function handleKeyUp(e) {
     }
 };
 
-// document.getElementById('btnLeft').addEventListener('touchstart', (e) => { 
-//     e.preventDefault();
-//     keyboard.LEFT = true; 
-// });
-// document.getElementById('btnLeft').addEventListener('touchend', (e) => { 
-//     e.preventDefault();
-//     keyboard.LEFT = false; 
-// });
+function attachTouchHandler(elementId, startHandler, endHandler) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    element.addEventListener('touchstart', startHandler);
+    element.addEventListener('touchend', endHandler);
+}
+function unattachTouchHandler(elementId, startHandler, endHandler) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    element.removeEventListener('touchstart', startHandler);
+    element.removeEventListener('touchend', endHandler);
+}
 
-// document.getElementById('btnRight').addEventListener('touchstart', (e) => { 
-//     e.preventDefault();
-//     keyboard.RIGHT = true; 
-// });
-// document.getElementById('btnRight').addEventListener('touchend', (e) => { 
-//     e.preventDefault();
-//     keyboard.RIGHT = false; 
-// });
+function handleLeftTouchStart(e) {
+    e.preventDefault();
+    keyboard.LEFT = true;
+}
 
-// document.getElementById('btnUp').addEventListener('touchstart', (e) => { 
-//     e.preventDefault();
-//     keyboard.SPACE = true; 
-// });
-// document.getElementById('btnUp').addEventListener('touchend', (e) => { 
-//     e.preventDefault();
-//     keyboard.SPACE = false; 
-// });
+function handleLeftTouchEnd(e) {
+    e.preventDefault();
+    keyboard.LEFT = false;
+}
 
-// document.getElementById('btnAttOne').addEventListener('touchstart', (e) => { 
-//     e.preventDefault();
-//     keyboard.F = true; 
-// });
-// document.getElementById('btnAttOne').addEventListener('touchend', (e) => { 
-//     e.preventDefault();
-//     keyboard.F = false; 
-// });
+function handleRightTouchStart(e) {
+    e.preventDefault();
+    keyboard.RIGHT = true;
+}
 
-// document.getElementById('btnAttTwo').addEventListener('touchstart', (e) => { 
-//     e.preventDefault();
-//     keyboard.R = true; 
-// });
-// document.getElementById('btnAttTwo').addEventListener('touchend', (e) => { 
-//     e.preventDefault();
-//     keyboard.R = false; 
-// });
+function handleRightTouchEnd(e) {
+    e.preventDefault();
+    keyboard.RIGHT = false;
+}
+
+function handleJumpTouchStart(e) {
+    e.preventDefault();
+    keyboard.SPACE = true;
+}
+
+function handleJumpTouchEnd(e) {
+    e.preventDefault();
+    keyboard.SPACE = false;
+}
+
+function handleAttackOneTouchStart(e) {
+    e.preventDefault();
+    keyboard.F = true;
+}
+
+function handleAttackOneTouchEnd(e) {
+    e.preventDefault();
+    keyboard.F = false;
+}
+
+function handleAttackTwoTouchStart(e) {
+    e.preventDefault();
+    keyboard.R = true;
+}
+
+function handleAttackTwoTouchEnd(e) {
+    e.preventDefault();
+    keyboard.R = false;
+}

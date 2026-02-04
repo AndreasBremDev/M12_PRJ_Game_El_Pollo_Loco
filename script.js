@@ -8,7 +8,6 @@ const progressMusicFill = document.getElementById('volumeMusicProgress');
 initialSoundsDone = false;
 
 function playGame() {
-    window.sounds.stop(window.sounds.BACKGROUND_GAME);
     toggleCanvas('block');
     toggleAllOverlays('none');
     startGame();
@@ -16,7 +15,7 @@ function playGame() {
 
 function showMenuTab(tabName, background = menuBg) {
     setMidSectionBg(background);
-    toggleCanvas('none');
+    // toggleCanvas('none');
     toggleAllOverlays('block');
     hideTabs();
     showTab(tabName);
@@ -110,7 +109,7 @@ function soundControl(elementToControl, value) {
     } else if ((window.sounds.volumeMuted[elementToControl] && value < 0) || (window.sounds.volumeCurrent[elementToControl] === 1 && value > 0)) {
         checkAndPlaySounds(elementToControl); return;
     } else {
-        checkAndPlaySounds(elementToControl);
+        // checkAndPlaySounds(elementToControl);
         window.sounds.volumeCurrent[elementToControl] += value;
         setVolumeInHTML(elementToControl);
     }

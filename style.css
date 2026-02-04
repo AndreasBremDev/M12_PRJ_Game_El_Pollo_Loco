@@ -73,7 +73,6 @@ canvas {
     font-size: 40px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    padding: 16px 12px;
     border: none;
     border-radius: 8px;
     background: transparent;
@@ -89,10 +88,14 @@ canvas {
         transform 0.09s ease-out,
         text-shadow 0.09s ease-out,
         filter 0.09s ease-out;
+    border: 1px solid red
 }
-
 .epl-btn {
     cursor: pointer;
+}
+
+.epl-btn-padding {
+    padding: 16px 12px;
 }
 
 .game-text,

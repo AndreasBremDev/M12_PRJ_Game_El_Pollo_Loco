@@ -2,6 +2,8 @@ class Endboss extends MovableObject {
     y = 160;
     width = 210;
     height = 280;
+    speedX = 8;
+    speedY = 20;
 
     IMAGES_ALERT = [
         './assets/img/4_enemie_boss_chicken/2_alert/G5.png',
@@ -80,7 +82,9 @@ class Endboss extends MovableObject {
         // }, 1000 / 60);
 
         let endbossAnimations = setStoppableInterval(() => {
+            // if (!this.hadFirstContact) {
 
+            // }
 
 
             if (this.isHurt() && this.health >= 20) {
@@ -88,28 +92,15 @@ class Endboss extends MovableObject {
                     this.playAnimation(this.IMAGES_HURT, 6);
                 } else if (this.animationCompleted) {
                     console.log('check hier - isHurt() & health >=20');
-
-                    this.speedY = 20;
-                    this.speedX = 8;
                     this.animationCompleted = false;
                     this.playAnimation(this.IMAGES_ATTACK, 7);
                 }
             } else if (this.health < 20) {
-                if (!this.animationCompleted) {
-                    this.playAnimation(this.IMAGES_DEAD, 8, true, 3);
-                } else {
-                    this.sounds.stop(this.sounds.BACKGROUND_GAME);
-                    this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
-                    setTimeout(() => {
-                        endGame();
-                        this.sounds.playOnce(this.sounds.ENDGAME_WIN_2);
-                        showMenuTab('win');
-                    }, 250);
-                }
+                this.animationDeadAndEndGame();
             } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
                 this.playAnimation(this.IMAGES_ALERT, 8);
-            } else if (this.checkIfCharacterWithin(500) && this.hadFirstContact) {
-                this.moveLeft();
+            } else if (this.checkIfCharacterWithin(500)) {
+                // this.moveLeft();
                 this.playAnimation(this.IMAGES_ATTACK, 7);
             } else if (!this.hadFirstContact && this.x < 1800 && this.x > 1200) {
                 // this.moveLeft();
@@ -117,6 +108,21 @@ class Endboss extends MovableObject {
             }
         }, 1000 / 60);
     }
+
+    animationDeadAndEndGame() {
+        if (!this.animationCompleted) {
+            this.playAnimation(this.IMAGES_DEAD, 8, true, 3);
+        } else {
+            this.sounds.stop(this.sounds.BACKGROUND_GAME);
+            this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
+            setTimeout(() => {
+                endGame();
+                this.sounds.playOnce(this.sounds.ENDGAME_WIN_2);
+                showMenuTab('win');
+            }, 250);
+        }
+    }
+
 
     checkIfCharacterWithin(distance) {
         return this.world.character.x + distance >= this.x;

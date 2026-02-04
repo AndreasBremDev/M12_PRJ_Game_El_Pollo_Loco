@@ -60,11 +60,31 @@
 
     <h1 class="sr-only">El Pollo Loco</h1>
 
-    <canvas id="canvas" width="720" height="480" class="canvas" style="display:none;"></canvas>
+    <!-- Overlay MOBILE Controls -->
 
-    <!-- Overlay PortraitToLandscapeImage -->
+    <!-- Overlay Imrint* (and/or LegalNotice / PrivacyPolicy) -->
 
-    <div id="overlays" class="all-overlays canvas">
+    <!-- Overlay Loading Spinner (before start/startGame()) -->
+
+    <div id="canvasControlMenu" class="control-menu">
+        <button>CONTROLL</button>
+        <button>SOUND</button>
+    </div>
+    <div id="canvasTouchOverlay" class="touch-menu">
+        <div>
+        <button id="btnLeft" class="epl-btn">&#9664;</button>
+        <button id="btnRight" class="epl-btn">&#9654;</button>
+        <button id="btnLeft" class="epl-btn">&#9660;</button>
+        <button id="btnUp" class="epl-btn">&#9650;</button>
+        </div>
+        <button id="btnAttOne" class="epl-btn">F</button>
+        <button id="btnAttTwo" class="epl-btn">R</button>
+    </div>
+
+    <canvas id="canvas" width="720" height="480" class="canvas" style="display:block;">
+    </canvas>
+
+    <div id="overlays" class="all-overlays canvas" style="display:block">
         <div id="MainScreen" class="overlay-screen">
             <div id="topSection" class="top-section">
             </div>
@@ -199,16 +219,10 @@
                 </div>
             </div>
             <div id="bottomSection" class="bottom-section">
-                <button id="btnPlay" class="epl-btn epl-btn-imprint epl-btn-animated" onclick="playGame()">PLAY</button>
-                <button id="btnImprint" class="epl-btn epl-btn-imprint">IMPRINT</button>
+                <button id="btnPlay" class="epl-btn epl-btn-padding epl-btn-imprint epl-btn-animated" onclick="playGame()">PLAY</button>
+                <button id="btnImprint" class="epl-btn epl-btn-padding epl-btn-imprint">IMPRINT</button>
             </div>
         </div>
-
-
-        <!-- Overlay MOBILE Controls -->
-        <!-- Overlay Imrint* (and/or LegalNotice / PrivacyPolicy) -->
-
-        <!-- Overlay Loading Spinner (before start/startGame()) -->
 
     </div>
 </body>

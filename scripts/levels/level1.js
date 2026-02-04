@@ -53,8 +53,13 @@ function initLevel() {
         [
             new Bottles(0, 350, sounds),
             new Bottles(200, 350, sounds),
+            new Bottles(250, 350, sounds),
             new Bottles(300, 350, sounds),
+            new Bottles(350, 350, sounds),
             new Bottles(400, 350, sounds),
+            new Bottles(450, 350, sounds),
+            new Bottles(500, 350, sounds),
+            new Bottles(550, 350, sounds),
 
             new Bottles(720, 350, sounds),
             new Bottles(920, 350, sounds),
