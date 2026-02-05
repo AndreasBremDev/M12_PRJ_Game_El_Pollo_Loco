@@ -28,8 +28,6 @@ canvas {
 
 .canvas-wrapper {
     position: relative;
-    /* width: 720px;
-    height: 480px; */
     max-width: 720px;
     width: 100%;
     aspect-ratio: 3 / 2;
@@ -53,15 +51,27 @@ canvas {
     left: 0;
     right: 0;
     justify-content: space-between;
-    display:none;
+    display: none;
 }
 
 #btnAttOne {
-    transform: translate(12px, -24px);
+    transform: translate(8px, -24px);
 }
 
-#btnAttTwo{
+#btnAttTwo {
     transform: translateX(12px);
+}
+
+#btnLeft,
+#btnRight,
+#btnUp {
+    font-size: 48px;
+}
+
+#btnDown,
+#btnAttOne,
+#btnAttTwo {
+    font-size: 32px;
 }
 
 .all-overlays {
@@ -537,7 +547,8 @@ canvas {
     .epl-btn {
         font-size: 24px;
     }
-    .epl-btn-padding{
+
+    .epl-btn-padding {
         padding: 8px 16px;
     }
 
@@ -568,6 +579,7 @@ canvas {
     .epl-btn {
         font-size: 24px;
     }
+
     .epl-btn-padding {
         padding: 8px 8px;
 
@@ -605,5 +617,4 @@ canvas {
         padding: 8px 0px;
         min-width: 32px;
     }
-    
 }
