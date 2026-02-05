@@ -117,7 +117,7 @@ class Endboss extends MovableObject {
             this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
             setTimeout(() => {
                 endGame();
-                this.sounds.playOnce(this.sounds.ENDGAME_WIN_2);
+                this.sounds.playOnce(this.sounds.ENDGAME_WIN_2, 'music');
                 showMenuTab('win');
             }, 250);
         }

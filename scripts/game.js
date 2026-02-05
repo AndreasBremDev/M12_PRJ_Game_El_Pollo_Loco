@@ -19,13 +19,6 @@ function endGame() {
         world = null;
     }
     keyboard.LEFT = keyboard.RIGHT = keyboard.UP = keyboard.DOWN = keyboard.SPACE = keyboard.F = keyboard.R = false;
-    if (window.sounds) {
-        window.sounds.stop(window.sounds.CHARACTER_WALK);
-        window.sounds.stop(window.sounds.CHARACTER_CROUCHING);
-        window.sounds.stop(window.sounds.BACKGROUND_GAME);
-        window.sounds.stop(window.sounds.BACKGROUND_ENDBOSS);
-        window.sounds.stop(window.sounds.CHARACTER_LONG_IDLE);
-    }
     level1 = null;
     keyboard = new Keyboard();
 }

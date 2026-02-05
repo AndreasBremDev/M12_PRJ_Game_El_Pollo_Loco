@@ -28,29 +28,40 @@ canvas {
 
 .canvas-wrapper {
     position: relative;
-    width: 720px;
-    height: 480px;
+    /* width: 720px;
+    height: 480px; */
+    max-width: 720px;
+    width: 100%;
+    aspect-ratio: 3 / 2;
     box-sizing: border-box;
-    border: 1px solid blue;
 }
 
 .control-menu,
-.touch-menu{
+.touch-menu {
     position: absolute;
     z-index: 99;
 }
 
-.control-menu{
+.control-menu {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    border: 1px solid red;
 }
 
-.touch-menu{
+.touch-menu {
     bottom: 0;
-    display: flex;
+    left: 0;
+    right: 0;
     justify-content: space-between;
+    display:none;
+}
+
+#btnAttOne {
+    transform: translate(12px, -24px);
+}
+
+#btnAttTwo{
+    transform: translateX(12px);
 }
 
 .all-overlays {
@@ -117,6 +128,7 @@ canvas {
         filter 0.09s ease-out;
     min-width: 55px;
 }
+
 .epl-btn {
     cursor: pointer;
 }
@@ -207,7 +219,7 @@ canvas {
 }
 
 .story {
-    display:flex;
+    display: flex;
     flex-direction: column;
     gap: 20px;
     overflow-y: auto;
@@ -501,7 +513,7 @@ canvas {
 
 @media only screen and (max-width: 720px) {
 
-    .canvasWrapper,
+    .canvas-wrapper,
     .all-overlays,
     .canvas {
         width: 100%;
@@ -524,6 +536,8 @@ canvas {
 
     .epl-btn {
         font-size: 24px;
+    }
+    .epl-btn-padding{
         padding: 8px 16px;
     }
 
@@ -541,15 +555,22 @@ canvas {
 
 @media only screen and (max-height: 480px) {
 
-    .canvasWrapper,
+    .canvas-wrapper,
     .all-overlays,
     .canvas {
         height: 100dvh;
     }
 
+    .canvas-wrapper {
+        width: auto;
+    }
+
     .epl-btn {
         font-size: 24px;
-        padding: 8px 16px;
+    }
+    .epl-btn-padding {
+        padding: 8px 8px;
+
     }
 
     .story {
@@ -564,7 +585,7 @@ canvas {
     }
 }
 
-@media only screen and  (max-height: 340px) {
+@media only screen and (max-height: 340px) {
     .middle-section {
         background-position: center -90px
     }
@@ -572,4 +593,17 @@ canvas {
     .story {
         height: 220px;
     }
+}
+
+@media (any-pointer: coarse) and (any-hover: none) {
+    .touch-menu {
+        display: flex;
+        padding: 0 8px;
+    }
+
+    .epl-btn.touch-padding {
+        padding: 8px 0px;
+        min-width: 32px;
+    }
+    
 }

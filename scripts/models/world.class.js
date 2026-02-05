@@ -40,7 +40,7 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
-        this.sounds.volumeMuted['music'] ? this.sounds.mute(this.sounds.BACKGROUND_GAME) : this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
+        this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
         this.lastKeyPressedTime = new Date().getTime();
     }
 
@@ -66,6 +66,7 @@ class World {
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
             this.checkCharacterEndbossDistance();
+            this.checkIsMutedStatus();
         }, 1000 / 60);
     }
 
@@ -136,6 +137,19 @@ class World {
         }
     }
 
+    checkIsMutedStatus() {
+        this.sounds.applyMuteState('music')
+        this.sounds.applyMuteState('effect')
+    }
+
+    // playInitialBackgroundMusic() {
+    //     if (this.sounds.volumeIsMuted['music']) {
+    //         this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
+    //         this.sounds.mute(this.sounds.BACKGROUND_GAME);
+    //     } else {
+    //         this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
+    //     }
+    // }
 
     addObjectsToMap(objects) {
         objects.forEach(o => {
@@ -148,7 +162,7 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
-        // mo.drawFrame(this.ctx);
+        // mo.drawFrame(this.ctx); // hitboxes only needed for debugging 
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }

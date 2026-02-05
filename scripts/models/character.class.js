@@ -138,12 +138,12 @@ class Character extends MovableObject {
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
             if (this.world.endboss.x - this.x < 600 && !this.world.endboss.hadFirstContact) {
                 this.sounds.pause(this.sounds.BACKGROUND_GAME);
-                this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS);
+                this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
                 this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK);
                 this.world.endboss.hadFirstContact = true;
             } else {
-                this.sounds.pause(this.sounds.BACKGROUND_ENDBOSS);
-                this.sounds.playLoop(this.sounds.BACKGROUND_GAME)
+                this.sounds.pause(this.sounds.BACKGROUND_ENDBOSS, 'music');
+                this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
             }
 
         }, 1000 / 60);
@@ -177,7 +177,7 @@ class Character extends MovableObject {
         } else {
             setTimeout(() => {
                 endGame();
-                this.sounds.playOnce(this.sounds.ENDGAME_LOOSE);
+                this.sounds.playOnce(this.sounds.ENDGAME_LOOSE, 'music');
                 showMenuTab('gameover');
             }, 500);
         }
