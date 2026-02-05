@@ -54,24 +54,30 @@ canvas {
     display: none;
 }
 
-#btnAttOne {
-    transform: translate(8px, -24px);
+#btnUp,
+#btnDown,
+#btnAttTwo {
+    transform: translateY(12px)
 }
 
-#btnAttTwo {
-    transform: translateX(12px);
+#btnAttOne {
+    transform: translate(0px, -16px);
+}
+
+#btnUp {
+    font-size: 72px;
 }
 
 #btnLeft,
-#btnRight,
-#btnUp {
-    font-size: 48px;
+#btnRight{
+    font-size: 52px;
+    transform: translateY(36px)
 }
 
 #btnDown,
 #btnAttOne,
 #btnAttTwo {
-    font-size: 32px;
+    font-size: 40px;
 }
 
 .all-overlays {
