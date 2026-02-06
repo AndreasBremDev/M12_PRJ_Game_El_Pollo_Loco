@@ -66,10 +66,30 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
         this.animate();
         this.applyGravity();
-        this.hadFirstContact = false;
+        this.endbossHitCounter = 0;
     }
 
     animate() {
+
+        // hadFirstContact... Sequenz.0 ???
+        // ENDBOSS-Battle in x-Grenze von x = bis xy = x +720px ?
+        // character, nach hadFirstContact: moveLeft() bis x = 1200 ?
+        // Endboss, maximal bis x = ? oder bis character.x + character.width >= endboss.x
+
+        // SEQUENZ.1: animation: alert (sonst nichts), wenn Character <600px (this.world.character.x + distance >= this.x
+
+        // SEQUENZ.2: wenn hit() [endbossHitCounter = 0] 1.Mal, dann:
+        // [endbossHitCounter]++
+        // nach hurt()
+        // moveLeft() langsam - animation(WALK) - kriterium (bis wohin)???
+
+        // SEQUENZ.3: wenn [endbossHitCounter = 1], dann:
+        // 
+
+
+
+
+
         // let endbossMovements = setStoppableInterval(() => {
         //     if (this.hadFirstContact && this.x > 1200) {
         //         this.moveLeft();
@@ -82,23 +102,15 @@ class Endboss extends MovableObject {
         // }, 1000 / 60);
 
         let endbossAnimations = setStoppableInterval(() => {
-            // if (!this.hadFirstContact) {
+            /* if (this.endbossHitCounter == 0){
+                this.playAnimation(this.IMAGES_ALERT, 8)
 
-            // }
-
-
-            if (this.isHurt() && this.health >= 20) {
-                if (!this.animationCompleted) {
-                    this.playAnimation(this.IMAGES_HURT, 6);
-                } else if (this.animationCompleted) {
-                    console.log('check hier - isHurt() & health >=20');
-                    this.animationCompleted = false;
-                    this.playAnimation(this.IMAGES_ATTACK, 7);
-                }
+            } else */ if (this.isHurt() && this.health >= 20) {
+                !this.animationCompleted ? this.playAnimation(this.IMAGES_HURT, 6) : this.animationCompleted = false;
             } else if (this.health < 20) {
                 this.animationDeadAndEndGame();
-            } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
-                this.playAnimation(this.IMAGES_ALERT, 8);
+            // } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
+            //     this.playAnimation(this.IMAGES_ALERT, 8);
             } else if (this.checkIfCharacterWithin(500)) {
                 // this.moveLeft();
                 this.playAnimation(this.IMAGES_ATTACK, 7);
@@ -107,6 +119,10 @@ class Endboss extends MovableObject {
                 this.playAnimation(this.IMAGES_WALK);
             }
         }, 1000 / 60);
+    }
+
+    checkIfCharacterWithin(distance) {
+        return this.world.character.x + distance >= this.x;
     }
 
     animationDeadAndEndGame() {
@@ -124,8 +140,6 @@ class Endboss extends MovableObject {
     }
 
 
-    checkIfCharacterWithin(distance) {
-        return this.world.character.x + distance >= this.x;
-    }
+
 
 }

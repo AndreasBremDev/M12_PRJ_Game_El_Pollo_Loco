@@ -70,6 +70,7 @@ class MovableObject extends DrawableObject {
                 this.health -= 20;
                 this.isCurrentlyHurt = true
                 this.lastHit = new Date().getTime();
+                console.log('this instanceof Endboss', this instanceof Endboss, 'this.isCurrentlyHurt', this.isCurrentlyHurt)
                 this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_HURT) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
                 (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
             } else if (this.health <= 20) {
@@ -87,15 +88,19 @@ class MovableObject extends DrawableObject {
             }
             return timePassed < 1000;
         } else if (this instanceof Endboss) {
-            if (timePassed > 100) {
+            if (timePassed > 100) { // set to 3000 (100 for testing only)
                 this.isCurrentlyHurt = false;
             }
-            return timePassed < 3000;
+            return timePassed < 100;// set to 3000 (100 for testing only)
         }
     }
 
     isDead() {
         return this.health < 20;
+    }
+
+    jump(speedY = 20) {
+        this.speedY = speedY;
     }
 
     /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////

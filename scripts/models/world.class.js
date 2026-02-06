@@ -142,15 +142,6 @@ class World {
         this.sounds.applyMuteState('effect')
     }
 
-    // playInitialBackgroundMusic() {
-    //     if (this.sounds.volumeIsMuted['music']) {
-    //         this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
-    //         this.sounds.mute(this.sounds.BACKGROUND_GAME);
-    //     } else {
-    //         this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
-    //     }
-    // }
-
     addObjectsToMap(objects) {
         objects.forEach(o => {
             this.addToMap(o);

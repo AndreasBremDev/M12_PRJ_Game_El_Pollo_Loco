@@ -623,4 +623,8 @@ canvas {
         padding: 8px 0px;
         min-width: 32px;
     }
+
+    #btn-keyboard-control {
+        display: none;
+    }
 }

@@ -143,11 +143,6 @@ class Sounds {
         }
     }
 
-    setVolume(audioObj, setVolume = this.generalVolume) {
-        audioObj.volume = setVolume;
-    }
-
-
     mute(audioObj) {
         audioObj.muted = true;
     }

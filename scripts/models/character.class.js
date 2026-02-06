@@ -132,7 +132,7 @@ class Character extends MovableObject {
                 this.otherDirection = true;
             }
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                this.jump();
+                this.jump(30);
                 this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
@@ -197,10 +197,6 @@ class Character extends MovableObject {
         } else {
             this.playAnimation(this.IMAGES_WALKING);
         }
-    }
-
-    jump(speedY = 30) {
-        this.speedY = speedY;
     }
 
     characterAttack(attackType) {

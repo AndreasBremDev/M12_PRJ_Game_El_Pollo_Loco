@@ -20,18 +20,24 @@ function showMenuTab(tabName, background = menuBg) {
     toggleHtmlElementDisplay('overlayMain', 'block');
     hideTabs();
     showTab(tabName);
+    getVolumeFromLocalStorage();
     (tabName !== 'gameover' || tabName !== 'win' || tabName !== 'sounds') && titleTopAndBottomSection();
     (tabName === 'gameover' || tabName === 'win') && gameoverWinTopAndBottomSection();
-    (tabName === 'sounds') && setDefaultSoundOptions();
+    (tabName === 'sounds' && !initialSoundsDone) ? setDefaultSoundOptions() : setSoundsAccordingToLocalStorage();
     (tabName === 'rotateYourPhone') && rotateYourPhoneTopAndBottomSection();
     window.sounds.stop(window.sounds.BACKGROUND_GAME);
 }
 
 function setDefaultSoundOptions() {
-    if (!initialSoundsDone) {
         initialSoundSettings('overlayMain', ['effect', 'music']);
         initialSoundsDone = true;
-    }
+        setVolumeToLocalStorage()
+}
+
+function setSoundsAccordingToLocalStorage() {
+    toggleMuteIcons('overlayMain', ['effect', 'music']);
+    window.sounds.volumeIsMuted['effect'] ? setVolumeBarToZero('overlayMain', 'effect') : setVolumeInHTML('overlayMain', 'effect')
+    window.sounds.volumeIsMuted['music'] ? setVolumeBarToZero('overlayMain', 'music') : setVolumeInHTML('overlayMain', 'music')
 }
 
 function toggleHtmlElementDisplay(element, display) {
@@ -73,38 +79,43 @@ function rotateYourPhoneTopAndBottomSection() {
 function setVolumeToLocalStorage() {
     localStorage.setItem('volumeIsMuted', JSON.stringify(window.sounds.volumeIsMuted));
     localStorage.setItem('volumeCurrent', JSON.stringify(window.sounds.volumeCurrent));
+    localStorage.setItem('initialSoundsDone', JSON.stringify(initialSoundsDone));
 }
 
 function getVolumeFromLocalStorage() {
     let volumeIsMutedFromStorage = JSON.parse(localStorage.getItem('volumeIsMuted'));
     let volumeCurrentFromStorage = JSON.parse(localStorage.getItem('volumeCurrent'));
+    let initialSoundsDoneFromStorage = JSON.parse(localStorage.getItem('initialSoundsDone'));
     volumeIsMutedFromStorage && (window.sounds.volumeIsMuted = volumeIsMutedFromStorage);
     volumeCurrentFromStorage && (window.sounds.volumeCurrent = volumeCurrentFromStorage);
+    initialSoundsDoneFromStorage && (initialSoundsDone = initialSoundsDoneFromStorage);
 }
 
 function initialSoundSettings(htmlDiv, array) {
-    // getVolumeFromLocalStorage();
     toggleMuteIcons(htmlDiv, array);
     setVolumeBarToZero(htmlDiv, array);
-    // setVolumeToLocalStorage();
+    setVolumeToLocalStorage();
 }
 
 
 function soundControl(htmlDiv, elementToControl, value) {
-    // getVolumeFromLocalStorage();
     if (window.sounds.volumeIsMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] > 0.2 && Math.round(window.sounds.volumeCurrent[elementToControl]) <= 1 && value > 0) {
         window.sounds.volumeCurrent[elementToControl] = 0.2;
+        setVolumeToLocalStorage();
         muteUnmute(htmlDiv, elementToControl);
+        setVolumeInHTML(htmlDiv, elementToControl)
         checkAndPlaySounds(elementToControl);
     } else if ((window.sounds.volumeIsMuted[elementToControl] && value > 0) || (!window.sounds.volumeIsMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] === 0.2 && value < 0)) {
         muteUnmute(htmlDiv, elementToControl);
     } else if ((window.sounds.volumeIsMuted[elementToControl] && value < 0) || (window.sounds.volumeCurrent[elementToControl] === 1 && value > 0)) {
         checkAndPlaySounds(elementToControl); return;
     } else {
+        getVolumeFromLocalStorage();
         setVolumeCurrentOfElementToControl(elementToControl, value)
         setVolumeInHTML(htmlDiv, elementToControl);
+        checkAndPlaySounds(htmlDiv, elementToControl);
+        setVolumeToLocalStorage();
     }
-    // setVolumeToLocalStorage();
 }
 
 function setVolumeCurrentOfElementToControl(elementToControl, value) {
@@ -126,10 +137,10 @@ function checkAndPlaySounds(htmlDiv, elementToControl) {
 }
 
 function muteUnmute(htmlDiv, elementToControl) {
-    // getVolumeFromLocalStorage();
+    getVolumeFromLocalStorage();
     toggleVolumeMuteBoolean(elementToControl);
     toggleMuteIcons(htmlDiv, elementToControl);
-    if (htmlDiv === 'overlayMain') { window.sounds.volumeIsMuted[elementToControl] ? setVolumeBarToZero(htmlDiv, elementToControl) : setVolumeInHTML(htmlDiv, elementToControl); }
+    if (htmlDiv === 'overlayMain') { window.sounds.volumeIsMuted[elementToControl] ? setVolumeBarToZero(htmlDiv, elementToControl) : (setVolumeInHTML(htmlDiv, elementToControl),checkAndPlaySounds(htmlDiv, elementToControl)); }
     if (htmlDiv === 'canvasControlMenu') { 
         if (window.sounds.volumeIsMuted[elementToControl]){
             elementToControl === 'effect' ? window.sounds.stop(window.sounds.MENU_CLICK) : window.sounds.stop(window.sounds.BACKGROUND_GAME);
@@ -137,13 +148,12 @@ function muteUnmute(htmlDiv, elementToControl) {
             checkAndPlaySounds(htmlDiv, elementToControl); 
         }
     }
-    // setVolumeToLocalStorage();
+    setVolumeToLocalStorage();
 }
 
 function setVolumeInHTML(htmlDiv, elementToControl) {
     let progressBar = document.getElementById(htmlDiv).querySelector('#' + elementToControl + 'VolumeProgressBar');
     progressBar.style.width = window.sounds.volumeCurrent[elementToControl] * 100 + '%';
-    checkAndPlaySounds(htmlDiv, elementToControl);
 }
 
 function toggleMuteIcons(htmlDiv, elementToControl) {
@@ -172,8 +182,7 @@ function setVolumeBarToZero(htmlDiv, elementToControl) {
 
 function toggleVolumeMuteBoolean(elementToControl) {
     window.sounds.volumeIsMuted[elementToControl] ? setvolumeIsMuted(elementToControl, false) : setvolumeIsMuted(elementToControl, true);
-    // setVolumeToLocalStorage();
-    return window.sounds.volumeIsMuted[elementToControl];
+    return;
 }
 
 function setvolumeIsMuted(elementToControl, bool) {
@@ -182,9 +191,7 @@ function setvolumeIsMuted(elementToControl, bool) {
 }
 
 function diplayAccordingMuteUnmuteVolumeIcons(htmlDiv, array){
-    // getVolumeFromLocalStorage();
     toggleMuteIcons(htmlDiv, array);
-    // setVolumeToLocalStorage();
 }
 
 document.addEventListener('DOMContentLoaded', turnYourPhone);

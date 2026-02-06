@@ -42,11 +42,6 @@ class ChickenSmall extends MovableObject {
         }, 100);
     }
 
-    jump() {
-        this.speedY = 20;
-
-    }
-
     getRandomJumpDelay() {
         return 1000 + Math.random() * 1000;
     }
