@@ -70,7 +70,6 @@ class MovableObject extends DrawableObject {
                 this.health -= 20;
                 this.isCurrentlyHurt = true
                 this.lastHit = new Date().getTime();
-                console.log('this instanceof Endboss', this instanceof Endboss, 'this.isCurrentlyHurt', this.isCurrentlyHurt)
                 this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_HURT) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
                 (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
             } else if (this.health <= 20) {

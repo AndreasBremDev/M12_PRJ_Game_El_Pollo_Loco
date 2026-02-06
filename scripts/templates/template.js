@@ -9,7 +9,7 @@ function topSectionStandardTemplate() {
 function bottomSectionStandardTemplate() {
     return /* html */`
         <button id="btnPlay" class="epl-btn epl-btn-padding epl-btn-imprint epl-btn-animated" onclick="playGame()">PLAY</button>
-        <button id="btnImprint" class="epl-btn epl-btn-padding epl-btn-imprint">IMPRINT</button>`;
+        <button id="btnImprint" class="epl-btn epl-btn-padding epl-btn-imprint" onclick="showMenuTab('imprint')">IMPRINT</button>`;
 }
 
 function topSectionGameoverWinTemplate() {
