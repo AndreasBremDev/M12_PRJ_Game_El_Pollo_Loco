@@ -69,7 +69,7 @@
         <canvas id="canvas" width="720" height="480" class="canvas"></canvas>
 
         <div id="canvasControlMenu" class="control-menu">
-            <button id="btn-keyboard-control" class="epl-btn epl-btn-padding">
+            <button id="btnKeyboardControl" class="epl-btn epl-btn-padding"  onclick="showCanvasControls(event)">
                 <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px"
                     fill="#FFCB19" class="volume-btn">
                     <path
@@ -103,6 +103,20 @@
                         d="M400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-418v-422h240v160H560v400q0 66-47 113t-113 47Z" />
                 </svg>
             </button>
+        </div>
+        <div id="canvasControl" class="game-text d-none">
+            <div>
+                <p><span class="w100">Move left</span><span class="control-icon">A</span>or<span
+                        class="control-icon">&#9664;</span></p>
+                <p><span class="w100">Move right</span><span class="control-icon">D</span>or<span
+                        class="control-icon">&#9654;</span></p>
+                <p><span class="w100">Move up</span><span class="control-icon">W</span>or<span
+                        class="control-icon">&#9650;</span>or<span class="control-icon">SPACE</span></p>
+                <p><span class="w100">Crouch</span><span class="control-icon">S</span>or<span
+                        class="control-icon">&#9660;</span></p>
+                <p><span class="w200">Throw Attack One</span><span class="control-icon">F</span></p>
+                <p><span class="w200">Throw Attack Two</span><span class="control-icon">R</span></p>
+            </div>
         </div>
         <div id="canvasTouchOverlay" class="touch-menu">
             <div>

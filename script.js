@@ -5,7 +5,9 @@ let midSection = document.getElementById('middleSection');
 let bottomSection = document.getElementById('bottomSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
-initialSoundsDone = false;
+let controlOverlay = document.getElementById('canvasControl')
+let initialSoundsDone = false;
+let showCanvasControlsIsActive = false;
 
 function playGame() {
     toggleHtmlElementDisplay('canvasWrapper', 'block');
@@ -29,9 +31,9 @@ function showMenuTab(tabName, background = menuBg) {
 }
 
 function setDefaultSoundOptions() {
-        initialSoundSettings('overlayMain', ['effect', 'music']);
-        initialSoundsDone = true;
-        setVolumeToLocalStorage()
+    initialSoundSettings('overlayMain', ['effect', 'music']);
+    initialSoundsDone = true;
+    setVolumeToLocalStorage()
 }
 
 function setSoundsAccordingToLocalStorage() {
@@ -140,12 +142,12 @@ function muteUnmute(htmlDiv, elementToControl) {
     getVolumeFromLocalStorage();
     toggleVolumeMuteBoolean(elementToControl);
     toggleMuteIcons(htmlDiv, elementToControl);
-    if (htmlDiv === 'overlayMain') { window.sounds.volumeIsMuted[elementToControl] ? setVolumeBarToZero(htmlDiv, elementToControl) : (setVolumeInHTML(htmlDiv, elementToControl),checkAndPlaySounds(htmlDiv, elementToControl)); }
-    if (htmlDiv === 'canvasControlMenu') { 
-        if (window.sounds.volumeIsMuted[elementToControl]){
+    if (htmlDiv === 'overlayMain') { window.sounds.volumeIsMuted[elementToControl] ? setVolumeBarToZero(htmlDiv, elementToControl) : (setVolumeInHTML(htmlDiv, elementToControl), checkAndPlaySounds(htmlDiv, elementToControl)); }
+    if (htmlDiv === 'canvasControlMenu') {
+        if (window.sounds.volumeIsMuted[elementToControl]) {
             elementToControl === 'effect' ? window.sounds.stop(window.sounds.MENU_CLICK) : window.sounds.stop(window.sounds.BACKGROUND_GAME);
-        } else { 
-            checkAndPlaySounds(htmlDiv, elementToControl); 
+        } else {
+            checkAndPlaySounds(htmlDiv, elementToControl);
         }
     }
     setVolumeToLocalStorage();
@@ -190,7 +192,7 @@ function setvolumeIsMuted(elementToControl, bool) {
     return window.sounds.volumeIsMuted[elementToControl];
 }
 
-function diplayAccordingMuteUnmuteVolumeIcons(htmlDiv, array){
+function diplayAccordingMuteUnmuteVolumeIcons(htmlDiv, array) {
     toggleMuteIcons(htmlDiv, array);
 }
 
@@ -205,5 +207,18 @@ function turnYourPhone() {
         showMenuTab('rotateYourPhone');
     } else {
         showMenuTab('title', titleBg)
+    }
+}
+
+function showCanvasControls(ev) {
+    controlOverlay.classList.remove('d-none');
+    ev.currentTarget.blur();
+    ev.stopPropagation();
+    if (!showCanvasControlsIsActive) {
+        showCanvasControlsIsActive = true;
+        setTimeout(() => {
+            controlOverlay.classList.add('d-none');
+            showCanvasControlsIsActive = false;
+        }, 3000);
     }
 }
