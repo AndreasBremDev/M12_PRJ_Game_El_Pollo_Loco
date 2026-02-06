@@ -5,7 +5,7 @@ let midSection = document.getElementById('middleSection');
 let bottomSection = document.getElementById('bottomSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
-let controlOverlay = document.getElementById('canvasControl')
+let controlOverlay = document.getElementById('canvasControl');
 let initialSoundsDone = false;
 let showCanvasControlsIsActive = false;
 
@@ -222,3 +222,7 @@ function showCanvasControls(ev) {
         }, 3000);
     }
 }
+
+document.querySelectorAll('.touch-menu button').forEach(btn => {
+    btn.addEventListener('contextmenu', event => event.preventDefault());
+});

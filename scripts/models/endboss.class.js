@@ -102,15 +102,18 @@ class Endboss extends MovableObject {
         // }, 1000 / 60);
 
         let endbossAnimations = setStoppableInterval(() => {
-            /* if (this.endbossHitCounter == 0){
-                this.playAnimation(this.IMAGES_ALERT, 8)
-
-            } else */ if (this.isHurt() && this.health >= 20) {
+            if (this.isHurt() && this.health >= 20) {
                 !this.animationCompleted ? this.playAnimation(this.IMAGES_HURT, 6) : this.animationCompleted = false;
-            } else if (this.health < 20) {
-                this.animationDeadAndEndGame();
-            // } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
+            } 
+
+            // else if (this.endbossHitCounter == 0) {
             //     this.playAnimation(this.IMAGES_ALERT, 8);
+            // } 
+            
+            else if (this.health < 20) {
+                this.animationDeadAndEndGame();
+                // } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
+                //     this.playAnimation(this.IMAGES_ALERT, 8);
             } else if (this.checkIfCharacterWithin(500)) {
                 // this.moveLeft();
                 this.playAnimation(this.IMAGES_ATTACK, 7);
