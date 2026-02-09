@@ -2,7 +2,6 @@ class Endboss extends MovableObject {
     y = 160;
     width = 210;
     height = 280;
-    speedX = 8;
     speedY = 20;
 
     IMAGES_ALERT = [
@@ -53,7 +52,6 @@ class Endboss extends MovableObject {
         bottom: 15
     };
 
-
     constructor(x, sounds) {
         super();
         this.sounds = sounds;
@@ -67,70 +65,122 @@ class Endboss extends MovableObject {
         this.animate();
         this.applyGravity();
         this.endbossHitCounter = 0;
+        this.currentPhase = 'alert';
+        this.phaseStarted = false;
+        this.backToStartX = 720 * 2;
     }
 
     animate() {
 
         // hadFirstContact... Sequenz.0 ???
-        // ENDBOSS-Battle in x-Grenze von x = bis xy = x +720px ?
+        // ENDBOSS-Battle in x-Grenze von x = bis xy = x +720px ?   -------------DONE-------------
         // character, nach hadFirstContact: moveLeft() bis x = 1200 ?
         // Endboss, maximal bis x = ? oder bis character.x + character.width >= endboss.x
 
-        // SEQUENZ.1: animation: alert (sonst nichts), wenn Character <600px (this.world.character.x + distance >= this.x
+        // SEQUENZ.0: (endbossHitCounter == 0)  -------------DONE-------------
+        // animation: alert (sonst nichts)      -------------DONE-------------
 
-        // SEQUENZ.2: wenn hit() [endbossHitCounter = 0] 1.Mal, dann:
-        // [endbossHitCounter]++
-        // nach hurt()
-        // moveLeft() langsam - animation(WALK) - kriterium (bis wohin)???
+        // SEQUENZ.1: (endbossHitCounter = 1) wenn hit() 1.Mal, dann:   -------------DONE-------------
+        // hurt() - animation(hurt) - kriterium (bis wohin) erledigt    -------------DONE-------------
+        // dann - moveLeft() langsam - animation(WALK)                  -------------DONE-------------
 
-        // SEQUENZ.3: wenn [endbossHitCounter = 1], dann:
+        // Zwischen-Sequenz - Zurückziehen
+
+        // SEQUENZ.2: wenn hit() [endbossHitCounter = 2] 1.Mal, dann:           -------------DONE-------------
+        // [endbossHitCounter]++, hurt()                                        -------------DONE-------------
+        // moveLeft() schneller - animation(ATTACK) - kriterium (wie oben)      -------------DONE-------------
+
+        // SEQUENZ.3: wenn [endbossHitCounter = 3], dann: tbd. (evtl. neue animation, evtl. neue attacke etc.)
         // 
 
 
-
-
-
-        // let endbossMovements = setStoppableInterval(() => {
-        //     if (this.hadFirstContact && this.x > 1200) {
-        //         this.moveLeft();
-        //     } else if (this.hadFirstContact && this.x == 1200 && this.x < 1800) {
-        //         this.otherDirection = true;
-        //         this.moveRight();
-        //     }
-
-
-        // }, 1000 / 60);
-
         let endbossAnimations = setStoppableInterval(() => {
-            if (this.isHurt() && this.health >= 20) {
-                !this.animationCompleted ? this.playAnimation(this.IMAGES_HURT, 6) : this.animationCompleted = false;
-            } 
-
-            // else if (this.endbossHitCounter == 0) {
-            //     this.playAnimation(this.IMAGES_ALERT, 8);
-            // } 
-            
-            else if (this.health < 20) {
+            if (this.health < 20 || this.currentPhase === 'dead') {
+                this.currentPhase = 'dead';
                 this.animationDeadAndEndGame();
-                // } else if (this.checkIfCharacterWithin(600) && !this.checkIfCharacterWithin(500) && this.hadFirstContact) {
-                //     this.playAnimation(this.IMAGES_ALERT, 8);
-            } else if (this.checkIfCharacterWithin(500)) {
-                // this.moveLeft();
-                this.playAnimation(this.IMAGES_ATTACK, 7);
-            } else if (!this.hadFirstContact && this.x < 1800 && this.x > 1200) {
-                // this.moveLeft();
-                this.playAnimation(this.IMAGES_WALK);
+                return; 
             }
+            if (this.currentPhase === 'alert') {
+                this.playAnimation(this.IMAGES_ALERT, 16);
+                if (this.isHurt()) this.switchPhase('hurt');
+            }
+            else if (this.currentPhase === 'hurt') {
+                this.playAnimation(this.IMAGES_HURT, 6);
+                if (!this.isHurt()) {
+                    this.endbossHitCounter++;
+                    console.log('endbossHitCounter: ', this.endbossHitCounter);
+                    if (this.endbossHitCounter >= 5 || this.health < 20) {
+                        this.switchPhase('dead');
+                    }
+                    else if (this.endbossHitCounter === 1) { this.switchPhase('attackOne'); }
+                    else if (this.endbossHitCounter === 2) { this.switchPhase('attackTwo'); }
+                    else if (this.endbossHitCounter === 3) { this.switchPhase('attackTwo'); }
+                    else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
+
+                    else { this.switchPhase('attackOne'); }
+
+                }
+            }
+            else if (this.currentPhase === 'attackOne') {
+                this.playAnimation(this.IMAGES_WALK, 8);
+                this.moveLeft(3);
+                if (this.x < this.world.level.endboss_left_end_x) {
+                    this.switchPhase('withdraw');
+                }
+            }
+            else if (this.currentPhase === 'attackTwo') {
+                this.playAnimation(this.IMAGES_ATTACK, 8);
+                this.moveLeft(8);
+                if (this.x < this.world.level.endboss_left_end_x) {
+                    this.switchPhase('withdraw');
+                }
+            }
+
+            else if (this.currentPhase === 'withdraw') {
+                this.handleWithdrawPhase();
+            }
+
+            // else if (this.currentPhase === 'dead' && this.health < 20) {
+            //     this.animationDeadAndEndGame();
+
+
+            // }
         }, 1000 / 60);
     }
 
-    checkIfCharacterWithin(distance) {
-        return this.world.character.x + distance >= this.x;
+    switchPhase(newPhase) {
+        this.currentPhase = newPhase;
+        this.phaseStarted = false;
+        console.log('switched to phase: ', newPhase);
     }
+
+    handleWithdrawPhase() {
+        // EINMALIGER AUFRUF (Started Flag)
+        if (!this.phaseStarted) {
+            this.jump(25); // Springt nur 1x am Anfang der Phase
+            this.phaseStarted = true;
+            console.log("Withdrawal started with a jump!");
+        }
+
+        // DAUERHAFTE AKTION
+        this.playAnimation(this.IMAGES_ATTACK, 8);
+        this.moveRight(5);
+
+        // BEENDEN-KRITERIUM
+        if (this.x >= this.backToStartX) {
+            this.x = this.backToStartX; // Fixieren auf Startpunkt
+            this.switchPhase('alert'); // Wieder in Wartestellung oder nächste Attacke
+        }
+    }
+
+
+    // checkIfCharacterWithin(distance) {       /// currently NOT in USE ///
+    //     return this.world.character.x + distance >= this.x;
+    // }
 
     animationDeadAndEndGame() {
         if (!this.animationCompleted) {
-            this.playAnimation(this.IMAGES_DEAD, 8, true, 3);
+            this.playAnimation(this.IMAGES_DEAD, 12, true, 3);
         } else {
             this.sounds.stop(this.sounds.BACKGROUND_GAME);
             this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
@@ -146,3 +196,4 @@ class Endboss extends MovableObject {
 
 
 }
+

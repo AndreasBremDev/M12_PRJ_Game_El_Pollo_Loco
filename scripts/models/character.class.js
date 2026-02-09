@@ -5,7 +5,6 @@ class Character extends MovableObject {
     width = 100;
     speedX = 8;
     crouching = false;
-    endbossMaxLeft = 1200;
     world;
 
     offset = {
@@ -108,6 +107,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_CROUCHING);
         this.applyGravity();
         this.animate();
+        this.endbossMet = false;
     }
 
     animate() {
@@ -123,28 +123,40 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         let characterMovements = setStoppableInterval(() => {
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.enemies.find(enemy => enemy instanceof Endboss).x + this.width && this.world.cameraInterpolationCompleted) {
-                this.moveRight();
-                this.otherDirection = false;
+            if (this.world.endboss.x - this.x < 600 && !this.endbossMet) {
+                this.endbossMet = true;
+                console.log('endbossMet = ', this.endbossMet);
+
             }
-            if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
-                this.moveLeft();
-                this.otherDirection = true;
+            if (!this.endbossMet) {
+                if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x + this.width && this.world.cameraInterpolationCompleted) {
+                    this.moveCharacterRight();
+                }
+                if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
+                    this.moveCharacterLeft();
+                }
+            } else if (this.endbossMet) {
+                if (this.world.keyboard.RIGHT && (this.x < this.world.endboss.x || this.x < this.world.endboss.x - this.world.endboss.width + 4)) {
+                    this.moveCharacterRight();
+                }
+                if (this.world.keyboard.LEFT && this.x > this.world.level.character_endboss_left_end_x) {
+                    this.moveCharacterLeft();
+                }
             }
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump(30);
                 this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
-            if (this.world.endboss.x - this.x < 600 && !this.world.endboss.hadFirstContact) {
-                this.sounds.pause(this.sounds.BACKGROUND_GAME);
-                this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
-                this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK);
-                this.world.endboss.hadFirstContact = true;
-            } else {
-                this.sounds.pause(this.sounds.BACKGROUND_ENDBOSS, 'music');
-                this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
-            }
+            // if (this.world.endboss.x - this.x < 600 && !this.world.endboss.hadFirstContact) {
+            //     this.sounds.pause(this.sounds.BACKGROUND_GAME);
+            //     this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
+            //     this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK);
+            //     this.world.endboss.hadFirstContact = true;
+            // } else {
+            //     this.sounds.pause(this.sounds.BACKGROUND_ENDBOSS, 'music');
+            //     this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
+            // }
 
         }, 1000 / 60);
 
@@ -167,6 +179,16 @@ class Character extends MovableObject {
                 this.playAnimation(this.IMAGES_IDLE);
             }
         }, 1000 / 25);
+    }
+
+    moveCharacterLeft() {
+        this.moveLeft();
+        this.otherDirection = true;
+    }
+
+    moveCharacterRight() {
+        this.moveRight();
+        this.otherDirection = false;
     }
 
     animationDeadAndEndGame() {

@@ -138,7 +138,8 @@ function checkAndPlaySounds(htmlDiv, elementToControl) {
     }
 }
 
-function muteUnmute(htmlDiv, elementToControl) {
+function muteUnmute(htmlDiv, elementToControl, ev) {
+    eventBlurAndStopPropagation(ev);
     getVolumeFromLocalStorage();
     toggleVolumeMuteBoolean(elementToControl);
     toggleMuteIcons(htmlDiv, elementToControl);
@@ -151,6 +152,11 @@ function muteUnmute(htmlDiv, elementToControl) {
         }
     }
     setVolumeToLocalStorage();
+}
+
+function eventBlurAndStopPropagation(ev) {
+    ev.currentTarget.blur();
+    ev.stopPropagation();
 }
 
 function setVolumeInHTML(htmlDiv, elementToControl) {

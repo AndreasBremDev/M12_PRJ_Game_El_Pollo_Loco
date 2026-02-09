@@ -29,7 +29,7 @@ function initLevel() {
             // new Chicken(1200, sounds),
             // new ChickenSmall(1300, sounds),
 
-            new Endboss(1800, sounds)
+            new Endboss(720 * 2, sounds)
         ],
         [
             new Cloud()

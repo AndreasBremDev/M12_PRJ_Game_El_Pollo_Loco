@@ -153,7 +153,6 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
-        // mo.drawFrame(this.ctx); // hitboxes only needed for debugging 
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }

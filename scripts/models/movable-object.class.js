@@ -64,19 +64,25 @@ class MovableObject extends DrawableObject {
     }
 
     hit() {
-        if (this.isCurrentlyHurt) { return;
+        if (this.isCurrentlyHurt) {
+            return;
         } else {
             if (this.health <= 100 && this.health > 20) {
-                this.health -= 20;
-                this.isCurrentlyHurt = true
-                this.lastHit = new Date().getTime();
-                this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_HURT) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
-                (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
+                this.applyDamage();
             } else if (this.health <= 20) {
                 this instanceof Character ? this.sounds.playOnce(this.sounds.CHARACTER_DEAD) : this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
                 this.health = 0;
             }
         }
+    }
+
+    applyDamage() {
+        this.health -= 20;
+        this.isCurrentlyHurt = true;
+        this.lastHit = new Date().getTime();
+        this.playHitSound();
+        this.characterPushBack();
+        this.endbossSetHurtAnimationPhase()
     }
 
     isHurt() {
@@ -87,10 +93,29 @@ class MovableObject extends DrawableObject {
             }
             return timePassed < 1000;
         } else if (this instanceof Endboss) {
-            if (timePassed > 100) { // set to 3000 (100 for testing only)
+            if (timePassed > 1500) { // set to 3000 (100 for testing only)
                 this.isCurrentlyHurt = false;
             }
-            return timePassed < 100;// set to 3000 (100 for testing only)
+            return timePassed < 1500;// set to 3000 (100 for testing only)
+        }
+    }
+
+    playHitSound() {
+        if (this instanceof Character) {
+            this.sounds.playOnce(this.sounds.CHARACTER_HURT)
+        } else {
+            this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
+        }
+    }
+
+    characterPushBack() {
+        (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
+    }
+
+    endbossSetHurtAnimationPhase() {
+        if (this instanceof Endboss) {
+            this.currentPhase = 'hurt';
+            // this.pendingPhase = this.phaseSequence[this.endbossHitCounter] || 'widthdraw';
         }
     }
 
@@ -102,6 +127,36 @@ class MovableObject extends DrawableObject {
         this.speedY = speedY;
     }
 
+
+    moveRight(speedX = this.speedX) {
+        if (this.crouching === true) {
+            this.x += speedX / 2;
+        } else {
+            this.x += speedX;
+        }
+    }
+
+    moveLeft(speedX = this.speedX) {
+        if (this.crouching === true) {
+            this.x -= speedX / 2;
+        } else {
+            this.x -= speedX;
+        }
+    }
+
+    isIdle(time) {
+        let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
+        if (time === 'short') { return timePassed < 7000; }
+        if (time === 'long') {
+            if (timePassed >= 7000) {
+                this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE);
+                return true;
+            } else {
+                this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
+                return false;
+            }
+        }
+    }
     /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////
     playAnimation(images, speed = 4, playOnce = false, loops = 1) {
         if (!this.animationCounter) this.animationCounter = 0;
@@ -147,34 +202,5 @@ class MovableObject extends DrawableObject {
         }
     }
 
-    moveRight() {
-        if (this.crouching === true) {
-            this.x += this.speedX / 2;
-        } else {
-            this.x += this.speedX;
-        }
-    }
-
-    moveLeft() {
-        if (this.crouching === true) {
-            this.x -= this.speedX / 2;
-        } else {
-            this.x -= this.speedX;
-        }
-    }
-
-    isIdle(time) {
-        let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') { return timePassed < 7000; }
-        if (time === 'long') {
-            if (timePassed >= 7000) {
-                this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE);
-                return true;
-            } else {
-                this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
-                return false;
-            }
-        }
-    }
 
 }
