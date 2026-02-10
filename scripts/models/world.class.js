@@ -22,14 +22,14 @@ class World {
     endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
     lastThrowTime = 0;
     attackOneCooldown = 750;
-    attackTwoCooldown = 1500;
+    attackTwoCooldown = 15000;
     lastJumpTime = 0;
     jumpProtectionTime = 300;
     coins;
     coinsCollected = 0;
     bottlesCollected = 0;
     endbossMet = false;
-    endbossMusicActive = false; endbossMet
+    endbossMusicActive = false;
 
     constructor(canvas, keyboard, sounds) {
         this.ctx = canvas.getContext('2d');
@@ -53,6 +53,7 @@ class World {
 
     endWorld() {
         this.gameRunning = false;
+        this.endbossMet = this.endbossMusicActive = false;
         this.level.enemies = [];
         this.throwableObjects = [];
         this.deadEnemies = [];
@@ -67,6 +68,7 @@ class World {
             this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
+            this.cleanupOffscreenEnemies();
             this.checkIsMutedStatus();
         }, 1000 / 60);
     }
@@ -108,7 +110,7 @@ class World {
     }
 
     checkCameraMovement() {
-        if (!this.endbossMet) {
+        // if (!this.endbossMet) {
             if (this.character.otherDirection !== this.lastOtherDirection) {
                 this.camera_offset = this.character.otherDirection ? 300 : 100;
                 this.lastOtherDirection = this.character.otherDirection;
@@ -116,8 +118,8 @@ class World {
             }
             this.camera_target_x = -this.character.x + this.camera_offset;
             !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
-        }
-        else { this.cameraFixValue(100) }
+        // }
+        // else { this.cameraFixValue(100) }
     }
 
     cameraInterpolation() {
@@ -242,6 +244,7 @@ class World {
         }
     }
 
+///////////////////// more than 14 LOC /////////////////////
     checkBottleCollisionAttackOne() {
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             let bottle = this.throwableObjects[i];
@@ -269,6 +272,7 @@ class World {
         }
     }
 
+///////////////////// more than 14 LOC /////////////////////
     handleBottleEnemyCollision(bottle) {
         if (!(bottle instanceof ThrownBottle) || bottle.hasCollided) { return; }
 
@@ -330,6 +334,16 @@ class World {
             let deadEnemy = this.deadEnemies[i];
             if (currentTime - deadEnemy.createdTime > 1000) {
                 this.deadEnemies.splice(i, 1);
+            }
+        }
+    }
+
+    cleanupOffscreenEnemies() {
+        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+            let enemy = this.level.enemies[i];
+            if (enemy instanceof Endboss) { continue; }
+            if (enemy.x < -300) {
+                this.level.enemies.splice(i, 1);
             }
         }
     }

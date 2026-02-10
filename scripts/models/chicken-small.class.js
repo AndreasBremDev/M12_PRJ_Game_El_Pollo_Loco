@@ -21,7 +21,7 @@ class ChickenSmall extends MovableObject {
     constructor(x,sounds) {
         super();
         this.sounds = sounds;
-        this.x = x + Math.random() * 100;
+        this.x = x;
         this.loadImages(this.IMAGES_WALKING);
         this.animate();
         this.speedX = 0.15 + Math.random() * 0.85;
@@ -33,12 +33,21 @@ class ChickenSmall extends MovableObject {
 
     animate() {
         let smallChickenMovements = setStoppableInterval(() => {
-            // this.moveLeft();
+            this.moveLeft();
             this.checkRandomJump();
         }, 1000 / 60);
 
         let smallChickenAnimations = setStoppableInterval(() => {
             this.playAnimation(this.IMAGES_WALKING);
+        }, 100);
+
+        let smallChickenRemoval = setStoppableInterval(() => {
+            if (this.x < -300 - this.width) {
+                clearInterval(smallChickenMovements);
+                clearInterval(smallChickenAnimations);
+                clearInterval(smallChickenRemoval);
+
+            }
         }, 100);
     }
 

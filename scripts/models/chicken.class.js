@@ -11,7 +11,7 @@ class Chicken extends MovableObject {
         './assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
     ];
 
-    offset = { 
+    offset = {
         top: 5,
         left: 5,
         right: 5,
@@ -21,7 +21,7 @@ class Chicken extends MovableObject {
     constructor(x, sounds) {
         super();
         this.sounds = sounds;
-        this.x = x + Math.random() * 320;
+        this.x = x;
         this.loadImages(this.IMAGES_WALKING);
         this.animate();
         this.speedX = 0.10 + Math.random() * 0.4;
@@ -30,11 +30,20 @@ class Chicken extends MovableObject {
 
     animate() {
         let chickenMovements = setStoppableInterval(() => {
-            // this.moveLeft();
+            this.moveLeft();
         }, 1000 / 60);
 
         let chickenAnimations = setStoppableInterval(() => {
             this.playAnimation(this.IMAGES_WALKING);
+        }, 100);
+
+        let chickenRemoval = setStoppableInterval(() => {
+            if (this.x < -300 - this.width) {
+                clearInterval(chickenMovements);
+                clearInterval(chickenAnimations);
+                clearInterval(chickenRemoval);
+
+            }
         }, 100);
     }
 

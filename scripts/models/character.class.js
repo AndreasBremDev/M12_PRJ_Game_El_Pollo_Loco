@@ -132,17 +132,17 @@ class Character extends MovableObject {
                 this.world.activateEndbossMusic();
             }
             if (!this.world.endbossMet) {// instead of endboss_right_end_x
-                if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x + this.width && this.world.cameraInterpolationCompleted) {
+                if (this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x && this.world.cameraInterpolationCompleted) {
                     this.moveCharacterRight();
                 }
                 if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
                     this.moveCharacterLeft();
                 }
             } else if (this.world.endbossMet) {
-                if (this.world.keyboard.RIGHT && (this.x < this.world.endboss.x || this.x < this.world.endboss.x - this.world.endboss.width + 4)) {
+                if (this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x && this.world.cameraInterpolationCompleted) {
                     this.moveCharacterRight();
                 }
-                if (this.world.keyboard.LEFT && this.x > this.world.level.character_endboss_left_end_x) {
+                if (this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x && this.world.cameraInterpolationCompleted) {
                     this.moveCharacterLeft();
                 }
             }

@@ -68,36 +68,34 @@
         <canvas id="canvas" width="720" height="480" class="canvas"></canvas>
 
         <div id="canvasControlMenu" class="control-menu">
-            <button id="btnKeyboardControl" class="epl-btn epl-btn-padding"  onclick="showCanvasKeyboardControls(event)">
+            <button id="btnKeyboardControl" class="epl-btn epl-btn-padding" onclick="showCanvasKeyboardControls(event)">
                 <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px"
                     fill="#FFCB19" class="volume-btn">
                     <path
                         d="M160-200q-33 0-56.5-23.5T80-280v-400q0-33 23.5-56.5T160-760h640q33 0 56.5 23.5T880-680v400q0 33-23.5 56.5T800-200H160Zm0-80h640v-400H160v400Zm160-40h320v-80H320v80ZM200-440h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80ZM200-560h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80Zm120 0h80v-80h-80v80ZM160-280v-400 400Z" />
                 </svg>
             </button>
-            <button class="epl-btn epl-btn-padding" onclick="muteUnmute('canvasControlMenu','effect', event)"><!-- /////////// HIER PASST ETWAS mit BUTTON vs. SVG noch nicht -->
-                <svg  id="effect_off"
-                    xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px"
-                    fill="#FFCB19" class="volume-btn">
+            <button class="epl-btn epl-btn-padding"
+                onclick="muteUnmute('canvasControlMenu','effect', event)"><!-- /////////// HIER PASST ETWAS mit BUTTON vs. SVG noch nicht -->
+                <svg id="effect_off" xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960"
+                    width="32px" fill="#FFCB19" class="volume-btn">
                     <path
                         d="M792-56 671-177q-25 16-53 27.5T560-131v-82q14-5 27.5-10t25.5-12L480-368v208L280-360H120v-240h128L56-792l56-56 736 736-56 56Zm-8-232-58-58q17-31 25.5-65t8.5-70q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 53-14.5 102T784-288ZM650-422l-90-90v-130q47 22 73.5 66t26.5 96q0 15-2.5 29.5T650-422ZM480-592 376-696l104-104v208Zm-80 238v-94l-72-72H200v80h114l86 86Zm-36-130Z" />
                 </svg>
-                <svg id="effect_on"
-                    xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px"
-                    fill="#FFCB19" class="volume-btn" style="display:none;">
+                <svg id="effect_on" xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960"
+                    width="32px" fill="#FFCB19" class="volume-btn" style="display:none;">
                     <path
                         d="M640-440v-80h160v80H640Zm48 280-128-96 48-64 128 96-48 64Zm-80-480-48-64 128-96 48 64-128 96ZM120-360v-240h160l200-200v640L280-360H120Zm280-246-86 86H200v80h114l86 86v-252ZM300-480Z" />
                 </svg>
             </button>
             <button class="epl-btn epl-btn-padding" onclick="muteUnmute('canvasControlMenu','music', event)">
-                <svg id="music_off" xmlns="http://www.w3.org/2000/svg"
-                    height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFCB19" class="volume-btn">
+                <svg id="music_off" xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960"
+                    width="32px" fill="#FFCB19" class="volume-btn">
                     <path
                         d="M792-56 56-792l56-56 736 736-56 56ZM560-514l-80-80v-246h240v160H560v166ZM400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-418v-62l80 80v120q0 66-47 113t-113 47Z" />
                 </svg>
-                <svg id="music_on" xmlns="http://www.w3.org/2000/svg"
-                    height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFCB19" class="volume-btn"
-                    style="display:none;">
+                <svg id="music_on" xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960"
+                    width="32px" fill="#FFCB19" class="volume-btn" style="display:none;">
                     <path
                         d="M400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-418v-422h240v160H560v400q0 66-47 113t-113 47Z" />
                 </svg>
@@ -113,8 +111,9 @@
                         class="control-icon">&#9650;</span>or<span class="control-icon">SPACE</span></p>
                 <p><span class="w100">Crouch</span><span class="control-icon">S</span>or<span
                         class="control-icon">&#9660;</span></p>
-                <p><span class="w200">Throw Attack One</span><span class="control-icon">F</span></p>
-                <p><span class="w200">Throw Attack Two</span><span class="control-icon">R</span></p>
+                <p><span class="w200">Special Attack</span><span class="control-icon">R</span></p>
+                <p><span class="w200">(with timeout)</span></p>
+                <p><span class="w200">Normal Attack</span><span class="control-icon">F</span></p>
             </div>
         </div>
         <div id="canvasTouchOverlay" class="touch-menu">
@@ -167,8 +166,9 @@
                                 class="control-icon">&#9650;</span>or<span class="control-icon">SPACE</span></p>
                         <p><span class="w200">Crouch</span><span class="control-icon">S</span>or<span
                                 class="control-icon">&#9660;</span></p>
-                        <p><span class="w200">Throw Attack One</span><span class="control-icon">F</span></p>
-                        <p><span class="w200">Throw Attack Two</span><span class="control-icon">R</span></p>
+                        <p><span class="w200">Special Attack (with timeout)</span><span class="control-icon">R</span>
+                        </p>
+                        <p><span class="w200">Normal Attack</span><span class="control-icon">F</span></p>
                     </div>
                 </div>
 
@@ -187,9 +187,9 @@
                                     <div id="effectVolumeProgressBar" class="progress-fill"></div>
                                 </div>
                             </div>
-                            <svg onclick="soundControl('overlayMain', 'effect', 0.2, event)" xmlns="http://www.w3.org/2000/svg"
-                                title="volume-effect-up" height="32px" viewBox="0 -960 960 960" width="32px"
-                                fill="#FFCB19" class="volume-btn">
+                            <svg onclick="soundControl('overlayMain', 'effect', 0.2, event)"
+                                xmlns="http://www.w3.org/2000/svg" title="volume-effect-up" height="32px"
+                                viewBox="0 -960 960 960" width="32px" fill="#FFCB19" class="volume-btn">
                                 <path
                                     d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z" />
                             </svg>
@@ -198,9 +198,9 @@
                     <div class="sound-wrapper">
                         <div class="sound-text">Music-sound</div>
                         <div class="volume-control">
-                            <svg onclick="soundControl('overlayMain', 'music', -0.2, event)" xmlns="http://www.w3.org/2000/svg"
-                                title="volume-music-down" height="32px" viewBox="0 -960 960 960" width="32px"
-                                fill="#FFCB19" class="volume-btn">
+                            <svg onclick="soundControl('overlayMain', 'music', -0.2, event)"
+                                xmlns="http://www.w3.org/2000/svg" title="volume-music-down" height="32px"
+                                viewBox="0 -960 960 960" width="32px" fill="#FFCB19" class="volume-btn">
                                 <path
                                     d="M200-360v-240h160l200-200v640L360-360H200Zm440 40v-322q45 21 72.5 65t27.5 97q0 53-27.5 96T640-320ZM480-606l-86 86H280v80h114l86 86v-252ZM380-480Z" />
                             </svg>
@@ -209,9 +209,9 @@
                                     <div id="musicVolumeProgressBar" class="progress-fill"></div>
                                 </div>
                             </div>
-                            <svg onclick="soundControl('overlayMain', 'music', 0.2, event)" xmlns="http://www.w3.org/2000/svg"
-                                title="volume-music-up" height="32px" viewBox="0 -960 960 960" width="32px"
-                                fill="#FFCB19" class="volume-btn">
+                            <svg onclick="soundControl('overlayMain', 'music', 0.2, event)"
+                                xmlns="http://www.w3.org/2000/svg" title="volume-music-up" height="32px"
+                                viewBox="0 -960 960 960" width="32px" fill="#FFCB19" class="volume-btn">
                                 <path
                                     d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z" />
                             </svg>

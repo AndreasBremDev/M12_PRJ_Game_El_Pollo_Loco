@@ -8,57 +8,18 @@ const progressMusicFill = document.getElementById('volumeMusicProgress');
 let controlOverlay = document.getElementById('canvasControl');
 let initialSoundsDone = false;
 let showCanvasControlsIsActive = false;
-let preloadCompleted = 0;
-
-// const preLoadImages = [
-//     './assets/img/5_background/layers/air.png',
-//     './assets/img/5_background/layers/3_third_layer/1.png',
-//     './assets/img/5_background/layers/3_third_layer/2.png',
-//     './assets/img/5_background/layers/2_second_layer/1.png',
-//     './assets/img/5_background/layers/2_second_layer/2.png',
-//     './assets/img/5_background/layers/1_first_layer/1.png',
-//     './assets/img/5_background/layers/1_first_layer/2.png',
-//     './assets/img/2_character_pepe/2_walk/W-21.png',
-//     './assets/img/2_character_pepe/2_walk/W-22.png',
-//     './assets/img/2_character_pepe/2_walk/W-23.png',
-//     './assets/img/2_character_pepe/2_walk/W-24.png',
-//     './assets/img/2_character_pepe/2_walk/W-25.png',
-//     './assets/img/2_character_pepe/2_walk/W-26.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-1.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-3.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-2.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-4.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-5.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-6.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-7.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-8.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-9.png',
-//     './assets/img/2_character_pepe/1_idle/idle/I-10.png',
-//     './assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
-//     './assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
-//     './assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
-//     './assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
-//     './assets/img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
-//     './assets/img/3_enemies_chicken/chicken_small/1_walk/3_w.png',
-//     './assets/img/8_coin/coin_1.png',
-//     './assets/img/8_coin/coin_2.png',
-//     './assets/img/6_salsa_bottle/1_salsa_bottle_on_ground.png',
-//     './assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png',
-//     './assets/img/5_background/layers/4_clouds/1.png',
-//     'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
-//     'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/green/0.png',
-//     'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/green/0.png'
-// ]
-
+let loadingSpinnerDone = false;
 
 function playGame() {
-    showMenuTab('loadingSpinner');
-    setTimeout(() => {
+    if(!loadingSpinnerDone) {
+        showMenuTab('loadingSpinner');
+        setTimeout(() => {}, 3000);
+        loadingSpinnerDone = true;
+    }
         startGame();
         toggleHtmlElementDisplay('canvasWrapper', 'block');
         toggleHtmlElementDisplay('overlayMain', 'none');
         diplayAccordingMuteUnmuteVolumeIcons('canvasControlMenu', ['effect', 'music']);
-    }, 4000);
 }
 
 function showMenuTab(tabName, background = menuBg) {
@@ -280,41 +241,3 @@ function showCanvasKeyboardControls(ev) {
 document.querySelectorAll('.touch-menu button').forEach(btn => {
     btn.addEventListener('contextmenu', event => event.preventDefault());
 });
-
-// function preloadCriticalAssets(threshold = preLoadImages.length - 1, onProgress = () => { }) {
-//     preloadCompleted = 0;
-//     let total = preLoadImages.length;
-//     let loadersArray = preLoadImages.map(src => {
-//         const img = new Image();
-//         const promise = img.decode()
-//             .catch(() => null)
-//             .finally(() => {
-//                 preloadCompleted++;
-//                 onProgress(preloadCompleted, total);
-//             });
-//         img.src = src;
-//         return promise;
-//     });
-//     return Promise.all(loadersArray).then(() => preloadCompleted >= threshold);
-// }
-
-// function updateSpinner() {
-//     let start = performance.now();
-//     let spinnerShown = false;
-//     preloadCriticalAssets(preLoadImages.length, (done, total) => {
-//         if (!spinnerShown) console.log('show spinner');
-//         console.log('progress', done, '/', total);
-//         if (!spinnerShown) {
-//                 showMenuTab('loadingSpinner');
-//             spinnerShown = true;
-//         }
-//         const percent = Math.round((done / total) * 100);
-//         // updateSpinnerUI(percent);
-//     }).then(() => {
-//         let end = performance.now();
-//         console.log('preload time: ', end - start, 'ms');
-        
-//         console.log('preload finished → playGame');
-//         playGame();
-//     });
-// }

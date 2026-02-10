@@ -67,7 +67,6 @@ class Endboss extends MovableObject {
         this.endbossHitCounter = 0;
         this.currentPhase = 'alert';
         this.phaseStarted = false;
-        this.backToStartX = 720 * 2;
     }
 
     animate() {
@@ -146,8 +145,8 @@ class Endboss extends MovableObject {
         }
         this.playAnimation(this.IMAGES_WALK, 8);
         this.moveRight(5);
-        if (this.x >= this.backToStartX) {
-            this.x = this.backToStartX;
+        if (this.x >= this.world.level.endboss_right_end_x) {
+            this.x = this.world.level.endboss_right_end_x;
             if (this.endbossHitCounter === 3) { this.switchPhase('attackThree'); }
             else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
             else { this.switchPhase('alert') }

@@ -17,19 +17,30 @@ function initLevel() {
     level1 = new Level(
         [
             new Chicken(400, sounds),
-            new Chicken(400, sounds),
-            new Chicken(400, sounds),
+            new Chicken(450, sounds),
+            new Chicken(480, sounds),
             new ChickenSmall(600, sounds),
-            new Chicken(800, sounds),
-            new Chicken(800, sounds),
-            new Chicken(800, sounds),
+            new Chicken(700, sounds),
+            new Chicken(760, sounds),
+            new Chicken(850, sounds),
             new ChickenSmall(900, sounds),
+            new Chicken(1100, sounds),
             new Chicken(1200, sounds),
-            new Chicken(1200, sounds),
-            new Chicken(1200, sounds),
-            new ChickenSmall(1300, sounds),
+            new Chicken(1250, sounds),
+            new ChickenSmall(1380, sounds),
+            new Chicken(1450, sounds),
+            new ChickenSmall(1480, sounds),
+            new ChickenSmall(1580, sounds),
+            new ChickenSmall(1640, sounds),
+            new Chicken(1850, sounds),
+            new ChickenSmall(1950, sounds),
+            new Chicken(1980, sounds),
+            new ChickenSmall(2090, sounds),
+            new Chicken(2150, sounds),
+            new ChickenSmall(2160, sounds),
+            new Chicken(2200, sounds),
 
-            new Endboss(720 * 2, sounds)
+            new Endboss(720 * 4, sounds)
         ],
         [
             new Cloud()
@@ -65,6 +76,13 @@ function initLevel() {
             new Bottles(920, 350, sounds),
             new Bottles(1020, 350, sounds),
             new Bottles(1120, 350, sounds),
+
+            new Bottles(2900, 350, sounds),
+            new Bottles(2950, 350, sounds),
+            new Bottles(3000, 350, sounds),
+
+            new Bottles(3400, 350, sounds),
+            new Bottles(3500, 350, sounds),
         ]
     );
 }
