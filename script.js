@@ -141,7 +141,11 @@ function checkAndPlaySounds(htmlDiv, elementToControl) {
     } else if (htmlDiv === 'overlayMain') {
         window.sounds.playOnce(window.sounds.BACKGROUND_GAME, elementToControl);
     } else if (htmlDiv === 'canvasControlMenu') {
+        if (typeof world !== 'undefined' && world && world.endbossMusicActive) {
+            window.sounds.playLoop(window.sounds.BACKGROUND_ENDBOSS, elementToControl);
+        } else {
         window.sounds.playLoop(window.sounds.BACKGROUND_GAME, elementToControl);
+        }
     }
 }
 

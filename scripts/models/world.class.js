@@ -70,6 +70,8 @@ class World {
             this.cleanupDeadEnemies();
             this.cleanupOffscreenEnemies();
             this.checkIsMutedStatus();
+            this.checkIfEndbossMet();
+            this.activateEndbossMusic();
         }, 1000 / 60);
     }
 
@@ -110,7 +112,6 @@ class World {
     }
 
     checkCameraMovement() {
-        // if (!this.endbossMet) {
             if (this.character.otherDirection !== this.lastOtherDirection) {
                 this.camera_offset = this.character.otherDirection ? 300 : 100;
                 this.lastOtherDirection = this.character.otherDirection;
@@ -118,8 +119,6 @@ class World {
             }
             this.camera_target_x = -this.character.x + this.camera_offset;
             !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
-        // }
-        // else { this.cameraFixValue(100) }
     }
 
     cameraInterpolation() {
@@ -148,12 +147,24 @@ class World {
         this.sounds.applyMuteState('effect')
     }
 
+    checkIfEndbossMet() {
+        if (!this.endbossMet && this.character.x > this.endboss.x - 600) {
+            this.endbossMet = true;
+            this.endbossMusicActive = true;
+        }
+    }
+
     activateEndbossMusic() {
-        if (this.endbossMusicActive) return;
-        this.endbossMusicActive = true;
-        this.sounds.pause(this.sounds.BACKGROUND_GAME);
-        this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
-        this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK, 'effect');
+        if (!this.endbossMusicActive) return;
+        if (this.sounds.volumeIsMuted.music) {
+            return;
+        } else {
+            this.endbossMusicActive = false;
+            this.sounds.pause(this.sounds.BACKGROUND_GAME, 'music');
+            this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
+        }
+        if (this.sounds.volumeIsMuted.effect){
+            this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK, 'effect');}
     }
 
     addObjectsToMap(objects) {
@@ -167,7 +178,6 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
-        // mo.drawFrame(this.ctx); // not needed in final version, only for debugging hitboxes
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
@@ -248,10 +258,8 @@ class World {
     checkBottleCollisionAttackOne() {
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             let bottle = this.throwableObjects[i];
-
             if (bottle instanceof ThrownBottle) {
                 this.handleBottleEnemyCollision(bottle);
-
                 if (bottle.attackType === 'two') {
                     let traveledDistance = Math.abs(bottle.x - bottle.startX);
                     let maxDistance = bottle.maxTravelDistance || 500;
@@ -262,7 +270,6 @@ class World {
                     if (bottle.y >= 380) { bottle.hasCollided = true; }
                     else if (Math.abs(bottle.x - this.character.x) > 720) { bottle.hasCollided = true; }
                 }
-
                 if (bottle.hasCollided) {
                     this.turnThrownBottleToSplashBottle(bottle, i);
                 }
@@ -347,5 +354,4 @@ class World {
             }
         }
     }
-
 }
