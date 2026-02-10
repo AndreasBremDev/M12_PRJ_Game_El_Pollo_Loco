@@ -93,10 +93,10 @@ class MovableObject extends DrawableObject {
             }
             return timePassed < 1000;
         } else if (this instanceof Endboss) {
-            if (timePassed > 1500) { // check if set to 3000 is better then 1500?
+            if (timePassed > 2000) {
                 this.isCurrentlyHurt = false;
             }
-            return timePassed < 1500;// check if set to 3000 is better then 1500?
+            return timePassed < 2000;
         }
     }
 
@@ -110,7 +110,7 @@ class MovableObject extends DrawableObject {
 
     characterPushBack() {
         if ((this.world.character.x >= 0 && this.world.character.x <= 0 + 200) || 
-        (this.world.character.x >= this.world.level.endboss_left_end_x && this.world.character.x <= this.world.level.endboss_left_end_x + 200)) { return; }
+        (this.world.character.x >= this.world.level.endboss_left_end_x - 8 && this.world.character.x <= this.world.level.endboss_left_end_x + 200)) { return; }
         else {
             (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
         }
