@@ -71,32 +71,8 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-
-        // hadFirstContact... Sequenz.0 ???
-        // ENDBOSS-Battle in x-Grenze von x = bis xy = x +720px ?   -------------DONE-------------
-        // character, nach hadFirstContact: moveLeft() bis x = 1200 ?
-        // Endboss, maximal bis x = ? oder bis character.x + character.width >= endboss.x
-
-        // SEQUENZ.0: (endbossHitCounter == 0)  -------------DONE-------------
-        // animation: alert (sonst nichts)      -------------DONE-------------
-
-        // SEQUENZ.1: (endbossHitCounter = 1) wenn hit() 1.Mal, dann:   -------------DONE-------------
-        // hurt() - animation(hurt) - kriterium (bis wohin) erledigt    -------------DONE-------------
-        // dann - moveLeft() langsam - animation(WALK)                  -------------DONE-------------
-
-        // Zwischen-Sequenz - Zurückziehen
-
-        // SEQUENZ.2: wenn hit() [endbossHitCounter = 2] 1.Mal, dann:           -------------DONE-------------
-        // [endbossHitCounter]++, hurt()                                        -------------DONE-------------
-        // moveLeft() schneller - animation(ATTACK) - kriterium (wie oben)      -------------DONE-------------
-
-        // SEQUENZ.3: wenn [endbossHitCounter = 3], dann: tbd. (evtl. neue animation, evtl. neue attacke etc.)
-        // 
-
-
         let endbossAnimations = setStoppableInterval(() => {
             if (this.health < 20 || this.currentPhase === 'dead') {
-                this.currentPhase = 'dead';
                 this.animationDeadAndEndGame();
                 return;
             }
@@ -106,60 +82,56 @@ class Endboss extends MovableObject {
             }
             else if (this.currentPhase === 'hurt') {
                 this.playAnimation(this.IMAGES_HURT, 6);
-                if (!this.isHurt()) {
-                    this.endbossHitCounter++;
-                    if (this.endbossHitCounter >= 5 || this.health < 20) {
-                        this.switchPhase('dead');
-                    }
-                    else if (this.endbossHitCounter === 1) { this.switchPhase('attackOne'); }
-                    else if (this.endbossHitCounter === 2) { this.switchPhase('attackTwo'); }
-                    else if (this.endbossHitCounter === 3) { this.switchPhase('attackThree'); }
-                    else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
-                    else { this.switchPhase('attackOne'); }
-                }
+                this.actionsWhenHurtIsOver();
             }
             else if (this.currentPhase === 'attackOne') {
                 this.playAnimation(this.IMAGES_WALK, 8);
                 this.moveLeft(3);
-                if (this.x < this.world.level.endboss_left_end_x) {
-                    this.switchPhase('alert');
-                    setTimeout(() => {
-                        this.switchPhase('withdraw');
-                    }, 500);
-                }
+                if (this.isHurt()) this.switchPhase('hurt');
+                this.actionWhenAtEndbossLeftPosition();
             }
             else if (this.currentPhase === 'attackTwo') {
                 this.playAnimation(this.IMAGES_ATTACK, 8);
                 this.moveLeft(7);
-                if (this.x < this.world.level.endboss_left_end_x) {
-                    this.switchPhase('alert');
-                    setTimeout(() => {
-                        this.switchPhase('withdraw');
-                    }, 500);
-                }
+                if (this.isHurt()) this.switchPhase('hurt');
+                this.actionWhenAtEndbossLeftPosition();
             }
-
             else if (this.currentPhase === 'attackThree') {
                 if (!this.isAboveGround()) {
                     this.jump(25);
-                    // this.phaseStarted = true;
                 }
                 this.playAnimation(this.IMAGES_ATTACK, 8);
                 this.moveLeft(7);
-                if (this.x < this.world.level.endboss_left_end_x) {
-                    this.switchPhase('alert');
-                    setTimeout(() => {
-                        this.switchPhase('withdraw');
-                    }, 500);
-                }
-
+                if (this.isHurt()) this.switchPhase('hurt');
+                this.actionWhenAtEndbossLeftPosition();
             }
-
             else if (this.currentPhase === 'withdraw') {
                 this.handleWithdrawPhase();
             }
-
         }, 1000 / 60);
+    }
+
+    actionsWhenHurtIsOver() {
+        if (!this.isHurt()) {
+            this.endbossHitCounter++;
+            if (this.endbossHitCounter >= 5 || this.health < 20) {
+                this.switchPhase('dead');
+            }
+            else if (this.endbossHitCounter === 1) { this.switchPhase('attackOne'); }
+            else if (this.endbossHitCounter === 2) { this.switchPhase('attackTwo'); }
+            else if (this.endbossHitCounter === 3) { this.switchPhase('attackThree'); }
+            else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
+            else { this.switchPhase('attackOne'); }
+        }
+    }
+
+    actionWhenAtEndbossLeftPosition() {
+        if (this.x < this.world.level.endboss_left_end_x) {
+            this.switchPhase('alert');
+            setTimeout(() => {
+                this.switchPhase('withdraw');
+            }, 500);
+        }
     }
 
     switchPhase(newPhase) {
@@ -182,31 +154,18 @@ class Endboss extends MovableObject {
         }
     }
 
-
-    // checkIfCharacterWithin(distance) {       /// currently NOT in USE ///
-    //     return this.world.character.x + distance >= this.x;
-    // }
-
     animationDeadAndEndGame() {
+        this.currentPhase = 'dead';
         if (!this.animationCompleted) {
             this.playAnimation(this.IMAGES_DEAD, 12, true, 3);
         } else {
             this.stopRepeatableSounds();
             setTimeout(() => {
                 endGame();
-                this.sounds.playOnce(this.sounds.ENDGAME_WIN_2, 'music');
+                this.sounds.playOnce(this.sounds.ENDGAME_WIN, 'effect');
                 showMenuTab('win');
             }, 250);
         }
-    }
-
-    stopRepeatableSounds() {
-        this.sounds.stop(this.sounds.BACKGROUND_GAME);
-        this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
-        this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
-        this.sounds.stop(this.sounds.CHARACTER_WALK);
-        this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
-
     }
 
 

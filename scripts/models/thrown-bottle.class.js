@@ -14,13 +14,17 @@ class ThrownBottle extends ThrowableObject {
         'assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/4_bottle_squeeze4.png'
     ];
 
-    constructor(x, y, attackType = 'one') {
+    constructor(x, y, attackType = 'one', direction = 'right') {
         super(x, y);
+        this.otherDirection = direction === 'left';
         if (attackType == 'one') {this.loadImage('./assets/img/6_salsa_bottle/salsa_bottle.png');}
         if (attackType == 'two') {this.loadImage('./assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png');}
         this.loadImages(this.IMAGES_ROTATE);
         this.loadImages(this.IMAGES_SQUEEZE);
         this.attackType = attackType;
+        this.startX = x;
+        this.maxTravelDistance = 500;
+        this.enemiesHit = new Set();
         this.hasCollided = false;
         this.animate();
     }

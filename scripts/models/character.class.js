@@ -107,7 +107,6 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_CROUCHING);
         this.applyGravity();
         this.animate();
-        this.endbossMet = false;
     }
 
     animate() {
@@ -120,20 +119,26 @@ class Character extends MovableObject {
             } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
                 this.sounds.playLoop(this.sounds.CHARACTER_CROUCHING);
             }
+            if (this.isDead()) {
+                this.sounds.stop(this.sounds.CHARACTER_WALK);
+                this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
+                return;
+            }
         }, 1000 / 60);
 
         let characterMovements = setStoppableInterval(() => {
-            if (this.world.endboss.x - this.x < 600 && !this.endbossMet) {
-                this.endbossMet = true;
+            if (this.world.endboss.x - this.x < 600 && !this.world.endbossMet) {
+                this.world.endbossMet = true;
+                this.world.activateEndbossMusic();
             }
-            if (!this.endbossMet) {
+            if (!this.world.endbossMet) {// instead of endboss_right_end_x
                 if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x + this.width && this.world.cameraInterpolationCompleted) {
                     this.moveCharacterRight();
                 }
                 if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
                     this.moveCharacterLeft();
                 }
-            } else if (this.endbossMet) {
+            } else if (this.world.endbossMet) {
                 if (this.world.keyboard.RIGHT && (this.x < this.world.endboss.x || this.x < this.world.endboss.x - this.world.endboss.width + 4)) {
                     this.moveCharacterRight();
                 }
@@ -146,16 +151,6 @@ class Character extends MovableObject {
                 this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
-            // if (this.world.endboss.x - this.x < 600 && !this.world.endboss.hadFirstContact) {
-            //     this.sounds.pause(this.sounds.BACKGROUND_GAME);
-            //     this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
-            //     this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK);
-            //     this.world.endboss.hadFirstContact = true;
-            // } else {
-            //     this.sounds.pause(this.sounds.BACKGROUND_ENDBOSS, 'music');
-            //     this.sounds.playLoop(this.sounds.BACKGROUND_GAME, 'music');
-            // }
-
         }, 1000 / 60);
 
         let characterAnimations = setStoppableInterval(() => {
@@ -195,9 +190,10 @@ class Character extends MovableObject {
         if (!this.animationCompleted) {
             this.playAnimation(this.IMAGES_DEAD, 3, true);
         } else {
+            this.stopRepeatableSounds();
             setTimeout(() => {
                 endGame();
-                this.sounds.playOnce(this.sounds.ENDGAME_LOOSE, 'music');
+                this.sounds.playOnce(this.sounds.ENDGAME_LOOSE, 'effect');
                 showMenuTab('gameover');
             }, 500);
         }
@@ -221,8 +217,8 @@ class Character extends MovableObject {
 
     characterAttack(attackType) {
         this.world.lastThrowTime = new Date().getTime();
-        let bottle = this.checkAttackType(attackType)
-        // this.otherDirection === false ? new ThrownBottle(this.x + 50, this.y + 100, attackType) : new ThrownBottle(this.x, this.y + 100, attackType);
+        let direction = this.otherDirection ? 'left' : 'right';
+        let bottle = this.checkAttackType(attackType, direction);
 
         attackType === 'one' ? this.attackOne(bottle) : this.attackTwo(bottle);
         this.world.throwableObjects.push(bottle);
@@ -230,15 +226,15 @@ class Character extends MovableObject {
         this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
     }
 
-    checkAttackType(attackType) {
+    checkAttackType(attackType, direction) {
         if ((attackType === 'one' || attackType === 'two') && this.otherDirection === false && this.crouching === false) {
-            return new ThrownBottle(this.x + 50, this.y + 100, attackType);
+            return new ThrownBottle(this.x + 50, this.y + 100, attackType, direction);
         } else if ((attackType === 'one' || attackType === 'two') && this.otherDirection === false && this.crouching === true) {
-            return new ThrownBottle(this.x + 50, this.y + 130, attackType);
+            return new ThrownBottle(this.x + 50, this.y + 130, attackType, direction);
         } else if ((attackType === 'one' || attackType === 'two') && this.otherDirection === true && this.crouching === false) {
-            return new ThrownBottle(this.x, this.y + 100, attackType);
+            return new ThrownBottle(this.x, this.y + 100, attackType, direction);
         } else if ((attackType === 'one' || attackType === 'two') && this.otherDirection === true && this.crouching === true) {
-            return new ThrownBottle(this.x, this.y + 130, attackType);
+            return new ThrownBottle(this.x, this.y + 130, attackType, direction);
         }
     }
 

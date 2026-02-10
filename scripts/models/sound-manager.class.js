@@ -13,8 +13,7 @@ class Sounds {
 
         this.BACKGROUND_GAME = new Audio('./assets/audio/background_game.m4a');
         this.BACKGROUND_ENDBOSS = new Audio('./assets/audio/background_endboss.m4a');
-        this.ENDGAME_WIN_1 = new Audio('./assets/audio/screen_WIN_tadaa_1.m4a');
-        this.ENDGAME_WIN_2 = new Audio('./assets/audio/screen_WIN_win-2.m4a');
+        this.ENDGAME_WIN = new Audio('./assets/audio/screen_WIN_win-2.m4a');
         this.ENDGAME_LOOSE = new Audio('./assets/audio/screen_LOOSE_4s.m4a');
 
         this.BOTTLE_SPLASH = new Audio('./assets/audio/bottle_splash_2.m4a');
@@ -48,11 +47,8 @@ class Sounds {
         this.musicArray = [
             this.BACKGROUND_GAME,
             this.BACKGROUND_ENDBOSS,
-            this.ENDGAME_WIN_1,
-            this.ENDGAME_WIN_2,
-            this.ENDGAME_LOOSE
         ];
-
+        
         this.effectArray = [
             this.BOTTLE_SPLASH,
             this.BOTTLE_SQUEEZE,
@@ -74,7 +70,10 @@ class Sounds {
             this.CHICKEN_SMALL_DEAD,
             this.COLLECT_BOTTLE,
             this.COLLECT_COIN,
-            this.MENU_CLICK
+            this.MENU_CLICK,
+            this.ENDGAME_WIN_1,
+            this.ENDGAME_WIN,
+            this.ENDGAME_LOOSE
         ];
     }
 

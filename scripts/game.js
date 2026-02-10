@@ -4,7 +4,7 @@ let keyboard = new Keyboard();
 
 function startGame() {
     initLevel();
-    keyboard.lastKeyPressedTime = new Date().getTime();
+    keyboard.lastKeyPressedTime = Date.now();
     world = new World(canvas, keyboard, window.sounds)
     addKeyboardListeners();
     addTouchListeners();
@@ -50,8 +50,6 @@ function removeTouchListeners() {
     unattachTouchHandler('btnAttOne', handleAttackOneTouchStart, handleAttackOneTouchEnd);
     unattachTouchHandler('btnAttTwo', handleAttackTwoTouchStart, handleAttackTwoTouchEnd);
 }
-
-
 
 function handleKeyDown(e) {
     if (e.key === 'ArrowUp' || e.code === 'KeyW') {

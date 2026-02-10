@@ -290,6 +290,61 @@ canvas {
     align-items: center;
 }
 
+#loadingSpinner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+    min-height: 100%;
+}
+
+#loadingSpinner>div {
+    height: 280px;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: contain;
+    animation: pepeWalking 0.96s steps(1) infinite;
+}
+
+@keyframes pepeWalking {
+
+    0%,
+    15.99% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-21.png');
+    }
+
+    16%,
+    31.99% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-22.png');
+    }
+
+    32%,
+    47.99% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-23.png');
+    }
+
+    48%,
+    63.99% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-24.png');
+    }
+
+    64%,
+    79.99% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-25.png');
+    }
+
+    80%,
+    99.99% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-26.png');
+    }
+
+    100% {
+        background-image: url('./assets/img/2_character_pepe/2_walk/W-21.png');
+    }
+}
+
 .sound-wrapper {
     display: flex;
 }
@@ -625,7 +680,6 @@ canvas {
 
     .epl-btn-padding {
         padding: 8px 8px;
-
     }
 
     .story {

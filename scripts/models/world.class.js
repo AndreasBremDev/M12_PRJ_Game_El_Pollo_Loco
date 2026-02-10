@@ -28,6 +28,8 @@ class World {
     coins;
     coinsCollected = 0;
     bottlesCollected = 0;
+    endbossMet = false;
+    endbossMusicActive = false; endbossMet
 
     constructor(canvas, keyboard, sounds) {
         this.ctx = canvas.getContext('2d');
@@ -65,7 +67,6 @@ class World {
             this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
             this.cleanupDeadEnemies();
-            this.checkCharacterEndbossDistance();
             this.checkIsMutedStatus();
         }, 1000 / 60);
     }
@@ -107,15 +108,16 @@ class World {
     }
 
     checkCameraMovement() {
-        if (!this.character.endbossMet){
-        if (this.character.otherDirection !== this.lastOtherDirection) {
-            this.camera_offset = this.character.otherDirection ? 300 : 100;
-            this.lastOtherDirection = this.character.otherDirection;
-            this.cameraInterpolationCompleted = false;
+        if (!this.endbossMet) {
+            if (this.character.otherDirection !== this.lastOtherDirection) {
+                this.camera_offset = this.character.otherDirection ? 300 : 100;
+                this.lastOtherDirection = this.character.otherDirection;
+                this.cameraInterpolationCompleted = false;
+            }
+            this.camera_target_x = -this.character.x + this.camera_offset;
+            !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
         }
-        this.camera_target_x = -this.character.x + this.camera_offset;
-        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);}
-        else {this.cameraFixValue(100)}
+        else { this.cameraFixValue(100) }
     }
 
     cameraInterpolation() {
@@ -144,6 +146,14 @@ class World {
         this.sounds.applyMuteState('effect')
     }
 
+    activateEndbossMusic() {
+        if (this.endbossMusicActive) return;
+        this.endbossMusicActive = true;
+        this.sounds.pause(this.sounds.BACKGROUND_GAME);
+        this.sounds.playLoop(this.sounds.BACKGROUND_ENDBOSS, 'music');
+        this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_ATTACK, 'effect');
+    }
+
     addObjectsToMap(objects) {
         objects.forEach(o => {
             this.addToMap(o);
@@ -155,6 +165,7 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
+        // mo.drawFrame(this.ctx); // not needed in final version, only for debugging hitboxes
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
@@ -234,37 +245,59 @@ class World {
     checkBottleCollisionAttackOne() {
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             let bottle = this.throwableObjects[i];
-            this.handleBottleEnemyCollision(bottle);
-            if (bottle instanceof ThrownBottle && !bottle.hasCollided) {
-                if (bottle.y >= 380) { bottle.hasCollided = true }
-                else if (Math.abs(bottle.x - this.character.x) > 720) { bottle.hasCollided = true }
-            }
-            if (bottle instanceof ThrownBottle && bottle.hasCollided) {
-                this.turnThrownBottleToSplashBottle(bottle, i);
-            }
-            else if (bottle instanceof SplashBottle && bottle.animationComplete) {
+
+            if (bottle instanceof ThrownBottle) {
+                this.handleBottleEnemyCollision(bottle);
+
+                if (bottle.attackType === 'two') {
+                    let traveledDistance = Math.abs(bottle.x - bottle.startX);
+                    let maxDistance = bottle.maxTravelDistance || 500;
+                    if (traveledDistance >= maxDistance) {
+                        bottle.hasCollided = true;
+                    }
+                } else if (!bottle.hasCollided) {
+                    if (bottle.y >= 380) { bottle.hasCollided = true; }
+                    else if (Math.abs(bottle.x - this.character.x) > 720) { bottle.hasCollided = true; }
+                }
+
+                if (bottle.hasCollided) {
+                    this.turnThrownBottleToSplashBottle(bottle, i);
+                }
+            } else if (bottle instanceof SplashBottle && bottle.animationComplete) {
                 this.throwableObjects.splice(i, 1);
             }
         }
     }
 
     handleBottleEnemyCollision(bottle) {
+        if (!(bottle instanceof ThrownBottle) || bottle.hasCollided) { return; }
+
+        let pierces = bottle.attackType === 'two';
+        if (!bottle.enemiesHit) {
+            bottle.enemiesHit = new Set();
+        }
         for (let j = this.level.enemies.length - 1; j >= 0; j--) {
             let enemy = this.level.enemies[j];
-            if (this.criteriaBottleEnemyCollision(enemy, bottle, Chicken) || this.criteriaBottleEnemyCollision(enemy, bottle, ChickenSmall)) {
-                bottle.hasCollided = true;
+            if (!bottle.isColliding(enemy)) { continue; }
+
+            if (enemy instanceof Chicken || enemy instanceof ChickenSmall) {
                 this.killChicken(j);
-            } else if (this.criteriaBottleEnemyCollision(enemy, bottle, Endboss)) {
-                bottle.hasCollided = true;
+                if (!pierces) {
+                    bottle.hasCollided = true;
+                    break;
+                }
+            } else if (enemy instanceof Endboss) {
+                if (pierces && bottle.enemiesHit.has(enemy)) { continue; }
                 enemy.hit();
                 this.statusBarEndbossHealth.setPercentage(enemy.health);
-
+                if (pierces) {
+                    bottle.enemiesHit.add(enemy);
+                } else {
+                    bottle.hasCollided = true;
+                    break;
+                }
             }
         }
-    }
-
-    criteriaBottleEnemyCollision(enemy, bottle, enemyType) {
-        return bottle instanceof ThrownBottle && !bottle.hasCollided && bottle.isColliding(enemy) && enemy instanceof enemyType;
     }
 
     turnThrownBottleToSplashBottle(bottle, i) {
@@ -300,14 +333,5 @@ class World {
             }
         }
     }
-
-    checkCharacterEndbossDistance() {
-        if (this.endboss.x - this.character.x < 600) {
-            this.endboss.hadFirstContact = true;
-        }
-    }
-
-
-
 
 }

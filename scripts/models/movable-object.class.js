@@ -93,10 +93,10 @@ class MovableObject extends DrawableObject {
             }
             return timePassed < 1000;
         } else if (this instanceof Endboss) {
-            if (timePassed > 1500) { // set to 3000 (100 for testing only)
+            if (timePassed > 1500) { // check if set to 3000 is better then 1500?
                 this.isCurrentlyHurt = false;
             }
-            return timePassed < 1500;// set to 3000 (100 for testing only)
+            return timePassed < 1500;// check if set to 3000 is better then 1500?
         }
     }
 
@@ -115,7 +115,6 @@ class MovableObject extends DrawableObject {
     endbossSetHurtAnimationPhase() {
         if (this instanceof Endboss) {
             this.currentPhase = 'hurt';
-            // this.pendingPhase = this.phaseSequence[this.endbossHitCounter] || 'widthdraw';
         }
     }
 
@@ -146,9 +145,9 @@ class MovableObject extends DrawableObject {
 
     isIdle(time) {
         let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') { return timePassed < 7000; }
+        if (time === 'short') { return timePassed < 12000; }
         if (time === 'long') {
-            if (timePassed >= 7000) {
+            if (timePassed >= 12000) {
                 this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE);
                 return true;
             } else {
@@ -157,33 +156,34 @@ class MovableObject extends DrawableObject {
             }
         }
     }
-    /////////////////////////// CLEAN CODE, 14 lines !!! ///////////////////////////
+
     playAnimation(images, speed = 4, playOnce = false, loops = 1) {
         if (!this.animationCounter) this.animationCounter = 0;
-
-        // EINFACHE LÖSUNG: Immer bei 0 starten + Flags zurücksetzen
         if (!this.animationStarted || this.currentImage >= images.length * loops) {
-            this.currentImage = 0;
-            this.animationStarted = true;
-            this.animationCompleted = false; // ← RESET für neue Animation
+            this.setAnimationStartSettings_playAnimation();
         }
-
         this.animationCounter++;
         if (this.animationCounter >= speed) {
-            this.animationCounter = 0;
-            let i = this.currentImage % images.length;
-            let path = images[i];
-            this.img = this.imageCache[path];
-
-            // Erhöhe currentImage ZUERST
+            this.setCurrentImage_playAnimation(images);
             this.currentImage++;
-
-            // DANN prüfe, ob Animation komplett ist (mit Durchläufen)
             if (playOnce === true && this.currentImage >= images.length * loops) {
                 this.animationCompleted = true;
                 return this.animationCompleted;
             }
         }
+    }
+
+    setCurrentImage_playAnimation(images) {
+        this.animationCounter = 0;
+        let i = this.currentImage % images.length;
+        let path = images[i];
+        this.img = this.imageCache[path];
+    }
+
+    setAnimationStartSettings_playAnimation() {
+        this.currentImage = 0;
+        this.animationStarted = true;
+        this.animationCompleted = false;
     }
 
     playAttackTwoAnimation(images, speed = 2) {
@@ -202,5 +202,12 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    stopRepeatableSounds() {
+        this.sounds.stop(this.sounds.BACKGROUND_GAME);
+        this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
+        this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
+        this.sounds.stop(this.sounds.CHARACTER_WALK);
+        this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
+    }
 
 }
