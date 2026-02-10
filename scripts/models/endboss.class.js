@@ -98,7 +98,7 @@ class Endboss extends MovableObject {
             if (this.health < 20 || this.currentPhase === 'dead') {
                 this.currentPhase = 'dead';
                 this.animationDeadAndEndGame();
-                return; 
+                return;
             }
             if (this.currentPhase === 'alert') {
                 this.playAnimation(this.IMAGES_ALERT, 16);
@@ -108,68 +108,77 @@ class Endboss extends MovableObject {
                 this.playAnimation(this.IMAGES_HURT, 6);
                 if (!this.isHurt()) {
                     this.endbossHitCounter++;
-                    console.log('endbossHitCounter: ', this.endbossHitCounter);
                     if (this.endbossHitCounter >= 5 || this.health < 20) {
                         this.switchPhase('dead');
                     }
                     else if (this.endbossHitCounter === 1) { this.switchPhase('attackOne'); }
                     else if (this.endbossHitCounter === 2) { this.switchPhase('attackTwo'); }
-                    else if (this.endbossHitCounter === 3) { this.switchPhase('attackTwo'); }
+                    else if (this.endbossHitCounter === 3) { this.switchPhase('attackThree'); }
                     else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
-
                     else { this.switchPhase('attackOne'); }
-
                 }
             }
             else if (this.currentPhase === 'attackOne') {
                 this.playAnimation(this.IMAGES_WALK, 8);
                 this.moveLeft(3);
                 if (this.x < this.world.level.endboss_left_end_x) {
-                    this.switchPhase('withdraw');
+                    this.switchPhase('alert');
+                    setTimeout(() => {
+                        this.switchPhase('withdraw');
+                    }, 500);
                 }
             }
             else if (this.currentPhase === 'attackTwo') {
                 this.playAnimation(this.IMAGES_ATTACK, 8);
-                this.moveLeft(8);
+                this.moveLeft(7);
                 if (this.x < this.world.level.endboss_left_end_x) {
-                    this.switchPhase('withdraw');
+                    this.switchPhase('alert');
+                    setTimeout(() => {
+                        this.switchPhase('withdraw');
+                    }, 500);
                 }
+            }
+
+            else if (this.currentPhase === 'attackThree') {
+                if (!this.isAboveGround()) {
+                    this.jump(25);
+                    // this.phaseStarted = true;
+                }
+                this.playAnimation(this.IMAGES_ATTACK, 8);
+                this.moveLeft(7);
+                if (this.x < this.world.level.endboss_left_end_x) {
+                    this.switchPhase('alert');
+                    setTimeout(() => {
+                        this.switchPhase('withdraw');
+                    }, 500);
+                }
+
             }
 
             else if (this.currentPhase === 'withdraw') {
                 this.handleWithdrawPhase();
             }
 
-            // else if (this.currentPhase === 'dead' && this.health < 20) {
-            //     this.animationDeadAndEndGame();
-
-
-            // }
         }, 1000 / 60);
     }
 
     switchPhase(newPhase) {
         this.currentPhase = newPhase;
         this.phaseStarted = false;
-        console.log('switched to phase: ', newPhase);
     }
 
     handleWithdrawPhase() {
-        // EINMALIGER AUFRUF (Started Flag)
-        if (!this.phaseStarted) {
-            this.jump(25); // Springt nur 1x am Anfang der Phase
+        if (!this.phaseStarted && !(this.endbossHitCounter === 3)) {
+            this.jump(25);
             this.phaseStarted = true;
-            console.log("Withdrawal started with a jump!");
         }
-
-        // DAUERHAFTE AKTION
-        this.playAnimation(this.IMAGES_ATTACK, 8);
+        this.playAnimation(this.IMAGES_WALK, 8);
         this.moveRight(5);
-
-        // BEENDEN-KRITERIUM
         if (this.x >= this.backToStartX) {
-            this.x = this.backToStartX; // Fixieren auf Startpunkt
-            this.switchPhase('alert'); // Wieder in Wartestellung oder nächste Attacke
+            this.x = this.backToStartX;
+            if (this.endbossHitCounter === 3) { this.switchPhase('attackThree'); }
+            else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
+            else { this.switchPhase('alert') }
         }
     }
 
@@ -182,8 +191,7 @@ class Endboss extends MovableObject {
         if (!this.animationCompleted) {
             this.playAnimation(this.IMAGES_DEAD, 12, true, 3);
         } else {
-            this.sounds.stop(this.sounds.BACKGROUND_GAME);
-            this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
+            this.stopRepeatableSounds();
             setTimeout(() => {
                 endGame();
                 this.sounds.playOnce(this.sounds.ENDGAME_WIN_2, 'music');
@@ -192,6 +200,14 @@ class Endboss extends MovableObject {
         }
     }
 
+    stopRepeatableSounds() {
+        this.sounds.stop(this.sounds.BACKGROUND_GAME);
+        this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
+        this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
+        this.sounds.stop(this.sounds.CHARACTER_WALK);
+        this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
+
+    }
 
 
 

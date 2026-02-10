@@ -107,13 +107,15 @@ class World {
     }
 
     checkCameraMovement() {
+        if (!this.character.endbossMet){
         if (this.character.otherDirection !== this.lastOtherDirection) {
             this.camera_offset = this.character.otherDirection ? 300 : 100;
             this.lastOtherDirection = this.character.otherDirection;
             this.cameraInterpolationCompleted = false;
         }
         this.camera_target_x = -this.character.x + this.camera_offset;
-        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
+        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);}
+        else {this.cameraFixValue(100)}
     }
 
     cameraInterpolation() {

@@ -125,8 +125,6 @@ class Character extends MovableObject {
         let characterMovements = setStoppableInterval(() => {
             if (this.world.endboss.x - this.x < 600 && !this.endbossMet) {
                 this.endbossMet = true;
-                console.log('endbossMet = ', this.endbossMet);
-
             }
             if (!this.endbossMet) {
                 if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x + this.width && this.world.cameraInterpolationCompleted) {
