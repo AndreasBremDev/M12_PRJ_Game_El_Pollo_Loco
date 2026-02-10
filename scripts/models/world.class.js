@@ -342,7 +342,7 @@ class World {
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             let enemy = this.level.enemies[i];
             if (enemy instanceof Endboss) { continue; }
-            if (enemy.x < -300) {
+            if (enemy.x < -300 && enemy.x < this.character.x) {
                 this.level.enemies.splice(i, 1);
             }
         }
