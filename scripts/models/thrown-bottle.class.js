@@ -1,17 +1,17 @@
 class ThrownBottle extends ThrowableObject {
 
     IMAGES_ROTATE = [
-        'assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
-        'assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
-        'assets/img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
-        'assets/img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png'
+        './assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
+        './assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+        './assets/img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
+        './assets/img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png'
     ];
 
     IMAGES_SQUEEZE = [
-        'assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
-        'assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/1_bottle_squeeze1.png',
-        'assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/3_bottle_squeeze3.png',
-        'assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/4_bottle_squeeze4.png'
+        './assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+        './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/1_bottle_squeeze1.png',
+        './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/3_bottle_squeeze3.png',
+        './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/4_bottle_squeeze4.png'
     ];
 
     constructor(x, y, attackType = 'one', direction = 'right') {

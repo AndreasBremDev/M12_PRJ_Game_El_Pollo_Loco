@@ -8,18 +8,119 @@ const progressMusicFill = document.getElementById('volumeMusicProgress');
 let controlOverlay = document.getElementById('canvasControl');
 let initialSoundsDone = false;
 let showCanvasControlsIsActive = false;
-let loadingSpinnerDone = false;
+let loadingSpinnerImagesTotal = 0;
+let loadingSpinnerImagesLoaded = 0;
+let IMAGE_CACHE = {};
+let isPreloadFinished = false;
+const preloadImages = [
+    './assets/img/5_background/layers/air.png',
+    './assets/img/5_background/layers/3_third_layer/1.png',
+    './assets/img/5_background/layers/3_third_layer/2.png',
+    './assets/img/5_background/layers/2_second_layer/1.png',
+    './assets/img/5_background/layers/2_second_layer/2.png',
+    './assets/img/5_background/layers/1_first_layer/1.png',
+    './assets/img/5_background/layers/1_first_layer/2.png',
+    './assets/img/2_character_pepe/2_walk/W-21.png',
+    './assets/img/2_character_pepe/2_walk/W-22.png',
+    './assets/img/2_character_pepe/2_walk/W-23.png',
+    './assets/img/2_character_pepe/2_walk/W-24.png',
+    './assets/img/2_character_pepe/2_walk/W-25.png',
+    './assets/img/2_character_pepe/2_walk/W-26.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-1.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-3.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-2.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-4.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-5.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-6.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-7.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-8.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-9.png',
+    './assets/img/2_character_pepe/1_idle/idle/I-10.png',
+    './assets/img/2_character_pepe/3_jump/J-31.png',
+    './assets/img/2_character_pepe/3_jump/J-32.png',
+    './assets/img/2_character_pepe/3_jump/J-33.png',
+    './assets/img/2_character_pepe/3_jump/J-34.png',
+    './assets/img/2_character_pepe/3_jump/J-35.png',
+    './assets/img/2_character_pepe/3_jump/J-36.png',
+    './assets/img/2_character_pepe/3_jump/J-37.png',
+    './assets/img/2_character_pepe/3_jump/J-38.png',
+    './assets/img/2_character_pepe/3_jump/J-39.png',
+    './assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+    './assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+    './assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
+    './assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+    './assets/img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+    './assets/img/3_enemies_chicken/chicken_small/1_walk/3_w.png',
+    './assets/img/8_coin/coin_1.png',
+    './assets/img/8_coin/coin_2.png',
+    './assets/img/6_salsa_bottle/1_salsa_bottle_on_ground.png',
+    './assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png',
+    './assets/img/5_background/layers/4_clouds/1.png',
+    'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
+    'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
+    'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
+    'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/green/0.png',
+    'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/green/20.png',
+    'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/green/40.png',
+    'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/green/0.png',
+    'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/green/20.png',
+    'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/green/40.png',
+    './assets/img/6_salsa_bottle/salsa_bottle.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/1_bottle_squeeze1.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/3_bottle_squeeze3.png',
+    './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/4_bottle_squeeze4.png',
+]
+
+function init() {
+    turnYourPhone();
+    endGame();
+    preloadAllAssets();
+}
 
 function playGame() {
-    if(!loadingSpinnerDone) {
-        showMenuTab('loadingSpinner');
-        setTimeout(() => {}, 3000);
-        loadingSpinnerDone = true;
+    showMenuTab('loadingSpinner');
+    let startTime = new Date().getTime();
+    let checkFinished = setInterval(() => {
+        let currentTime = new Date().getTime();
+        let timePassed = currentTime - startTime;
+        if (isPreloadFinished && timePassed > 2500) {
+            clearInterval(checkFinished);
+            prepareAndStartGame();
+        } else { /* console.log('waiting for preload to finish...'); */ }
+    }, 100);
+}
+
+function prepareAndStartGame() {
+    toggleHtmlElementDisplay('canvasWrapper', 'block');
+    toggleHtmlElementDisplay('overlayMain', 'none');
+    diplayAccordingMuteUnmuteVolumeIcons('canvasControlMenu', ['effect', 'music']);
+    startGame();
+}
+
+async function preloadAllAssets() {
+    loadingSpinnerImagesTotal = preloadImages.length;
+    preloadImages.forEach((path) => {
+        const img = new Image();
+        img.src = path;
+        img.onload = () => {
+            IMAGE_CACHE[path] = img;
+            loadingSpinnerImages();
+        }
+        img.onerror = () => loadingSpinnerImages(); // Auch bei Fehler weitermachen
+    });
+}
+
+function loadingSpinnerImages() {
+    loadingSpinnerImagesLoaded++;
+    if (loadingSpinnerImagesLoaded >= loadingSpinnerImagesTotal && loadingSpinnerImagesTotal > 0) {
+        isPreloadFinished = true;
     }
-        startGame();
-        toggleHtmlElementDisplay('canvasWrapper', 'block');
-        toggleHtmlElementDisplay('overlayMain', 'none');
-        diplayAccordingMuteUnmuteVolumeIcons('canvasControlMenu', ['effect', 'music']);
 }
 
 function showMenuTab(tabName, background = menuBg) {
@@ -34,6 +135,19 @@ function showMenuTab(tabName, background = menuBg) {
     (tabName === 'sounds' && !initialSoundsDone) ? setDefaultSoundOptions() : setSoundsAccordingToLocalStorage();
     (tabName === 'rotateYourPhone' || tabName === 'loadingSpinner') && rotateYourPhoneTopAndBottomSection();
     window.sounds.stop(window.sounds.BACKGROUND_GAME);
+}
+
+document.addEventListener('DOMContentLoaded', turnYourPhone);
+window.addEventListener('resize', turnYourPhone);
+
+function turnYourPhone() {
+    const isPortrait = window.innerWidth < window.innerHeight;
+    const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480;
+    if (isTooSmall && isPortrait) {
+        showMenuTab('rotateYourPhone');
+    } else {
+        showMenuTab('title', titleBg)
+    }
 }
 
 function setDefaultSoundOptions() {
@@ -83,8 +197,6 @@ function rotateYourPhoneTopAndBottomSection() {
     topSection.innerHTML = '';
     bottomSection.innerHTML = '';
 }
-
-// #region sound management
 
 function setVolumeToLocalStorage() {
     localStorage.setItem('volumeIsMuted', JSON.stringify(window.sounds.volumeIsMuted));
@@ -139,12 +251,16 @@ function checkAndPlaySounds(htmlDiv, elementToControl) {
     if (elementToControl === 'effect') {
         window.sounds.playOnce(window.sounds.MENU_CLICK, elementToControl)
     } else if (htmlDiv === 'overlayMain') {
+        window.sounds.playLoop(window.sounds.BACKGROUND_ENDBOSS, elementToControl);
+        window.sounds.stop(window.sounds.BACKGROUND_ENDBOSS);
         window.sounds.playOnce(window.sounds.BACKGROUND_GAME, elementToControl);
     } else if (htmlDiv === 'canvasControlMenu') {
-        if (typeof world !== 'undefined' && world && world.endbossMusicActive) {
+        console.log('world !== undefined: ', world !== 'undefined', 'world: ', world, 'world.endbossMet: ', world.endbossMet);
+
+        if (typeof world !== 'undefined' && world && world.endbossMet) {
             window.sounds.playLoop(window.sounds.BACKGROUND_ENDBOSS, elementToControl);
         } else {
-        window.sounds.playLoop(window.sounds.BACKGROUND_GAME, elementToControl);
+            window.sounds.playLoop(window.sounds.BACKGROUND_GAME, elementToControl);
         }
     }
 }
@@ -211,22 +327,6 @@ function setvolumeIsMuted(elementToControl, bool) {
 
 function diplayAccordingMuteUnmuteVolumeIcons(htmlDiv, array) {
     toggleMuteIcons(htmlDiv, array);
-}
-
-// #endregion
-
-document.addEventListener('DOMContentLoaded', turnYourPhone);
-window.addEventListener('resize', turnYourPhone);
-
-function turnYourPhone() {
-    const isPortrait = window.innerWidth < window.innerHeight;
-    const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480;
-
-    if (isTooSmall && isPortrait) {
-        showMenuTab('rotateYourPhone');
-    } else {
-        showMenuTab('title', titleBg)
-    }
 }
 
 function showCanvasKeyboardControls(ev) {

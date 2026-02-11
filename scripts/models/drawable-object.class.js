@@ -8,15 +8,23 @@ class DrawableObject {
 
 
     loadImage(path) {
-        this.img = new Image();
-        this.img.src = path;
+        if (IMAGE_CACHE[path]) {
+            this.img = IMAGE_CACHE[path];
+        } else {
+            this.img = new Image();
+            this.img.src = path;
+        }
     }
 
     loadImages(arr) {
         arr.forEach((path) => {
-            let img = new Image();
-            img.src = path;
-            this.imageCache[path] = img;
+            if (IMAGE_CACHE[path]) {
+                this.imageCache[path] = IMAGE_CACHE[path];
+            } else {
+                let img = new Image();
+                img.src = path;
+                this.imageCache[path] = img;
+            }
         });
     }
 
@@ -28,12 +36,12 @@ class DrawableObject {
 
     /*  */
     drawFrame(ctx) {
-        if (this instanceof Character || 
-            this instanceof Chicken || 
-            this instanceof Endboss || 
-            this instanceof ThrowableObject || 
-            this instanceof Coins || 
-            this instanceof Bottles || 
+        if (this instanceof Character ||
+            this instanceof Chicken ||
+            this instanceof Endboss ||
+            this instanceof ThrowableObject ||
+            this instanceof Coins ||
+            this instanceof Bottles ||
             this instanceof ChickenDead ||
             this instanceof ChickenSmall) {
             ctx.beginPath();

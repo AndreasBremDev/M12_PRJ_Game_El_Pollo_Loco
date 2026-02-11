@@ -112,13 +112,15 @@ class Sounds {
             audioObj.pause();
             return;
         }
-
         if (audioObj.readyState >= 4) {
-            audioObj.play();
+            // audioObj.play();
+            audioObj.play().catch(err => console.warn('play blocked', err, audioObj));
         } else {
             this.detachCanPlayHandler(audioObj);
+            let handler = () => audioObj.play().catch(err => console.warn('play blocked', err, audioObj));
             this.canPlayHandlers.set(audioObj, () => audioObj.play());
-            audioObj.addEventListener('canplaythrough', this.canPlayHandlers.get(audioObj), { once: true });
+            audioObj.addEventListener('canplaythrough', handler /* this.canPlayHandlers.get(audioObj) */, { once: true });
+            audioObj.load();
         }
     }
 
