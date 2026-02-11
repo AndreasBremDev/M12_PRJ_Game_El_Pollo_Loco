@@ -64,6 +64,14 @@ canvas {
     display: none;
 }
 
+.no-selection {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 #btnUp,
 #btnDown,
 #btnAttTwo {
