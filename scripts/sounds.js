@@ -101,7 +101,7 @@ function checkAndPlaySounds(htmlDiv, elementToControl) {
         window.sounds.playOnce(window.sounds.MENU_CLICK, elementToControl);
     } else if (htmlDiv === 'overlayMain') {
         window.sounds.playLoop(window.sounds.BACKGROUND_ENDBOSS, elementToControl);
-        window.sounds.stop(window.sounds.BACKGROUND_ENDBOSS);
+        setTimeout(() => {window.sounds.stop(window.sounds.BACKGROUND_ENDBOSS);}, 10);
         window.sounds.playOnce(window.sounds.BACKGROUND_GAME, elementToControl);
     } else if (htmlDiv === 'canvasControlMenu') {
         if (typeof world !== 'undefined' && world && world.endbossMet) {
