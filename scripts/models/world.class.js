@@ -196,6 +196,10 @@ class World {
         if (!this.endbossMet && this.character.x > this.endboss.x - 600) {
             this.endbossMet = true;
             this.endbossMusicActive = true;
+            if (!this.endboss.currentPhase) {
+                this.endboss.switchPhase('alert');
+                this.endboss.waitingStartTime = new Date().getTime();
+            }
         }
     }
 

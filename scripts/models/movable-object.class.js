@@ -206,15 +206,17 @@ class MovableObject extends DrawableObject {
      * @returns {boolean} True if idle condition met.
      */
     isIdle(time) {
-        let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
-        if (time === 'short') { return timePassed < 12000; }
-        if (time === 'long') {
-            if (timePassed >= 12000) {
-                this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE);
-                return true;
-            } else {
-                this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
-                return false;
+        if (this.world.gameRunning) {
+            let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
+            if (time === 'short') { return timePassed < 12000; }
+            if (time === 'long') {
+                if (timePassed >= 12000) {
+                    this.sounds.playLoop(this.sounds.CHARACTER_LONG_IDLE);
+                    return true;
+                } else {
+                    this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
+                    return false;
+                }
             }
         }
     }
