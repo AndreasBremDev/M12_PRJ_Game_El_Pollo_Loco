@@ -1,3 +1,7 @@
+/**
+ * Represents a normal chicken enemy.
+ * @extends MovableObject
+ */
 class Chicken extends MovableObject {
 
     width = 50;
@@ -18,6 +22,11 @@ class Chicken extends MovableObject {
         bottom: 5
     };
 
+    /**
+     * Creates a new Chicken object.
+     * @param {number} x - The x-coordinate where the chicken is placed.
+     * @param {SoundManager} sounds - The sound manager instance.
+     */
     constructor(x, sounds) {
         super();
         this.sounds = sounds;
@@ -28,6 +37,9 @@ class Chicken extends MovableObject {
 
     }
 
+    /**
+     * Sets intervals for chicken movements, animations and removal.
+     */
     animate() {
         let chickenMovements = setStoppableInterval(() => {
             this.moveLeft();
@@ -42,7 +54,6 @@ class Chicken extends MovableObject {
                 clearInterval(chickenMovements);
                 clearInterval(chickenAnimations);
                 clearInterval(chickenRemoval);
-
             }
         }, 100);
     }

@@ -1,3 +1,6 @@
+/**
+ * Represents the state of keyboard inputs for game control.
+ */
 class Keyboard {
     LEFT = false;
     RIGHT = false;
@@ -7,7 +10,5 @@ class Keyboard {
     R = false;
     lastKeyPressedTime = 0;
 
-    constructor() {
-    }
 
 }

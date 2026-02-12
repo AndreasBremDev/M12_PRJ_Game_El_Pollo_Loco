@@ -1,3 +1,6 @@
+/**
+ * Base class for all objects that can be drawn on the canvas.
+ */
 class DrawableObject {
     img;
     imageCache = [];
@@ -7,6 +10,10 @@ class DrawableObject {
     height = 100;
 
 
+    /**
+     * Loads a single image.
+     * @param {string} path - Path to the image file.
+     */
     loadImage(path) {
         if (IMAGE_CACHE[path]) {
             this.img = IMAGE_CACHE[path];
@@ -16,6 +23,10 @@ class DrawableObject {
         }
     }
 
+    /**
+     * Loads multiple images into the image cache.
+     * @param {string[]} arr - Array of paths to image files.
+     */
     loadImages(arr) {
         arr.forEach((path) => {
             if (IMAGE_CACHE[path]) {
@@ -28,13 +39,21 @@ class DrawableObject {
         });
     }
 
+    /**
+     * Draws the object on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+     */
     draw(ctx) {
         if (this.img && this.img.complete && this.img.naturalWidth > 0) {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }
     }
 
-    /*  */
+    /**
+     * Draws a frame around the object for debugging collision boxes.
+     * only needed for debugging purposes, to be inserted after mo.draw(this.ctx);
+     * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+     */
     drawFrame(ctx) {
         if (this instanceof Character ||
             this instanceof Chicken ||

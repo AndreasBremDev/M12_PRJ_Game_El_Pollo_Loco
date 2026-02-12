@@ -1,3 +1,7 @@
+/**
+ * Represents a thrown bottle projectile.
+ * @extends ThrowableObject
+ */
 class ThrownBottle extends ThrowableObject {
 
     IMAGES_ROTATE = [
@@ -14,6 +18,13 @@ class ThrownBottle extends ThrowableObject {
         './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/4_bottle_squeeze4.png'
     ];
 
+    /**
+     * Creates a new ThrownBottle instance.
+     * @param {number} x - The x-coordinate where the bottle starts.
+     * @param {number} y - The y-coordinate where the bottle starts.
+     * @param {'one'|'two'} [attackType='one'] - The attack type determining behavior.
+     * @param {'left'|'right'} [direction='right'] - The throw direction.
+     */
     constructor(x, y, attackType = 'one', direction = 'right') {
         super(x, y);
         this.otherDirection = direction === 'left';
@@ -29,6 +40,9 @@ class ThrownBottle extends ThrowableObject {
         this.animate();
     }
 
+    /**
+     * Starts the animation loop for the thrown bottle.
+     */
     animate() {
         this.thrownBottleAnimations = setStoppableInterval(() => {
             if (this.attackType === 'one') {

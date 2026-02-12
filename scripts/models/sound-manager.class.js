@@ -1,5 +1,11 @@
+/**
+ * Handles all game audio, including music and sound effects.
+ */
 class Sounds {
 
+    /**
+     * Creates a new Sounds instance and initializes all audio objects.
+     */
     constructor() {
         this.volumeIsMuted = {
             'effect': true,
@@ -77,6 +83,11 @@ class Sounds {
         ];
     }
 
+    /**
+     * Plays an audio object once if not muted.
+     * @param {HTMLAudioElement} audioObj - The audio object to play.
+     * @param {'effect'|'music'} [elementToControl='effect'] - The type of audio content.
+     */
     playOnce(audioObj, elementToControl = 'effect') {
         if (this.volumeIsMuted[elementToControl]) {
             return;
@@ -88,6 +99,11 @@ class Sounds {
         }
     }
 
+    /**
+     * Plays an audio object in a loop if not muted.
+     * @param {HTMLAudioElement} audioObj - The audio object to play.
+     * @param {'effect'|'music'} [elementToControl='effect'] - The type of audio content.
+     */
     playLoop(audioObj, elementToControl = 'effect') {
         if (this.volumeIsMuted[elementToControl] || this.isGameOver) { /// noch nirgends als variable gesetzt
             return;
@@ -98,6 +114,10 @@ class Sounds {
         }
     }
 
+    /**
+     * Pauses an audio object.
+     * @param {HTMLAudioElement} audioObj - The audio object to pause.
+     */
     pause(audioObj) {
         try {
             this.checkReadyStateAndPlay(audioObj, 'pause');
@@ -106,6 +126,11 @@ class Sounds {
         }
     }
 
+    /**
+     * Checks if audio is ready to play or needs to be paused.
+     * @param {HTMLAudioElement} audioObj - The audio object.
+     * @param {'play'|'pause'} [action='play'] - The action to perform.
+     */
     checkReadyStateAndPlay(audioObj, action = 'play') {
         if (action === 'pause') {
             this.detachCanPlayHandler(audioObj);
@@ -124,11 +149,19 @@ class Sounds {
         }
     }
 
+    /**
+     * Applies the current mute state to all audio objects of a specific type.
+     * @param {'effect'|'music'} type - The type of audio content.
+     */
     applyMuteState(type) {
         const targets = type === 'music' ? this.musicArray : this.effectArray;
         targets.forEach(audio => audio && (audio.muted = this.volumeIsMuted[type]));
     }
 
+    /**
+     * Stops an audio object and resets its position.
+     * @param {HTMLAudioElement} audioObj - The audio object to stop.
+     */
     stop(audioObj) {
         this.detachCanPlayHandler(audioObj);
         audioObj.pause();
@@ -136,6 +169,10 @@ class Sounds {
         audioObj.loop = false;
     }
 
+    /**
+     * Removes the canplaythrough event handler for an audio object.
+     * @param {HTMLAudioElement} audioObj - The audio object.
+     */
     detachCanPlayHandler(audioObj) {
         const handler = this.canPlayHandlers.get(audioObj);
         if (handler) {
@@ -144,13 +181,20 @@ class Sounds {
         }
     }
 
+    /**
+     * Mutes an audio object.
+     * @param {HTMLAudioElement} audioObj - The audio object.
+     */
     mute(audioObj) {
         audioObj.muted = true;
     }
 
+    /**
+     * Unmutes an audio object.
+     * @param {HTMLAudioElement} audioObj - The audio object.
+     */
     unmute() {
         audioObj.muted = false;
     }
 
-    // Idee: hintergrundmusik (z.B. wenn Endboss) "spielt ab" trotz/mit mute, sodass bei unmute direkt die entsprechende stelle abgespielt wird
 }

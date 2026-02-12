@@ -1,3 +1,7 @@
+/**
+ * Represents the endboss enemy with multi-phase behavior.
+ * @extends MovableObject
+ */
 class Endboss extends MovableObject {
     y = 160;
     width = 210;
@@ -52,6 +56,11 @@ class Endboss extends MovableObject {
         bottom: 15
     };
 
+    /**
+     * Creates a new Endboss instance.
+     * @param {number} x - The x-coordinate where the endboss starts.
+     * @param {Sounds} sounds - The sound manager instance.
+     */
     constructor(x, sounds) {
         super();
         this.sounds = sounds;
@@ -65,43 +74,41 @@ class Endboss extends MovableObject {
         this.animate();
         this.applyGravity();
         this.endbossHitCounter = 0;
-        this.currentPhase = 'alert';
         this.phaseStarted = false;
+        this.waitingStartTime = 0;
     }
 
+    /**
+     * Runs the main endboss animation and behavior loop.
+     */
     animate() {
         let endbossAnimations = setStoppableInterval(() => {
-            if (this.health < 20 || this.currentPhase === 'dead') {
-                this.animationDeadAndEndGame();
-                return;
-            }
-            if (this.currentPhase === 'alert') {
-                this.playAnimation(this.IMAGES_ALERT, 16);
-                if (this.isHurt()) this.switchPhase('hurt');
-            }
-            else if (this.currentPhase === 'hurt') {
+            this.updateHurtStatus();
+            if (this.health < 20 || this.currentPhase === 'dead') { this.animationDeadAndEndGame(); }
+
+            if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT, 6);
-                this.actionsWhenHurtIsOver();
+            }
+            this.actionsWhenHurtIsOver();
+
+            if (this.currentPhase === 'alert') {
+                if (!this.isHurt()) { this.playAnimation(this.IMAGES_ALERT, 16); }
+                this.checkIfWaitingPeriodIsOver('withdraw');
             }
             else if (this.currentPhase === 'attackOne') {
-                this.playAnimation(this.IMAGES_WALK, 8);
                 this.moveLeft(3);
-                if (this.isHurt()) this.switchPhase('hurt');
+                if (!this.isHurt()) { this.playAnimation(this.IMAGES_WALK, 8); }
                 this.actionWhenAtEndbossLeftPosition();
             }
             else if (this.currentPhase === 'attackTwo') {
-                this.playAnimation(this.IMAGES_ATTACK, 8);
                 this.moveLeft(7);
-                if (this.isHurt()) this.switchPhase('hurt');
+                if (!this.isHurt()) { this.playAnimation(this.IMAGES_ATTACK, 8); }
                 this.actionWhenAtEndbossLeftPosition();
             }
             else if (this.currentPhase === 'attackThree') {
-                if (!this.isAboveGround()) {
-                    this.jump(25);
-                }
-                this.playAnimation(this.IMAGES_ATTACK, 8);
+                if (!this.isAboveGround()) { this.jump(25); }
                 this.moveLeft(7);
-                if (this.isHurt()) this.switchPhase('hurt');
+                if (!this.isHurt()) { this.playAnimation(this.IMAGES_ATTACK, 8); }
                 this.actionWhenAtEndbossLeftPosition();
             }
             else if (this.currentPhase === 'withdraw') {
@@ -110,40 +117,80 @@ class Endboss extends MovableObject {
         }, 1000 / 60);
     }
 
+    /**
+     * Updates the hurt state timer for the endboss.
+     */
+    updateHurtStatus() {
+        let timePassed = new Date().getTime() - this.lastHit;
+        let cooldown = (this instanceof Character) ? this.characterIsHurtTimeOffset : this.endbossIsHurtTimeOffset;
+
+        if (this.isCurrentlyHurt && timePassed > cooldown) {
+            this.isCurrentlyHurt = false;
+        }
+    }
+
+    /**
+     * Handles phase switching after a hurt state ends.
+     */
     actionsWhenHurtIsOver() {
-        if (!this.isHurt()) {
+        if (!this.isHurt() && this.endbossHurtProcessed) {
+            this.endbossHurtProcessed = false;
             this.endbossHitCounter++;
-            if (this.endbossHitCounter >= 5 || this.health < 20) {
-                this.switchPhase('dead');
-            }
+            if (this.endbossHitCounter >= 5 || this.health < 20) {this.switchPhase('dead'); }
             else if (this.endbossHitCounter === 1) { this.switchPhase('attackOne'); }
             else if (this.endbossHitCounter === 2) { this.switchPhase('attackTwo'); }
             else if (this.endbossHitCounter === 3) { this.switchPhase('attackThree'); }
             else if (this.endbossHitCounter === 4) { this.switchPhase('attackTwo'); }
-            else { this.switchPhase('attackOne'); }
+            else { this.switchPhase('attackTwo'); }
         }
     }
 
+    /**
+     * Switches to alert phase after reaching the left boundary.
+     */
     actionWhenAtEndbossLeftPosition() {
         if (this.x < this.world.level.endboss_left_end_x) {
             this.switchPhase('alert');
-            setTimeout(() => {
-                this.switchPhase('withdraw');
-            }, 500);
+            this.waitingStartTime = new Date().getTime();
         }
     }
 
-    switchPhase(newPhase) {
-        this.currentPhase = newPhase;
-        this.phaseStarted = false;
+    /**
+     * Advances to the next phase after a short waiting period.
+     * @param {string} nextPhase - The phase to switch to.
+     */
+    checkIfWaitingPeriodIsOver(nextPhase) {
+        if (this.waitingStartTime && new Date().getTime() - this.waitingStartTime > 250) {
+            this.waitingStartTime = 0;
+            this.switchPhase(nextPhase);
+        }
     }
 
+    /**
+     * Switches the endboss to a new phase and resets animation state.
+     * @param {string} newPhase - The phase to switch to.
+     */
+    switchPhase(newPhase) {
+        if (this.currentPhase === newPhase) return;
+        this.currentPhase = newPhase
+        this.phaseStarted = false;
+        this.animationStarted = false;
+        this.animationCompleted = false;
+        this.currentImage = 0;
+        this.animationCounter = 0;
+    }
+
+    /**
+     * Handles movement and transitions while withdrawing to the right.
+     */
     handleWithdrawPhase() {
-        if (!this.phaseStarted && !(this.endbossHitCounter === 3)) {
-            this.jump(25);
+        if (!this.phaseStarted) {
+            if (this.endbossHitCounter !== 3) {
+                this.jump(25);
+            }
             this.phaseStarted = true;
         }
-        this.playAnimation(this.IMAGES_WALK, 8);
+        if (!this.isHurt()) { this.playAnimation(this.IMAGES_WALK, 8); }
         this.moveRight(5);
         if (this.x >= this.world.level.endboss_right_end_x) {
             this.x = this.world.level.endboss_right_end_x;
@@ -153,21 +200,18 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Plays the death animation and finishes the game.
+     */
     animationDeadAndEndGame() {
         this.currentPhase = 'dead';
         if (!this.animationCompleted) {
             this.playAnimation(this.IMAGES_DEAD, 12, true, 3);
         } else {
-            this.stopRepeatableSounds();
-            setTimeout(() => {
-                endGame();
-                this.sounds.playOnce(this.sounds.ENDGAME_WIN, 'effect');
-                showMenuTab('win');
-            }, 250);
+            finishGame('win');
         }
+        return;
     }
-
-
 
 }
 

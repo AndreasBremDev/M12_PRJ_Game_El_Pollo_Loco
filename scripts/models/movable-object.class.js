@@ -1,3 +1,7 @@
+/**
+ * Base class for all objects that can move, have health and interact with other objects.
+ * @extends DrawableObject
+ */
 class MovableObject extends DrawableObject {
 
     speedX = 1;
@@ -9,6 +13,9 @@ class MovableObject extends DrawableObject {
     animationCompleted = false;
     isCurrentlyHurt = false;
     isAboveGroundOffset = 20;
+    characterIsHurtTimeOffset = 1000;
+    endbossIsHurtTimeOffset = 2000;
+    endbossHurtProcessed = false;
 
     offset = {
         top: 0,
@@ -17,6 +24,9 @@ class MovableObject extends DrawableObject {
         bottom: 0
     };
 
+    /**
+     * Applies gravity to the object, pulling it down to the ground level.
+     */
     applyGravity() {
         let gravity = setStoppableInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
@@ -29,6 +39,10 @@ class MovableObject extends DrawableObject {
         }, 1000 / 25);
     }
 
+    /**
+     * Checks if the object is above its respective ground level.
+     * @returns {boolean} True if the object is in the air.
+     */
     isAboveGround() {
         if (this instanceof ThrowableObject || this instanceof ChickenDead || this instanceof ChickenSmall || this instanceof Chicken) {
             return this.y < 380 - this.isAboveGroundOffset;
@@ -39,6 +53,10 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Resets the object's y-coordinate to its ground level.
+     * @param {MovableObject} mo - The movable object.
+     */
     applyGroundLevel(mo) {
         if (mo instanceof ThrowableObject || mo instanceof ChickenDead || mo instanceof ChickenSmall || mo instanceof Chicken) {
             mo.y = 380;
@@ -49,6 +67,11 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Checks if this object is colliding with another movable object.
+     * @param {MovableObject} mo - The other movable object.
+     * @returns {boolean} True if they are colliding.
+     */
     isColliding(mo) {
         return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
             this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
@@ -56,6 +79,11 @@ class MovableObject extends DrawableObject {
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     }
 
+    /**
+     * Checks if this object is colliding with the top part of another movable object (e.g., jumping on a chicken).
+     * @param {MovableObject} mo - The other movable object.
+     * @returns {boolean} True if colliding with the top.
+     */
     isCollidingTop(mo) {
         return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
             this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
@@ -63,6 +91,9 @@ class MovableObject extends DrawableObject {
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right
     }
 
+    /**
+     * Handles hitting this object, applying damage and playing sounds.
+     */
     hit() {
         if (this.isCurrentlyHurt) {
             return;
@@ -76,30 +107,40 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Applies damage to the object and updates its state.
+     */
     applyDamage() {
         this.health -= 20;
         this.isCurrentlyHurt = true;
         this.lastHit = new Date().getTime();
         this.playHitSound();
         this.characterPushBack();
-        this.endbossSetHurtAnimationPhase()
+        this.endbossHurtProcessed = true;
     }
 
+    /**
+     * Checks if the object is currently in a "hurt" state (invincibility frames).
+     * @returns {boolean} True if hurt.
+     */
     isHurt() {
         let timePassed = new Date().getTime() - this.lastHit;
         if (this instanceof Character) {
-            if (timePassed > 1000) {
+            if (timePassed > this.characterIsHurtTimeOffset) {
                 this.isCurrentlyHurt = false;
             }
-            return timePassed < 1000;
+            return this.isCurrentlyHurt;
         } else if (this instanceof Endboss) {
-            if (timePassed > 2000) {
+            if (timePassed > this.endbossIsHurtTimeOffset) {
                 this.isCurrentlyHurt = false;
             }
-            return timePassed < 2000;
+            return this.isCurrentlyHurt;
         }
     }
 
+    /**
+     * Plays the appropriate hit sound based on the object type.
+     */
     playHitSound() {
         if (this instanceof Character) {
             this.sounds.playOnce(this.sounds.CHARACTER_HURT)
@@ -108,29 +149,37 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Pushes the character back after receiving damage.
+     */
     characterPushBack() {
-        if ((this.world.character.x >= 0 && this.world.character.x <= 0 + 200) || 
-        (this.world.character.x >= this.world.level.endboss_left_end_x - 8 && this.world.character.x <= this.world.level.endboss_left_end_x + 200)) { return; }
+        if ((this.world.character.x >= 0 && this.world.character.x <= 0 + 200) ||
+            (this.world.character.x >= this.world.level.endboss_left_end_x - 8 && this.world.character.x <= this.world.level.endboss_left_end_x + 200)) { return; }
         else {
             (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
         }
     }
 
-    endbossSetHurtAnimationPhase() {
-        if (this instanceof Endboss) {
-            this.currentPhase = 'hurt';
-        }
-    }
-
+    /**
+     * Checks if the object is dead.
+     * @returns {boolean} True if health is below 20.
+     */
     isDead() {
         return this.health < 20;
     }
 
+    /**
+     * Makes the object jump.
+     * @param {number} [speedY=20] - Vertical speed of the jump.
+     */
     jump(speedY = 20) {
         this.speedY = speedY;
     }
 
-
+    /**
+     * Moves the object to the right.
+     * @param {number} [speedX=this.speedX] - Horizontal speed.
+     */
     moveRight(speedX = this.speedX) {
         if (this.crouching === true) {
             this.x += speedX / 2;
@@ -139,6 +188,10 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Moves the object to the left.
+     * @param {number} [speedX=this.speedX] - Horizontal speed.
+     */
     moveLeft(speedX = this.speedX) {
         if (this.crouching === true) {
             this.x -= speedX / 2;
@@ -147,6 +200,11 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Checks if the character is idle.
+     * @param {'short'|'long'} time - The idle category.
+     * @returns {boolean} True if idle condition met.
+     */
     isIdle(time) {
         let timePassed = new Date().getTime() - this.world.keyboard.lastKeyPressedTime;
         if (time === 'short') { return timePassed < 12000; }
@@ -161,6 +219,14 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Plays an animation using an array of images.
+     * @param {string[]} images - Array of image paths.
+     * @param {number} [speed=4] - Speed of the animation (higher is slower).
+     * @param {boolean} [playOnce=false] - Whether the animation should stop after one cycle.
+     * @param {number} [loops=1] - Number of cycles to play.
+     * @returns {boolean|undefined} Returns true if playOnce is set and animation completed.
+     */
     playAnimation(images, speed = 4, playOnce = false, loops = 1) {
         if (!this.animationCounter) this.animationCounter = 0;
         if (!this.animationStarted || this.currentImage >= images.length * loops) {
@@ -177,6 +243,19 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Resets animation flags and counter for a new animation cycle.
+     */
+    setAnimationStartSettings_playAnimation() {
+        this.currentImage = 0;
+        this.animationStarted = true;
+        this.animationCompleted = false;
+    }
+
+    /**
+     * Sets the current image for the animation.
+     * @param {string[]} images - Array of image paths.
+     */
     setCurrentImage_playAnimation(images) {
         this.animationCounter = 0;
         let i = this.currentImage % images.length;
@@ -184,12 +263,11 @@ class MovableObject extends DrawableObject {
         this.img = this.imageCache[path];
     }
 
-    setAnimationStartSettings_playAnimation() {
-        this.currentImage = 0;
-        this.animationStarted = true;
-        this.animationCompleted = false;
-    }
-
+    /**
+     * Plays a specialized attack animation with variable speed based on frame.
+     * @param {string[]} images - Array of image paths.
+     * @param {number} [speed=2] - Base speed.
+     */
     playAttackTwoAnimation(images, speed = 2) {
         if (!this.animationCounter) this.animationCounter = 0;
         this.animationCounter++;
@@ -204,14 +282,6 @@ class MovableObject extends DrawableObject {
                 this.currentImage++;
             }
         }
-    }
-
-    stopRepeatableSounds() {
-        this.sounds.stop(this.sounds.BACKGROUND_GAME);
-        this.sounds.stop(this.sounds.BACKGROUND_ENDBOSS);
-        this.sounds.stop(this.sounds.CHARACTER_LONG_IDLE);
-        this.sounds.stop(this.sounds.CHARACTER_WALK);
-        this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
     }
 
 }

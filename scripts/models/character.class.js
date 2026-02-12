@@ -1,3 +1,7 @@
+/**
+ * Represents the main playable character in the game.
+ * @extends MovableObject
+ */
 class Character extends MovableObject {
     x = 100;
     y = 235;
@@ -91,7 +95,10 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/5_crouch/C-1.png'
     ];
 
-
+    /**
+     * Initializes the character and loads all required images.
+     * @param {SoundManager} sounds - The sound manager instance.
+     */
     constructor(sounds) {
         super();
         this.sounds = sounds;
@@ -109,6 +116,9 @@ class Character extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Sets intervals for character movements, animations and sounds.
+     */
     animate() {
 
         let characterSounds = setStoppableInterval(() => {
@@ -127,78 +137,95 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         let characterMovements = setStoppableInterval(() => {
+            this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
             if (this.world.endboss.x - this.x < 600 && !this.world.endbossMet) {
                 this.world.endbossMet = true;
                 this.world.activateEndbossMusic();
             }
-            if (!this.world.endbossMet) {// instead of endboss_right_end_x
-                if (this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x && this.world.cameraInterpolationCompleted) {
-                    this.moveCharacterRight();
-                }
-                if (this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted) {
+            if (!this.world.endbossMet) {
+                if (this.canMoveRightBetweenZeroXAndEndbossRightEndX()) this.moveCharacterRight();
+                if (this.canMoveLeftUntilZeroX()) {
                     this.moveCharacterLeft();
                 }
             } else if (this.world.endbossMet) {
-                if (this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x && this.world.cameraInterpolationCompleted) {
-                    this.moveCharacterRight();
-                }
-                if (this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x && this.world.cameraInterpolationCompleted) {
-                    this.moveCharacterLeft();
-                }
+                if (this.canMoveRightBetweenZeroXAndEndbossRightEndX()) this.moveCharacterRight();
+                if (this.canMoveRightBetweenEndbossLeftEndXAndEndbossRightEndX()) this.moveCharacterLeft();
             }
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump(30);
                 this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
-            this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
         }, 1000 / 60);
 
         let characterAnimations = setStoppableInterval(() => {
-            if (this.isDead()) {
-                this.animationDeadAndEndGame();
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT, 1);
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
-            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
-                this.animationWalkingOrIdle();
-            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
-                this.animationCrouchingOrCrouch();
-            } else if (this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMAGES_CROUCH);
-            } else if (this.isIdle('long')) {
-                this.playAnimation(this.IMAGES_LONG_IDLE);
-            } else if (this.isIdle('short')) {
-                this.playAnimation(this.IMAGES_IDLE);
+            if (this.isDead()) {this.animationDeadAndEndGame();
+            } else if (this.isHurt()) {this.playAnimation(this.IMAGES_HURT, 1);
+            } else if (this.isAboveGround()) {this.playAnimation(this.IMAGES_JUMPING);
+            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {this.animationWalkingOrIdle();
+            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {this.animationCrouchingOrCrouch();
+            } else if (this.world.keyboard.DOWN) {this.playAnimation(this.IMAGES_CROUCH);
+            } else if (this.isIdle('long')) {this.playAnimation(this.IMAGES_LONG_IDLE);
+            } else if (this.isIdle('short')) {this.playAnimation(this.IMAGES_IDLE);
             }
         }, 1000 / 25);
     }
 
+    /**
+     * Checks if the character can move right when the endboss is present.
+     * @returns {boolean}
+     */
+    canMoveRightBetweenEndbossLeftEndXAndEndbossRightEndX() {
+        return this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x && this.world.cameraInterpolationCompleted;
+    }
+
+    /**
+     * Checks if the character can move left.
+     * @returns {boolean}
+     */
+    canMoveLeftUntilZeroX() {
+        return this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted;
+    }
+
+    /**
+     * Checks if the character can move right.
+     * @returns {boolean}
+     */
+    canMoveRightBetweenZeroXAndEndbossRightEndX() {
+        return this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x && this.world.cameraInterpolationCompleted;
+    }
+
+    /**
+     * Moves the character to the left and updates the direction.
+     */
     moveCharacterLeft() {
         this.moveLeft();
         this.otherDirection = true;
     }
 
+    /**
+     * Moves the character to the right and updates the direction.
+     */
     moveCharacterRight() {
         this.moveRight();
         this.otherDirection = false;
     }
 
+    /**
+     * Executes the death animation and triggers the lose screen.
+     */
     animationDeadAndEndGame() {
-        window.removeKeyboardListeners();
-        window.removeTouchListeners();
         if (!this.animationCompleted) {
+            window.removeKeyboardListeners();
+            window.removeTouchListeners();
             this.playAnimation(this.IMAGES_DEAD, 3, true);
         } else {
-            this.stopRepeatableSounds();
-            setTimeout(() => {
-                endGame();
-                this.sounds.playOnce(this.sounds.ENDGAME_LOOSE, 'effect');
-                showMenuTab('gameover');
-            }, 500);
+            finishGame('lose');
         }
     }
 
+    /**
+     * Plays the corect animation for crouching or moving while crouching.
+     */
     animationCrouchingOrCrouch() {
         if (this.world.keyboard.RIGHT && this.world.keyboard.LEFT) {
             this.playAnimation(this.IMAGES_CROUCH);
@@ -207,6 +234,9 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Plays the correct animation for walking or idle.
+     */
     animationWalkingOrIdle() {
         if (this.world.keyboard.RIGHT && this.world.keyboard.LEFT) {
             this.playAnimation(this.IMAGES_IDLE);
@@ -215,6 +245,10 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Handles character attack.
+     * @param {string} attackType - The type of attack.
+     */
     characterAttack(attackType) {
         this.world.lastThrowTime = new Date().getTime();
         let direction = this.otherDirection ? 'left' : 'right';
@@ -226,6 +260,12 @@ class Character extends MovableObject {
         this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
     }
 
+    /**
+     * Creates a new ThrownBottle based on attack type, direction and character state.
+     * @param {string} attackType - The type of attack.
+     * @param {string} direction - The direction of the throw.
+     * @returns {ThrownBottle}
+     */
     checkAttackType(attackType, direction) {
         if ((attackType === 'one' || attackType === 'two') && this.otherDirection === false && this.crouching === false) {
             return new ThrownBottle(this.x + 50, this.y + 100, attackType, direction);
@@ -238,6 +278,10 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Executes the normal attack.
+     * @param {ThrowableObject} throwableObject 
+     */
     attackOne(throwableObject) {
         throwableObject.applyGravity();
         throwableObject.speedY = 20;
@@ -252,6 +296,10 @@ class Character extends MovableObject {
         }, 1000 / 25);
     }
 
+    /**
+     * Executes the special attack.
+     * @param {ThrowableObject} throwableObject 
+     */
     attackTwo(throwableObject) {
         this.otherDirection === false ? throwableObject.speedX = 15 : throwableObject.speedX = -15;
         this.attackTwoInterval = setStoppableInterval(() => {
@@ -264,6 +312,11 @@ class Character extends MovableObject {
         }, 1000 / 25);
     }
 
+    /**
+     * Checks if the attack is on cooldown.
+     * @param {string} attackType 
+     * @returns {boolean}
+     */
     throwCooldown(attackType) {
         let currentTime = new Date().getTime();
         if (attackType === 'one') {
@@ -272,9 +325,5 @@ class Character extends MovableObject {
             return currentTime - this.world.lastThrowTime >= this.world.attackTwoCooldown;
         }
     }
-
-
-
-
 
 }

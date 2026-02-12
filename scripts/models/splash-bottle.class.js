@@ -1,3 +1,7 @@
+/**
+ * Represents the splash animation effect when a bottle breaks.
+ * @extends ThrowableObject
+ */
 class SplashBottle extends ThrowableObject {
 
     IMAGES_SPLASH = [
@@ -9,6 +13,12 @@ class SplashBottle extends ThrowableObject {
         'assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
 
+    /**
+     * Creates a new SplashBottle object.
+     * @param {number} x - The x-coordinate of the splash.
+     * @param {number} y - The y-coordinate of the splash.
+     * @param {SoundManager} sounds - The sound manager instance.
+     */
     constructor(x, y, sounds) {
         super(x, y);
         this.sounds = sounds;
@@ -20,6 +30,9 @@ class SplashBottle extends ThrowableObject {
         this.animate();
     }
 
+    /**
+     * Sets an interval to play the splash animation once.
+     */
     animate() {
         this.bottleSplashAnimation = setStoppableInterval(() => {
             this.playAnimation(this.IMAGES_SPLASH, 4);
@@ -30,6 +43,5 @@ class SplashBottle extends ThrowableObject {
             }
         }, 1000 / 25);
     }
-
 
 }

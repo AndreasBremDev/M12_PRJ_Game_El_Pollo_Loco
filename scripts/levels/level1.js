@@ -1,5 +1,12 @@
+/**
+ * Variable that stores the instance of the first level.
+ * @type {Level}
+ */
 let level1;
 
+/**
+ * Initializes level 1 by creating all objects (enemies, clouds, background, coins, bottles).
+ */
 function initLevel() {
 
     let backgroundObjects = [];
@@ -58,7 +65,20 @@ function initLevel() {
             new Coins(1100, 250, sounds),
             new Coins(1150, 250, sounds),
             new Coins(1100, 200, sounds),
-            new Coins(1150, 200, sounds)
+            new Coins(1150, 200, sounds),
+
+            new Coins(1300, 150, sounds),
+            new Coins(1350, 150, sounds),
+            new Coins(1300, 200, sounds),
+            new Coins(1350, 200, sounds),
+
+            new Coins(250 + 1200, 300, sounds),
+            new Coins(310 + 1200, 210, sounds),
+            new Coins(390 + 1200, 170, sounds),
+            new Coins(490 + 1200, 150, sounds),
+            new Coins(590 + 1200, 170, sounds),
+            new Coins(670 + 1200, 210, sounds),
+            new Coins(730 + 1200, 300, sounds),
 
         ],
         [

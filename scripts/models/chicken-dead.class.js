@@ -1,3 +1,7 @@
+/**
+ * Represents a dead chicken enemy in the game.
+ * @extends MovableObject
+ */
 class ChickenDead extends MovableObject {
 
     width = 50;
@@ -25,6 +29,12 @@ class ChickenDead extends MovableObject {
         bottom: 5
     };
 
+    /**
+     * Creates a new ChickenDead object.
+     * @param {number} x - The x-coordinate where the dead chicken is placed.
+     * @param {number} y - The y-coordinate where the dead chicken is placed.
+     * @param {Object} chickenType - The instance of the chicken that died to determine the sprite.
+     */
     constructor(x, y, chickenType) {
         super();
         this.x = x;

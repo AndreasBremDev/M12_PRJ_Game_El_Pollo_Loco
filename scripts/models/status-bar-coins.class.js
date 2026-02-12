@@ -1,3 +1,7 @@
+/**
+ * Displays the coin collection status bar.
+ * @extends DrawableObject
+ */
 class StatusBarCoins extends DrawableObject {
 
     IMAGES_COINS = [
@@ -11,6 +15,9 @@ class StatusBarCoins extends DrawableObject {
 
     percentage = 0;
 
+    /**
+     * Creates a new StatusBarCoins instance.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES_COINS);
@@ -21,12 +28,20 @@ class StatusBarCoins extends DrawableObject {
         this.height = 60;
     }
 
+    /**
+     * Updates the displayed percentage and image.
+     * @param {number} percentage - The percentage to display.
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let imagePath = this.IMAGES_COINS[this.resolveImageIndex()];
         this.img = this.imageCache[imagePath];
     }
     
+    /**
+     * Resolves the image index based on the current percentage.
+     * @returns {number} The index of the image to use.
+     */
     resolveImageIndex() {
         if (this.percentage >= 100) {
             return 5;

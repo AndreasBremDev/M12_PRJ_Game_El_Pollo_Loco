@@ -1,3 +1,7 @@
+/**
+ * Displays the player health status bar.
+ * @extends DrawableObject
+ */
 class StatusBarHealth extends DrawableObject {
 
     IMAGES_HEARTS = [
@@ -11,6 +15,9 @@ class StatusBarHealth extends DrawableObject {
 
     percentage = 100;
 
+    /**
+     * Creates a new StatusBarHealth instance.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES_HEARTS);
@@ -21,12 +28,20 @@ class StatusBarHealth extends DrawableObject {
         this.height = 60;
     }
 
+    /**
+     * Updates the displayed percentage and image.
+     * @param {number} percentage - The percentage to display.
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let imagePath = this.IMAGES_HEARTS[this.resolveImageIndex()];
         this.img = this.imageCache[imagePath];
     }
     
+    /**
+     * Resolves the image index based on the current percentage.
+     * @returns {number} The index of the image to use.
+     */
     resolveImageIndex() {
         if (this.percentage == 100) {
             return 5;

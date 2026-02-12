@@ -1,3 +1,11 @@
+/**
+ * Represents a small chicken enemy with jumping behavior.
+ * @extends MovableObject
+ */
+/**
+ * Represents a small chicken enemy with jumping behavior.
+ * @extends MovableObject
+ */
 class ChickenSmall extends MovableObject {
 
     width = 50;
@@ -18,7 +26,13 @@ class ChickenSmall extends MovableObject {
         bottom: 5
     };
 
-    constructor(x,sounds) {
+
+    /**
+     * Creates a new ChickenSmall object.
+     * @param {number} x - The x-coordinate where the small chicken is placed.
+     * @param {Sounds} sounds - The sound manager instance.
+     */
+    constructor(x, sounds) {
         super();
         this.sounds = sounds;
         this.x = x;
@@ -31,6 +45,9 @@ class ChickenSmall extends MovableObject {
 
     }
 
+    /**
+     * Sets intervals for small chicken movements, animations and removal.
+     */
     animate() {
         let smallChickenMovements = setStoppableInterval(() => {
             this.moveLeft();
@@ -51,10 +68,17 @@ class ChickenSmall extends MovableObject {
         }, 100);
     }
 
+    /**
+     * Generates a random delay for the next jump.
+     * @returns {number} Delay in milliseconds.
+     */
     getRandomJumpDelay() {
         return 1000 + Math.random() * 1000;
     }
-
+    
+    /**
+     * Checks if it's time for the small chicken to jump based on a random delay.
+     */
     checkRandomJump() {
         let currentTime = new Date().getTime();
 

@@ -1,3 +1,7 @@
+/**
+ * Represents a collectible bottle object in the game.
+ * @extends MovableObject
+ */
 class Bottles extends MovableObject {
 
     width = 80;
@@ -17,6 +21,11 @@ class Bottles extends MovableObject {
         bottom: 8
     };
 
+    /**
+     * Creates a new Bottles object.
+     * @param {number} x - The x-coordinate where the bottle is placed.
+     * @param {number} y - The y-coordinate where the bottle is placed.
+     */
     constructor(x, y) {
         super();
         this.loadImage('./assets/img/6_salsa_bottle/1_salsa_bottle_on_ground.png');

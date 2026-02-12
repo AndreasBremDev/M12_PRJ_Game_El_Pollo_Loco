@@ -6,7 +6,6 @@ let bottomSection = document.getElementById('bottomSection');
 const progressEffectFill = document.getElementById('volumeEffectProgress');
 const progressMusicFill = document.getElementById('volumeMusicProgress');
 let controlOverlay = document.getElementById('canvasControl');
-let initialSoundsDone = false;
 let showCanvasControlsIsActive = false;
 let loadingSpinnerImagesTotal = 0;
 let loadingSpinnerImagesLoaded = 0;
@@ -77,14 +76,21 @@ const preloadImages = [
     './assets/img/6_salsa_bottle/bottle_rotation/bottle_squeeze/4_bottle_squeeze4.png',
 ]
 
+/**
+ * Initializes the application and starts asset preloading.
+ */
 function init() {
     turnYourPhone();
     endGame();
     preloadAllAssets();
 }
 
-function playGame() {
-    showMenuTab('loadingSpinner');
+/**
+ * Starts the game after assets are preloaded.
+ * @param {boolean} [loadingSpinner=true] - Whether to show the loading spinner.
+ */
+function playGame(loadingSpinner = true) {
+    loadingSpinner && showMenuTab('loadingSpinner');
     let startTime = new Date().getTime();
     let checkFinished = setInterval(() => {
         let currentTime = new Date().getTime();
@@ -96,6 +102,17 @@ function playGame() {
     }, 100);
 }
 
+/**
+ * Restarts the game without showing the loading spinner.
+ */
+function replayGame() {
+    endGame();
+    playGame(false);
+}
+
+/**
+ * Prepares UI and starts the game world.
+ */
 function prepareAndStartGame() {
     toggleHtmlElementDisplay('canvasWrapper', 'block');
     toggleHtmlElementDisplay('overlayMain', 'none');
@@ -103,6 +120,10 @@ function prepareAndStartGame() {
     startGame();
 }
 
+/**
+ * Preloads images used in the game and tracks progress.
+ * @returns {Promise<void>} Resolves when preload setup is complete.
+ */
 async function preloadAllAssets() {
     loadingSpinnerImagesTotal = preloadImages.length;
     preloadImages.forEach((path) => {
@@ -116,6 +137,9 @@ async function preloadAllAssets() {
     });
 }
 
+/**
+ * Updates preload counters and marks preload as finished.
+ */
 function loadingSpinnerImages() {
     loadingSpinnerImagesLoaded++;
     if (loadingSpinnerImagesLoaded >= loadingSpinnerImagesTotal && loadingSpinnerImagesTotal > 0) {
@@ -123,6 +147,11 @@ function loadingSpinnerImages() {
     }
 }
 
+/**
+ * Shows a specific menu tab and applies background.
+ * @param {string} tabName - The tab id to display.
+ * @param {string} [background=menuBg] - Background image style.
+ */
 function showMenuTab(tabName, background = menuBg) {
     setMidSectionBg(background);
     toggleHtmlElementDisplay('canvasWrapper', 'none');
@@ -134,12 +163,15 @@ function showMenuTab(tabName, background = menuBg) {
     (tabName === 'gameover' || tabName === 'win') && gameoverWinTopAndBottomSection();
     (tabName === 'sounds' && !initialSoundsDone) ? setDefaultSoundOptions() : setSoundsAccordingToLocalStorage();
     (tabName === 'rotateYourPhone' || tabName === 'loadingSpinner') && rotateYourPhoneTopAndBottomSection();
-    window.sounds.stop(window.sounds.BACKGROUND_GAME);
+    stopRepeatableSounds();
 }
 
 document.addEventListener('DOMContentLoaded', turnYourPhone);
 window.addEventListener('resize', turnYourPhone);
 
+/**
+ * Shows the rotate-your-phone overlay on small portrait screens.
+ */
 function turnYourPhone() {
     const isPortrait = window.innerWidth < window.innerHeight;
     const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480;
@@ -150,22 +182,22 @@ function turnYourPhone() {
     }
 }
 
-function setDefaultSoundOptions() {
-    initialSoundSettings('overlayMain', ['effect', 'music']);
-    initialSoundsDone = true;
-    setVolumeToLocalStorage()
-}
+/**
+ * Applies default sound settings on first run.
+ */
 
-function setSoundsAccordingToLocalStorage() {
-    toggleMuteIcons('overlayMain', ['effect', 'music']);
-    window.sounds.volumeIsMuted['effect'] ? setVolumeBarToZero('overlayMain', 'effect') : setVolumeInHTML('overlayMain', 'effect')
-    window.sounds.volumeIsMuted['music'] ? setVolumeBarToZero('overlayMain', 'music') : setVolumeInHTML('overlayMain', 'music')
-}
-
+/**
+ * Toggles the display style of an HTML element.
+ * @param {string} element - The element id.
+ * @param {string} display - The CSS display value.
+ */
 function toggleHtmlElementDisplay(element, display) {
     document.getElementById(element).style.display = display;
 }
 
+/**
+ * Hides all tab sections.
+ */
 function hideTabs() {
     let tab = document.getElementsByClassName('tab');
     for (let i = 0; i < tab.length; i++) {
@@ -174,161 +206,55 @@ function hideTabs() {
     }
 }
 
+/**
+ * Shows a single tab section.
+ * @param {string} tabName - The tab id to display.
+ */
 function showTab(tabName) {
     document.getElementById(tabName).style.display = "flex";
     document.getElementById(tabName).ariaSelected = "true";
 }
 
+/**
+ * Sets the background image for the mid section.
+ * @param {string} background - Background image style.
+ */
 function setMidSectionBg(background) {
     midSection.style.backgroundImage = background;
 }
 
+/**
+ * Renders top and bottom sections for the title screen.
+ */
 function titleTopAndBottomSection() {
     topSection.innerHTML = topSectionStandardTemplate();
     bottomSection.innerHTML = bottomSectionStandardTemplate();
 }
 
+/**
+ * Renders top and bottom sections for win/gameover screens.
+ */
 function gameoverWinTopAndBottomSection() {
     topSection.innerHTML = topSectionGameoverWinTemplate();
     bottomSection.innerHTML = bottomSectionGameoverWinTemplate();
 }
 
+/**
+ * Clears top and bottom sections for rotate/loader screens.
+ */
 function rotateYourPhoneTopAndBottomSection() {
     topSection.innerHTML = '';
     bottomSection.innerHTML = '';
 }
 
-function setVolumeToLocalStorage() {
-    localStorage.setItem('volumeIsMuted', JSON.stringify(window.sounds.volumeIsMuted));
-    localStorage.setItem('volumeCurrent', JSON.stringify(window.sounds.volumeCurrent));
-    localStorage.setItem('initialSoundsDone', JSON.stringify(initialSoundsDone));
-}
+/**
+ * Persists current sound settings to local storage.
+ */
 
-function getVolumeFromLocalStorage() {
-    let volumeIsMutedFromStorage = JSON.parse(localStorage.getItem('volumeIsMuted'));
-    let volumeCurrentFromStorage = JSON.parse(localStorage.getItem('volumeCurrent'));
-    let initialSoundsDoneFromStorage = JSON.parse(localStorage.getItem('initialSoundsDone'));
-    volumeIsMutedFromStorage && (window.sounds.volumeIsMuted = volumeIsMutedFromStorage);
-    volumeCurrentFromStorage && (window.sounds.volumeCurrent = volumeCurrentFromStorage);
-    initialSoundsDoneFromStorage && (initialSoundsDone = initialSoundsDoneFromStorage);
-}
-
-function initialSoundSettings(htmlDiv, array) {
-    toggleMuteIcons(htmlDiv, array);
-    setVolumeBarToZero(htmlDiv, array);
-    setVolumeToLocalStorage();
-}
-
-function soundControl(htmlDiv, elementToControl, value, ev) {
-    if (window.sounds.volumeIsMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] > 0.2 && Math.round(window.sounds.volumeCurrent[elementToControl]) <= 1 && value > 0) {
-        window.sounds.volumeCurrent[elementToControl] = 0.2;
-        setVolumeToLocalStorage();
-        muteUnmute(htmlDiv, elementToControl, ev);
-        setVolumeInHTML(htmlDiv, elementToControl)
-        checkAndPlaySounds(elementToControl);
-    } else if ((window.sounds.volumeIsMuted[elementToControl] && value > 0) || (!window.sounds.volumeIsMuted[elementToControl] && window.sounds.volumeCurrent[elementToControl] === 0.2 && value < 0)) {
-        muteUnmute(htmlDiv, elementToControl, ev);
-    } else if ((window.sounds.volumeIsMuted[elementToControl] && value < 0) || (window.sounds.volumeCurrent[elementToControl] === 1 && value > 0)) {
-        checkAndPlaySounds(elementToControl); return;
-    } else {
-        getVolumeFromLocalStorage();
-        setVolumeCurrentOfElementToControl(elementToControl, value)
-        setVolumeInHTML(htmlDiv, elementToControl);
-        checkAndPlaySounds(htmlDiv, elementToControl);
-        setVolumeToLocalStorage();
-    }
-}
-
-function setVolumeCurrentOfElementToControl(elementToControl, value) {
-    window.sounds.volumeCurrent[elementToControl] += value;
-    let step = Math.abs(value) || 0.2;
-    const steps = Math.round(1 / step);
-    const snapped = Math.round(window.sounds.volumeCurrent[elementToControl] * steps) / steps;
-    window.sounds.volumeCurrent[elementToControl] = Math.min(1, Math.max(0, snapped));
-}
-
-function checkAndPlaySounds(htmlDiv, elementToControl) {
-    if (elementToControl === 'effect') {
-        window.sounds.playOnce(window.sounds.MENU_CLICK, elementToControl)
-    } else if (htmlDiv === 'overlayMain') {
-        window.sounds.playLoop(window.sounds.BACKGROUND_ENDBOSS, elementToControl);
-        window.sounds.stop(window.sounds.BACKGROUND_ENDBOSS);
-        window.sounds.playOnce(window.sounds.BACKGROUND_GAME, elementToControl);
-    } else if (htmlDiv === 'canvasControlMenu') {
-        console.log('world !== undefined: ', world !== 'undefined', 'world: ', world, 'world.endbossMet: ', world.endbossMet);
-
-        if (typeof world !== 'undefined' && world && world.endbossMet) {
-            window.sounds.playLoop(window.sounds.BACKGROUND_ENDBOSS, elementToControl);
-        } else {
-            window.sounds.playLoop(window.sounds.BACKGROUND_GAME, elementToControl);
-        }
-    }
-}
-
-function muteUnmute(htmlDiv, elementToControl, ev) {
-    eventBlurAndStopPropagation(ev);
-    getVolumeFromLocalStorage();
-    toggleVolumeMuteBoolean(elementToControl);
-    toggleMuteIcons(htmlDiv, elementToControl);
-    if (htmlDiv === 'overlayMain') { window.sounds.volumeIsMuted[elementToControl] ? setVolumeBarToZero(htmlDiv, elementToControl) : (setVolumeInHTML(htmlDiv, elementToControl), checkAndPlaySounds(htmlDiv, elementToControl)); }
-    if (htmlDiv === 'canvasControlMenu') {
-        if (window.sounds.volumeIsMuted[elementToControl]) {
-            elementToControl === 'effect' ? window.sounds.stop(window.sounds.MENU_CLICK) : window.sounds.stop(window.sounds.BACKGROUND_GAME);
-        } else {
-            checkAndPlaySounds(htmlDiv, elementToControl);
-        }
-    }
-    setVolumeToLocalStorage();
-}
-
-function eventBlurAndStopPropagation(ev) {
-    ev.currentTarget.blur();
-    ev.stopPropagation();
-}
-
-function setVolumeInHTML(htmlDiv, elementToControl) {
-    let progressBar = document.getElementById(htmlDiv).querySelector('#' + elementToControl + 'VolumeProgressBar');
-    progressBar.style.width = window.sounds.volumeCurrent[elementToControl] * 100 + '%';
-}
-
-function toggleMuteIcons(htmlDiv, elementToControl) {
-    if (Array.isArray(elementToControl)) {
-        elementToControl.forEach(el => toggleMuteIcons(htmlDiv, el));
-        return;
-    }
-    let [iconON, iconOFF] = ['_on', '_off'].map(suffix => document.getElementById(htmlDiv).querySelector('#' + elementToControl + suffix))
-    window.sounds.volumeIsMuted[elementToControl] ? toggleMuteElement(iconOFF, iconON) : toggleMuteElement(iconON, iconOFF);
-}
-
-function toggleMuteElement(iconON, iconOFF) {
-    iconON.style.display = 'block';
-    iconOFF.style.display = 'none';
-}
-
-function setVolumeBarToZero(htmlDiv, elementToControl) {
-    if (Array.isArray(elementToControl)) {
-        elementToControl.forEach(el => setVolumeBarToZero(htmlDiv, el));
-        return;
-    }
-    let progressBar = document.getElementById(htmlDiv).querySelector('#' + elementToControl + 'VolumeProgressBar');
-    elementToControl === 'effect' ? window.sounds.stop(window.sounds.MENU_CLICK) : window.sounds.stop(window.sounds.BACKGROUND_GAME);
-    progressBar.style.width = '0%';
-}
-
-function toggleVolumeMuteBoolean(elementToControl) {
-    window.sounds.volumeIsMuted[elementToControl] ? setvolumeIsMuted(elementToControl, false) : setvolumeIsMuted(elementToControl, true);
-    return;
-}
-
-function setvolumeIsMuted(elementToControl, bool) {
-    window.sounds.volumeIsMuted[elementToControl] = bool;
-    return window.sounds.volumeIsMuted[elementToControl];
-}
-
-function diplayAccordingMuteUnmuteVolumeIcons(htmlDiv, array) {
-    toggleMuteIcons(htmlDiv, array);
-}
-
+/**
+ * Shows the on-canvas keyboard controls for a short duration.
+ * @param {Event} ev - The triggering event.
+ */
 function showCanvasKeyboardControls(ev) {
     controlOverlay.classList.remove('d-none');
     ev.currentTarget.blur();
@@ -342,6 +268,13 @@ function showCanvasKeyboardControls(ev) {
     }
 }
 
-document.querySelectorAll('.touch-menu button').forEach(btn => {
-    btn.addEventListener('contextmenu', event => event.preventDefault());
-});
+/**
+ * Disables the context menu on touch control buttons.
+ */
+function disableTouchMenuContext() {
+    document.querySelectorAll('.touch-menu button').forEach(btn => {
+        btn.addEventListener('contextmenu', event => event.preventDefault());
+    });
+}
+
+disableTouchMenuContext();
