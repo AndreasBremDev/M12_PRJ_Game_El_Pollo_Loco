@@ -115,7 +115,6 @@ class MovableObject extends DrawableObject {
         this.isCurrentlyHurt = true;
         this.lastHit = new Date().getTime();
         this.playHitSound();
-        this.characterPushBack();
         this.endbossHurtProcessed = true;
     }
 
@@ -146,17 +145,6 @@ class MovableObject extends DrawableObject {
             this.sounds.playOnce(this.sounds.CHARACTER_HURT)
         } else {
             this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_HURT);
-        }
-    }
-
-    /**
-     * Pushes the character back after receiving damage.
-     */
-    characterPushBack() {
-        if ((this.world.character.x >= 0 && this.world.character.x <= 0 + 200) ||
-            (this.world.character.x >= this.world.level.endboss_left_end_x - 8 && this.world.character.x <= this.world.level.endboss_left_end_x + 200)) { return; }
-        else {
-            (this instanceof Character) && Array.from({ length: 10 }).forEach(() => this.x -= 20);
         }
     }
 
