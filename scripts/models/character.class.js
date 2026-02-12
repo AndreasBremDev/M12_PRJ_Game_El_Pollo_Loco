@@ -250,7 +250,7 @@ class Character extends MovableObject {
      * @param {string} attackType - The type of attack.
      */
     characterAttack(attackType) {
-        this.world.lastThrowTime = new Date().getTime();
+        attackType === 'one' ? (this.world.attackOneLastThrowTime = new Date().getTime()) : (this.world.attackTwoLastThrowTime = new Date().getTime());
         let direction = this.otherDirection ? 'left' : 'right';
         let bottle = this.checkAttackType(attackType, direction);
 
@@ -320,9 +320,9 @@ class Character extends MovableObject {
     throwCooldown(attackType) {
         let currentTime = new Date().getTime();
         if (attackType === 'one') {
-            return currentTime - this.world.lastThrowTime >= this.world.attackOneCooldown;
+            return currentTime - this.world.attackOneLastThrowTime >= this.world.attackOneCooldown;
         } else {
-            return currentTime - this.world.lastThrowTime >= this.world.attackTwoCooldown;
+            return currentTime - this.world.attackTwoLastThrowTime >= this.world.attackTwoCooldown;
         }
     }
 

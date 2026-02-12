@@ -22,8 +22,9 @@ class World {
     throwableObjects = [];
     deadEnemies = [];
     endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-    lastThrowTime = 0;
+    attackOneLastThrowTime = 0;
     attackOneCooldown = 750;
+    attackTwoLastThrowTime = 0;
     attackTwoCooldown = 15000;
     lastJumpTime = 0;
     jumpProtectionTime = 300;
