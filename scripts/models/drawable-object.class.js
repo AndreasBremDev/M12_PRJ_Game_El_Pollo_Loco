@@ -45,7 +45,17 @@ class DrawableObject {
      */
     draw(ctx) {
         if (this.img && this.img.complete && this.img.naturalWidth > 0) {
-            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.img, Math.round(this.x), Math.round(this.y), this.width, this.height);
+        }
+    }
+
+    /**
+     * Draws the object at x = 0 because the caller already translated the context.
+     * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+     */
+    drawAtZero(ctx) {
+        if (this.img && this.img.complete) {
+            ctx.drawImage(this.img, 0, Math.round(this.y), this.width, this.height);
         }
     }
 

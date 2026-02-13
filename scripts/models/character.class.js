@@ -124,7 +124,7 @@ class Character extends MovableObject {
         let characterSounds = setStoppableInterval(() => {
             this.sounds.pause(this.sounds.CHARACTER_WALK);
             this.sounds.pause(this.sounds.CHARACTER_CROUCHING);
-            if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.world.cameraInterpolationCompleted && !this.isAboveGround() && !this.world.keyboard.DOWN) {
+            if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) /* && this.world.cameraInterpolationCompleted */ && !this.isAboveGround() && !this.world.keyboard.DOWN) {
                 this.sounds.playLoop(this.sounds.CHARACTER_WALK);
             } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
                 this.sounds.playLoop(this.sounds.CHARACTER_CROUCHING);
@@ -175,7 +175,7 @@ class Character extends MovableObject {
      * @returns {boolean}
      */
     canMoveRightBetweenEndbossLeftEndXAndEndbossRightEndX() {
-        return this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x && this.world.cameraInterpolationCompleted;
+        return this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x /* && this.world.cameraInterpolationCompleted */;
     }
 
     /**
@@ -183,7 +183,7 @@ class Character extends MovableObject {
      * @returns {boolean}
      */
     canMoveLeftUntilZeroX() {
-        return this.world.keyboard.LEFT && this.x > 0 && this.world.cameraInterpolationCompleted;
+        return this.world.keyboard.LEFT && this.x > 0/*  && this.world.cameraInterpolationCompleted */;
     }
 
     /**
@@ -191,7 +191,7 @@ class Character extends MovableObject {
      * @returns {boolean}
      */
     canMoveRightBetweenZeroXAndEndbossRightEndX() {
-        return this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x && this.world.cameraInterpolationCompleted;
+        return this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x/*  && this.world.cameraInterpolationCompleted */;
     }
 
     /**

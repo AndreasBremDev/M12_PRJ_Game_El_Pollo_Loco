@@ -173,6 +173,8 @@ class MovableObject extends DrawableObject {
             this.x += speedX / 2;
         } else {
             this.x += speedX;
+            console.log('charcter.x moveRIGHT: ', this.x);
+            
         }
     }
 
@@ -185,6 +187,7 @@ class MovableObject extends DrawableObject {
             this.x -= speedX / 2;
         } else {
             this.x -= speedX;
+            if (this instanceof Character) console.log('charcter.x moveLEFT: ', this.x);
         }
     }
 

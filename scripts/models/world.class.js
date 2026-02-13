@@ -1,5 +1,6 @@
 /**
  * Represents the game world, managing the canvas, levels, characters, and interactions.
+ * lerpFactor between 0.05 - 0.1 is best for smooth camera movement.
  */
 class World {
     level = level1;
@@ -7,14 +8,22 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
-    camera_start_x = 0;
-    camera_progress = 0;
-    camera_progress_speed = 0.05;
-    camera_target_x = 0;
-    camera_speed = 0.2;
     camera_offset = 100;
-    cameraInterpolationCompleted = false;
-    distanceToTarget = Math.abs(this.camera_x - this.camera_target_x);
+    camera_target_x = 0;
+    // NEUE VERSION MIT LERP //
+    camera_lerpFactor = 0.15;
+    lastOtherDirection = false;
+    // ENDE
+
+    // ------------- ALTE VARIANTE ------------- //
+    // camera_progress_speed = 0.05;
+    // camera_start_x = 0;
+    // camera_progress = 0;
+    // camera_speed = 0.2;
+    // cameraInterpolationCompleted = false;
+    // distanceToTarget = Math.abs(this.camera_x - this.camera_target_x);
+    // ENDE
+
     statusBarHealth = new StatusBarHealth();
     statusBarCoins = new StatusBarCoins();
     statusBarBottles = new StatusBarBottles();
@@ -34,7 +43,7 @@ class World {
     endbossMet = false;
     endbossMusicActive = false;
     gameRunning = true;
-    
+
     /**
      * Creates a new World instance.
      * @param {HTMLCanvasElement} canvas - The HTML canvas element.
@@ -47,8 +56,12 @@ class World {
         this.keyboard = keyboard;
         this.sounds = sounds;
         this.character = new Character(sounds);
-        this.lastOtherDirection = this.character.otherDirection;
-        this.lastCharacterX = this.character.x;
+
+        // ------------- ALTE VARIANTE ------------- //
+        // this.lastOtherDirection = this.character.otherDirection;
+        // this.lastCharacterX = this.character.x;
+        // ENDE
+
         this.draw();
         this.setWorld();
         this.run();
@@ -99,14 +112,20 @@ class World {
      */
     draw() {
         if (!this.gameRunning) return;
+        // this.ctx.imageSmoothingEnabled = false;
         this.checkCameraMovement();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // ------------- NEW VERSION incl. LERP + addToMap + FlipImage + drawAtZero changes ------------- //
+        this.ctx.save();
         this.ctx.translate(Math.round(this.camera_x), 0);
+        // ENDE
         this.addLevelObjects();
         this.addToMap(this.character);
-        this.ctx.translate(Math.round(-this.camera_x), 0);
+        // ------------- NEW VERSION incl. LERP + addToMap + FlipImage + drawAtZero changes ------------- //
+        this.ctx.restore();
+        // this.ctx.translate(Math.round(-this.camera_x), 0); // muss hier raus, da save() und restore()
+        // ENDE
         this.addStatusBars();
-
         let self = this
         requestAnimationFrame(function () {
             self.draw();
@@ -144,43 +163,53 @@ class World {
     /**
      * Updates camera position based on character movement and direction.
      */
+    // ------------- NEW VERSION MIT LERP ------------- //
     checkCameraMovement() {
         if (this.character.otherDirection !== this.lastOtherDirection) {
-            this.camera_offset = this.character.otherDirection ? 300 : 100;
-            this.lastOtherDirection = this.character.otherDirection;
-            this.cameraInterpolationCompleted = false;
-        }
-        this.camera_target_x = -this.character.x + this.camera_offset;
-        !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
-    }
-
-    /**
-     * Performs smooth camera interpolation to the target position.
-     */
-    cameraInterpolation() {
-        if (Math.abs(this.camera_x - this.camera_target_x) <= 16) {
+                this.camera_offset = this.character.otherDirection ? 300 : 100;
+                this.lastOtherDirection = this.character.otherDirection;
+            }
+            
+        this.camera_target_x = -Math.round(this.character.x) + this.camera_offset;
+        // this.camera_target_x = -this.character.x + this.camera_offset;
+        let movement = this.camera_target_x - this.camera_x /* * this.camera_lerpFactor */;
+        if (Math.abs(movement) < 1 /* statt: 0.1 */) {
             this.camera_x = this.camera_target_x;
-            this.cameraInterpolationCompleted = true;
-            return;
         } else {
-            this.camera_start_x = this.camera_x;
-            this.camera_progress = 0;
-            this.camera_progress += this.camera_progress_speed;
-            let easeIn = 1 - Math.exp(-6 * this.camera_progress);
-            this.camera_x = this.camera_start_x + (this.camera_target_x - this.camera_start_x) * easeIn;
+            this.camera_x += movement * this.camera_lerpFactor;
         }
     }
 
-    /**
-     * Fixes the camera value when interpolation is completed and the character moves.
-     * @param {number} offset - The x-offset for the camera.
-     */
-    cameraFixValue(offset) {
-        if (this.cameraInterpolationCompleted === true && this.character.x !== this.lastCharacterX) {
-            this.camera_x = Math.round(-this.character.x + offset);
-            this.lastCharacterX = this.character.x;
-        }
-    }
+    // ------------- ALTE VARIANTE ------------- //
+    // checkCameraMovement() {
+    //     if (this.character.otherDirection !== this.lastOtherDirection) {
+    //         this.camera_offset = this.character.otherDirection ? 300 : 100;
+    //         this.lastOtherDirection = this.character.otherDirection;
+    //         this.cameraInterpolationCompleted = false;
+    //     }
+    //     this.camera_target_x = -this.character.x + this.camera_offset;
+    //     !this.cameraInterpolationCompleted ? this.cameraInterpolation() : this.cameraFixValue(this.camera_offset);
+    // }
+
+    // cameraInterpolation() {
+    //     if (Math.abs(this.camera_x - this.camera_target_x) <= 16) {
+    //         this.camera_x = this.camera_target_x;
+    //         this.cameraInterpolationCompleted = true;
+    //         return;
+    //     } else {
+    //         this.camera_start_x = this.camera_x;
+    //         this.camera_progress = 0;
+    //         this.camera_progress += this.camera_progress_speed;
+    //         let easeIn = 1 - Math.exp(-6 * this.camera_progress);
+    //         this.camera_x = this.camera_start_x + (this.camera_target_x - this.camera_start_x) * easeIn;
+    //     }
+    // }
+    // cameraFixValue(offset) {
+    //     if (this.cameraInterpolationCompleted === true && this.character.x !== this.lastCharacterX) {
+    //         this.camera_x = Math.round(-this.character.x + offset);
+    //         this.lastCharacterX = this.character.x;
+    //     }
+    // }
 
     /**
      * Checks and applies the mute status for music and effects.
@@ -235,15 +264,16 @@ class World {
      * Adds a single object to the map, handling direction flipping.
      * @param {MovableObject} mo - The movable object.
      */
-    addToMap(mo) {
-        if (mo.otherDirection) {
-            this.flipImage(mo);
-        }
+addToMap(mo) {
+    if (mo.otherDirection) {
+        this.flipImage(mo);
+        // Wir zeichnen bei 0, weil der translate uns schon an mo.x geschoben hat
+        mo.drawAtZero(this.ctx); 
+        this.flipImageBack();
+    } else {
         mo.draw(this.ctx);
-        if (mo.otherDirection) {
-            this.flipImageBack(mo);
-        }
     }
+}
 
     /**
      * Flips the image horizontally for the specified object.
@@ -251,9 +281,8 @@ class World {
      */
     flipImage(mo) {
         this.ctx.save();
-        this.ctx.translate(mo.width, 0);
+        this.ctx.translate(Math.round(mo.x + mo.width), 0);
         this.ctx.scale(-1, 1);
-        mo.x = mo.x * -1;
     }
 
     /**
@@ -261,7 +290,6 @@ class World {
      * @param {MovableObject} mo - The movable object.
      */
     flipImageBack(mo) {
-        mo.x = mo.x * -1;
         this.ctx.restore();
     }
 
