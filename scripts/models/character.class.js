@@ -95,10 +95,8 @@ class Character extends MovableObject {
     camera_x = 0;
     camera_offset = 100;
     camera_target_x = 0;
-    // NEUE VERSION MIT LERP //
     camera_lerpFactor = 0.15;
     lastOtherDirection = false;
-    // ENDE
 
     /**
      * Initializes the character and loads all required images.
@@ -118,71 +116,100 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_CROUCH);
         this.loadImages(this.IMAGES_CROUCHING);
         this.applyGravity();
-        this.animate();
+        this.characterSound();
+        this.characterMovements();
+        this.characterAnimations()
     }
 
     /**
-     * Sets intervals for character movements, animations and sounds.
+     * Manages character sound effects based on movement and state.
+     * Plays walk/crouch sounds based on keyboard input and stops sounds when dead.
      */
-    animate() {
-
+    characterSound() {
         let characterSounds = setStoppableInterval(() => {
             this.sounds.pause(this.sounds.CHARACTER_WALK);
             this.sounds.pause(this.sounds.CHARACTER_CROUCHING);
-            if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) /* && this.world.cameraInterpolationCompleted */ && !this.isAboveGround() && !this.world.keyboard.DOWN) {
+            if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.isAboveGround() && !this.world.keyboard.DOWN) {
                 this.sounds.playLoop(this.sounds.CHARACTER_WALK);
             } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
-                this.sounds.playLoop(this.sounds.CHARACTER_CROUCHING);
-            }
+                this.sounds.playLoop(this.sounds.CHARACTER_CROUCHING);}
             if (this.isDead()) {
                 this.sounds.stop(this.sounds.CHARACTER_WALK);
                 this.sounds.stop(this.sounds.CHARACTER_CROUCHING);
                 return;
             }
         }, 1000 / 60);
+    }
 
+    /**
+     * Manages character movement and endboss detection.
+     * Handles walking, jumping, and crouch state based on keyboard input.
+     */
+    characterMovements() {
         let characterMovements = setStoppableInterval(() => {
             this.world.keyboard.DOWN ? this.crouching = true : this.crouching = false;
-            if (this.world.endboss.x - this.x < 600 && !this.world.endbossMet) {
-                this.world.endbossMet = true;
-                this.world.activateEndbossMusic();
-            }
-            if (!this.world.endbossMet) {
-                if (this.canMoveRightBetweenZeroXAndEndbossRightEndX()) this.moveCharacterRight();
-                if (this.canMoveLeftUntilZeroX()) {
-                    this.moveCharacterLeft();
-                }
-            } else if (this.world.endbossMet) {
-                if (this.canMoveRightBetweenZeroXAndEndbossRightEndX()) this.moveCharacterRight();
-                if (this.canMoveRightBetweenEndbossLeftEndXAndEndbossRightEndX()) this.moveCharacterLeft();
-            }
-            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                this.jump(30);
-                this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
-            }
+            (this.world.endboss.x - this.x < 600 && !this.world.endbossMet) && this.markEnbossMetAndSound();
+            !this.world.endbossMet ? this.manageCharacterMovementWhenEndbossMetNOT() : this.manageCharacterMovementWhenEndbossMet();
+            (this.world.keyboard.SPACE && !this.isAboveGround()) && this.manageCharacterJump();
             this.checkCameraMovement();
         }, 1000 / 60);
+    }
 
+    /**
+     * Manages character animations based on current state.
+     * Plays the appropriate animation for walking, jumping, idle, crouch, and hurt states.
+     */
+    characterAnimations() {
         let characterAnimations = setStoppableInterval(() => {
-            if (this.isDead()) {
-                this.animationDeadAndEndGame();
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT, 1);
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
-            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
-                this.animationWalkingOrIdle();
-            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
-                this.animationCrouchingOrCrouch();
-            } else if (this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMAGES_CROUCH);
-            } else if (this.isIdle('long')) {
-                this.playAnimation(this.IMAGES_LONG_IDLE);
-            } else if (this.isIdle('short')) {
-                this.playAnimation(this.IMAGES_IDLE);
-            }
-
+            if (this.isDead()) {this.animationDeadAndEndGame();
+            } else if (this.isHurt()) {this.playAnimation(this.IMAGES_HURT, 1);
+            } else if (this.isAboveGround()) {this.playAnimation(this.IMAGES_JUMPING);
+            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {this.animationWalkingOrIdle();
+            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {this.animationCrouchingOrCrouch();
+            } else if (this.world.keyboard.DOWN) {this.playAnimation(this.IMAGES_CROUCH);
+            } else if (this.isIdle('long')) {this.playAnimation(this.IMAGES_LONG_IDLE);
+            } else if (this.isIdle('short')) {this.playAnimation(this.IMAGES_IDLE);}
         }, 1000 / 25);
+    }
+
+    /**
+     * Handles character jump with sound effect.
+     */
+    manageCharacterJump() {
+        this.jump(30);
+        this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
+    }
+
+    /**
+     * Manages character movement when endboss has not been met.
+     */
+    manageCharacterMovementWhenEndbossMetNOT() {
+        if (this.canMoveRightBetweenZeroXAndEndbossRightEndX()) {
+            this.moveCharacterRight();
+        }
+        if (this.canMoveLeftUntilZeroX()) {
+            this.moveCharacterLeft();
+        }
+    }
+
+    /**
+     * Manages character movement when endboss has been met.
+     */
+    manageCharacterMovementWhenEndbossMet() {
+        if (this.canMoveRightBetweenZeroXAndEndbossRightEndX()) {
+            this.moveCharacterRight();
+        }
+        if (this.canMoveRightBetweenEndbossLeftEndXAndEndbossRightEndX()) {
+            this.moveCharacterLeft();
+        }
+    }
+
+    /**
+     * Marks endboss as met and activates endboss music.
+     */
+    markEnbossMetAndSound() {
+        this.world.endbossMet = true;
+        this.world.activateEndbossMusic();
     }
 
     /**
@@ -207,7 +234,7 @@ class Character extends MovableObject {
      * @returns {boolean}
      */
     canMoveRightBetweenEndbossLeftEndXAndEndbossRightEndX() {
-        return this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x /* && this.world.cameraInterpolationCompleted */;
+        return this.world.keyboard.LEFT && this.x > this.world.level.endboss_left_end_x;
     }
 
     /**
@@ -215,7 +242,7 @@ class Character extends MovableObject {
      * @returns {boolean}
      */
     canMoveLeftUntilZeroX() {
-        return this.world.keyboard.LEFT && this.x > 0/*  && this.world.cameraInterpolationCompleted */;
+        return this.world.keyboard.LEFT && this.x > 0;
     }
 
     /**
@@ -223,7 +250,7 @@ class Character extends MovableObject {
      * @returns {boolean}
      */
     canMoveRightBetweenZeroXAndEndbossRightEndX() {
-        return this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x/*  && this.world.cameraInterpolationCompleted */;
+        return this.world.keyboard.RIGHT && this.x < this.world.level.endboss_right_end_x;
     }
 
     /**
@@ -285,11 +312,10 @@ class Character extends MovableObject {
         attackType === 'one' ? (this.world.attackOneLastThrowTime = new Date().getTime()) : (this.world.attackTwoLastThrowTime = new Date().getTime());
         let direction = this.otherDirection ? 'left' : 'right';
         let bottle = this.checkAttackType(attackType, direction);
-
         attackType === 'one' ? this.attackOne(bottle) : this.attackTwo(bottle);
         this.world.throwableObjects.push(bottle);
         this.world.bottlesCollected -= 20;
-        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected);
+        this.world.statusBarBottles.setPercentage(this.world.bottlesCollected, this.world.statusBarBottles.IMAGES_BOTTLES);
     }
 
     /**

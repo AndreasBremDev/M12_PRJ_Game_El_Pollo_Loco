@@ -84,37 +84,57 @@ class Endboss extends MovableObject {
     animate() {
         let endbossAnimations = setStoppableInterval(() => {
             this.updateHurtStatus();
-            if (this.health < 20 || this.currentPhase === 'dead') { this.animationDeadAndEndGame(); }
-
-            if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT, 6);
-            }
+            (this.health < 20 || this.currentPhase === 'dead') && this.animationDeadAndEndGame(); 
+            (this.isHurt()) && this.playAnimation(this.IMAGES_HURT, 6);
             this.actionsWhenHurtIsOver();
-
-            if (this.currentPhase === 'alert') {
-                if (!this.isHurt()) { this.playAnimation(this.IMAGES_ALERT, 16); }
-                this.checkIfWaitingPeriodIsOver('withdraw');
-            }
-            else if (this.currentPhase === 'attackOne') {
-                this.moveLeft(3);
-                if (!this.isHurt()) { this.playAnimation(this.IMAGES_WALK, 8); }
-                this.actionWhenAtEndbossLeftPosition();
-            }
-            else if (this.currentPhase === 'attackTwo') {
-                this.moveLeft(7);
-                if (!this.isHurt()) { this.playAnimation(this.IMAGES_ATTACK, 8); }
-                this.actionWhenAtEndbossLeftPosition();
-            }
-            else if (this.currentPhase === 'attackThree') {
-                if (!this.isAboveGround()) { this.jump(25); }
-                this.moveLeft(7);
-                if (!this.isHurt()) { this.playAnimation(this.IMAGES_ATTACK, 8); }
-                this.actionWhenAtEndbossLeftPosition();
-            }
-            else if (this.currentPhase === 'withdraw') {
-                this.handleWithdrawPhase();
-            }
+            if (this.currentPhase === 'alert') {this.handlePhaseAlert();
+            } else if (this.currentPhase === 'attackOne') {this.handlePhaseAttackOne();
+            } else if (this.currentPhase === 'attackTwo') {this.handlePhaseAttackTwo();
+            } else if (this.currentPhase === 'attackThree') {this.handlePhaseAttackThree();
+            } else if (this.currentPhase === 'withdraw') {this.handleWithdrawPhase();}
         }, 1000 / 60);
+    }
+    
+    /**
+     * Handles the third attack phase with jumping and aggressive movement.
+     * Jumps, moves left, and plays attack animation if not hurt.
+     */
+    handlePhaseAttackThree() {
+        if (!this.isAboveGround()) { this.jump(25); }
+        this.moveLeft(7);
+        if (!this.isHurt()) { this.playAnimation(this.IMAGES_ATTACK, 8); }
+        this.actionWhenAtEndbossLeftPosition();
+    }
+
+    /**
+     * Handles the alert phase where the endboss waits before withdrawing.
+     * Plays alert animation and checks if the waiting period has elapsed.
+     */
+    handlePhaseAlert() {
+        if (!this.isHurt()) { 
+            this.playAnimation(this.IMAGES_ALERT, 16); 
+        }
+        this.checkIfWaitingPeriodIsOver('withdraw');
+    }
+    
+    /**
+     * Handles the first attack phase with slow movement.
+     * Moves left and plays walking animation if not hurt.
+     */
+    handlePhaseAttackOne() {
+        this.moveLeft(3);
+        if (!this.isHurt()) { this.playAnimation(this.IMAGES_WALK, 8); }
+        this.actionWhenAtEndbossLeftPosition();
+    }
+    
+    /**
+     * Handles the second attack phase with faster movement.
+     * Moves left and plays attack animation if not hurt.
+     */
+    handlePhaseAttackTwo() {
+        this.moveLeft(7);
+        if (!this.isHurt()) { this.playAnimation(this.IMAGES_ATTACK, 8); }
+        this.actionWhenAtEndbossLeftPosition();
     }
 
     /**

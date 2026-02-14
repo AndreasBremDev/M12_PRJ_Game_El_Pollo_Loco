@@ -8,10 +8,10 @@ class World {
     ctx;
     keyboard;
     enemyManager;
-    statusBarHealth = new StatusBarHealth();
-    statusBarCoins = new StatusBarCoins();
-    statusBarBottles = new StatusBarBottles();
-    statusBarEndbossHealth = new StatusBarEndbossHealth();
+    statusBarBottles = new StatusBars(20, 90, 'bottles');
+    statusBarCoins = new StatusBars(20, 40, 'coins');
+    statusBarEndbossHealth = new StatusBars(490, 97, 'endboss');
+    statusBarHealth = new StatusBars(20, -10, 'health');
     throwableObjects = [];
     deadEnemies = [];
     endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
@@ -41,12 +41,6 @@ class World {
         this.sounds = sounds;
         this.character = new Character(sounds);
         this.enemyManager = new EnemyManager(this);
-
-        // ------------- ALTE VARIANTE ------------- //
-        // this.lastOtherDirection = this.character.otherDirection;
-        // this.lastCharacterX = this.character.x;
-        // ENDE
-
         this.draw();
         this.setWorld();
         this.run();
@@ -82,8 +76,8 @@ class World {
             this.checkCharacterEnemyCollisions();
             this.checkThrowObjects();
             this.checkBottleCollisionAttackOneAndTwo();
-            this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
-            this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
+            this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected', this.statusBarCoins.IMAGES_COINS);
+            this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected', this.statusBarBottles.IMAGES_BOTTLES);
             this.enemyManager.cleanupDeadEnemies();
             this.enemyManager.cleanupOffscreenEnemies();
             this.checkIsMutedStatus();
@@ -225,7 +219,7 @@ addToMap(mo) {
      * @param {DrawableObject} statusBar - The corresponding status bar.
      * @param {string} collected - The property name for collected count.
      */
-    ckeckCollectableCollisions(array, statusBar, collected) {
+    ckeckCollectableCollisions(array, statusBar, collected, imagesArray) {
         for (let i = array.length - 1; i >= 0; i--) {
             let element = array[i];
             if (this.character.isColliding(element)) {
@@ -236,7 +230,7 @@ addToMap(mo) {
                 }
                 this[collected] += 20;
                 array.splice(i, 1);
-                statusBar.setPercentage(this[collected]);
+                statusBar.setPercentage(this[collected], imagesArray);
             }
         }
     }
@@ -274,7 +268,7 @@ addToMap(mo) {
      */
     actionsGeneralCollisionEnemy() {
         if (!this.character.isCurrentlyHurt) { this.character.hit(); }
-        this.statusBarHealth.setPercentage(this.character.health);
+        this.statusBarHealth.setPercentage(this.character.health, this.statusBarHealth.IMAGES_CHARACTER_HEARTS);
     }
 
     /**
@@ -383,7 +377,7 @@ addToMap(mo) {
     handleEndbossHit(bottle, enemy, pierces) {
         if (pierces && bottle.enemiesHit.has(enemy)) { return null; }
         enemy.hit();
-        this.statusBarEndbossHealth.setPercentage(enemy.health);
+        this.statusBarEndbossHealth.setPercentage(enemy.health, this.statusBarEndbossHealth.IMAGES_ENDBOSS_HEARTS);
         if (pierces) { bottle.enemiesHit.add(enemy); }
         return !pierces;
     }
