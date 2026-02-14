@@ -18,7 +18,6 @@ class Character extends MovableObject {
         bottom: 10
     };
 
-
     IMAGES_WALKING = [
         './assets/img/2_character_pepe/2_walk/W-21.png',
         './assets/img/2_character_pepe/2_walk/W-22.png',
@@ -27,8 +26,6 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/2_walk/W-25.png',
         './assets/img/2_character_pepe/2_walk/W-26.png'
     ];
-
-
 
     IMAGES_IDLE = [
         './assets/img/2_character_pepe/1_idle/idle/I-1.png',
@@ -95,6 +92,14 @@ class Character extends MovableObject {
         './assets/img/2_character_pepe/5_crouch/C-1.png'
     ];
 
+    camera_x = 0;
+    camera_offset = 100;
+    camera_target_x = 0;
+    // NEUE VERSION MIT LERP //
+    camera_lerpFactor = 0.15;
+    lastOtherDirection = false;
+    // ENDE
+
     /**
      * Initializes the character and loads all required images.
      * @param {SoundManager} sounds - The sound manager instance.
@@ -155,19 +160,46 @@ class Character extends MovableObject {
                 this.jump(30);
                 this.sounds.playOnce(this.sounds.CHARACTER_JUMP);
             }
+            this.checkCameraMovement();
         }, 1000 / 60);
 
         let characterAnimations = setStoppableInterval(() => {
-            if (this.isDead()) {this.animationDeadAndEndGame();
-            } else if (this.isHurt()) {this.playAnimation(this.IMAGES_HURT, 1);
-            } else if (this.isAboveGround()) {this.playAnimation(this.IMAGES_JUMPING);
-            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {this.animationWalkingOrIdle();
-            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {this.animationCrouchingOrCrouch();
-            } else if (this.world.keyboard.DOWN) {this.playAnimation(this.IMAGES_CROUCH);
-            } else if (this.isIdle('long')) {this.playAnimation(this.IMAGES_LONG_IDLE);
-            } else if (this.isIdle('short')) {this.playAnimation(this.IMAGES_IDLE);
+            if (this.isDead()) {
+                this.animationDeadAndEndGame();
+            } else if (this.isHurt()) {
+                this.playAnimation(this.IMAGES_HURT, 1);
+            } else if (this.isAboveGround()) {
+                this.playAnimation(this.IMAGES_JUMPING);
+            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && !this.world.keyboard.DOWN) {
+                this.animationWalkingOrIdle();
+            } else if (this.world.keyboard.DOWN && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
+                this.animationCrouchingOrCrouch();
+            } else if (this.world.keyboard.DOWN) {
+                this.playAnimation(this.IMAGES_CROUCH);
+            } else if (this.isIdle('long')) {
+                this.playAnimation(this.IMAGES_LONG_IDLE);
+            } else if (this.isIdle('short')) {
+                this.playAnimation(this.IMAGES_IDLE);
             }
+
         }, 1000 / 25);
+    }
+
+    /**
+     * Smoothly interpolates the character-bound camera (lerp) whenever position or facing changes.
+     */
+    checkCameraMovement() {
+        if (this.otherDirection !== this.lastOtherDirection) {
+            this.camera_offset = this.otherDirection ? 300 : 100;
+            this.lastOtherDirection = this.otherDirection;
+        }
+        this.camera_target_x = -this.x + this.camera_offset;
+        let movement = (this.camera_target_x - this.camera_x) * this.camera_lerpFactor;
+        if (Math.abs(movement) < 0.1) {
+            this.camera_x = this.camera_target_x;
+        } else {
+            this.camera_x += movement;
+        }
     }
 
     /**
