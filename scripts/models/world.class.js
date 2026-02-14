@@ -7,7 +7,7 @@ class World {
     canvas;
     ctx;
     keyboard;
-
+    enemyManager;
     statusBarHealth = new StatusBarHealth();
     statusBarCoins = new StatusBarCoins();
     statusBarBottles = new StatusBarBottles();
@@ -40,6 +40,7 @@ class World {
         this.keyboard = keyboard;
         this.sounds = sounds;
         this.character = new Character(sounds);
+        this.enemyManager = new EnemyManager(this);
 
         // ------------- ALTE VARIANTE ------------- //
         // this.lastOtherDirection = this.character.otherDirection;
@@ -83,8 +84,8 @@ class World {
             this.checkBottleCollisionAttackOneAndTwo();
             this.ckeckCollectableCollisions(this.level.coins, this.statusBarCoins, 'coinsCollected');
             this.ckeckCollectableCollisions(this.level.bottles, this.statusBarBottles, 'bottlesCollected');
-            this.cleanupDeadEnemies();
-            this.cleanupOffscreenEnemies();
+            this.enemyManager.cleanupDeadEnemies();
+            this.enemyManager.cleanupOffscreenEnemies();
             this.checkIsMutedStatus();
             this.checkIfEndbossMet();
             this.activateEndbossMusic();
@@ -293,7 +294,7 @@ addToMap(mo) {
      */
     actionsTopCollisionWithChicken(i, currentTime) {
         this.character.jump(10);
-        this.killChicken(i);
+        this.enemyManager.killChicken(i);
         this.lastJumpTime = currentTime;
         return true;
     }
@@ -334,16 +335,12 @@ addToMap(mo) {
         if (bottle.attackType === 'two') {
             let traveledDistance = Math.abs(bottle.x - bottle.startX);
             let maxDistance = bottle.maxTravelDistance || 500;
-            if (traveledDistance >= maxDistance) {
-                bottle.hasCollided = true;
-            }
+            if (traveledDistance >= maxDistance) { bottle.hasCollided = true;}
         } else if (!bottle.hasCollided) {
             if (bottle.y >= 380) { bottle.hasCollided = true; }
             else if (Math.abs(bottle.x - this.character.x) > 720) { bottle.hasCollided = true; }
         }
-        if (bottle.hasCollided) {
-            this.turnThrownBottleToSplashBottle(bottle, i);
-        }
+        if (bottle.hasCollided) { this.turnThrownBottleToSplashBottle(bottle, i);}
     }
 
     /**
@@ -358,11 +355,8 @@ addToMap(mo) {
             let enemy = this.level.enemies[j];
             if (!bottle.isColliding(enemy)) { continue; }
             let shouldStop = null;
-            if (enemy instanceof Chicken || enemy instanceof ChickenSmall) {
-                shouldStop = this.handleChickenHit(j, pierces);
-            } else if (enemy instanceof Endboss) {
-                shouldStop = this.handleEndbossHit(bottle, enemy, pierces);
-            }
+            if (enemy instanceof Chicken || enemy instanceof ChickenSmall) { shouldStop = this.handleChickenHit(j, pierces);
+            } else if (enemy instanceof Endboss) {shouldStop = this.handleEndbossHit(bottle, enemy, pierces);}
             if (shouldStop === null) { continue; }
             if (shouldStop) { bottle.hasCollided = true; break; }
         }
@@ -375,7 +369,7 @@ addToMap(mo) {
      * @returns {boolean} True if the bottle should stop.
      */
     handleChickenHit(enemyIndex, pierces) {
-        this.killChicken(enemyIndex);
+        this.enemyManager.killChicken(enemyIndex);
         return !pierces;
     }
 
@@ -403,57 +397,5 @@ addToMap(mo) {
         this.throwableObjects.splice(i, 1);
         let splash = new SplashBottle(bottle.x, bottle.y, sounds);
         this.throwableObjects.push(splash);
-    }
-
-    /**
-     * Kills a chicken enemy and creates a dead chicken object.
-     * @param {number} enemyIndex - The index of the chicken in level.enemies.
-     */
-    killChicken(enemyIndex) {
-        let enemy = this.level.enemies[enemyIndex];
-        let chickenDead = new ChickenDead(enemy.x, enemy.y - 20, enemy);
-        this.killedChickenPlaySounds(enemy);
-        this.deadEnemies.push(chickenDead);
-        this.level.enemies.splice(enemyIndex, 1);
-    }
-
-    /**
-     * Plays the appropriate sound for a killed chicken.
-     * @param {MovableObject} enemy - The killed enemy.
-     */
-    killedChickenPlaySounds(enemy) {
-        if (enemy instanceof Chicken) {
-            this.sounds.playOnce(this.sounds.CHICKEN_DEAD);
-        } else if (enemy instanceof ChickenSmall) {
-            this.sounds.playOnce(this.sounds.CHICKEN_SMALL_DEAD);
-        } else if (enemy instanceof Endboss) {
-            this.sounds.playOnce(this.sounds.CHICKEN_ENDBOSS_DEAD);
-        }
-    }
-
-    /**
-     * Cleans up dead enemy objects from the world after a delay.
-     */
-    cleanupDeadEnemies() {
-        let currentTime = new Date().getTime();
-        for (let i = this.deadEnemies.length - 1; i >= 0; i--) {
-            let deadEnemy = this.deadEnemies[i];
-            if (currentTime - deadEnemy.createdTime > 1000) {
-                this.deadEnemies.splice(i, 1);
-            }
-        }
-    }
-
-    /**
-     * Removes enemies that have moved far offscreen.
-     */
-    cleanupOffscreenEnemies() {
-        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
-            let enemy = this.level.enemies[i];
-            if (enemy instanceof Endboss) { continue; }
-            if (enemy.x < -300 && enemy.x < this.character.x) {
-                this.level.enemies.splice(i, 1);
-            }
-        }
     }
 }
