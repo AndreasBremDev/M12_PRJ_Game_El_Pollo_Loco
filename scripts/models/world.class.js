@@ -18,7 +18,7 @@ class World {
     attackOneLastThrowTime = 0;
     attackOneCooldown = 750;
     attackTwoLastThrowTime = 0;
-    attackTwoCooldown = 15000;
+    attackTwoCooldown = 10000;
     lastJumpTime = 0;
     jumpProtectionTime = 300;
     coins;

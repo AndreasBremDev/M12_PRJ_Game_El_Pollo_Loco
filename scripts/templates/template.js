@@ -35,5 +35,5 @@ function topSectionGameoverWinTemplate() {
  */
 function bottomSectionGameoverWinTemplate() {
     return /* html */`
-        <button id="btnPlay" class="epl-btn epl-btn-padding epl-btn-imprint epl-btn-animated" onclick="playGame(false)">REPLAY</button>`;
+        <button id="btnPlay" class="epl-btn epl-btn-padding epl-btn-imprint epl-btn-animated" onclick="playGame()">REPLAY</button>`;
 }

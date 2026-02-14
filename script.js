@@ -98,16 +98,8 @@ function playGame(loadingSpinner = true) {
         if (isPreloadFinished && timePassed > 2500) {
             clearInterval(checkFinished);
             prepareAndStartGame();
-        } else { /* console.log('waiting for preload to finish...'); */ }
+        } else { /* possible console.log('waiting for preload to finish...'); */ }
     }, 100);
-}
-
-/**
- * Restarts the game without showing the loading spinner.
- */
-function replayGame() {
-    endGame();
-    playGame(false);
 }
 
 /**
@@ -153,6 +145,7 @@ function loadingSpinnerImages() {
  * @param {string} [background=menuBg] - Background image style.
  */
 function showMenuTab(tabName, background = menuBg) {
+    if (world && world.gameRunning) {endGame();}
     setMidSectionBg(background);
     toggleHtmlElementDisplay('canvasWrapper', 'none');
     toggleHtmlElementDisplay('overlayMain', 'block');
@@ -163,7 +156,6 @@ function showMenuTab(tabName, background = menuBg) {
     (tabName === 'gameover' || tabName === 'win') && gameoverWinTopAndBottomSection();
     (tabName === 'sounds' && !initialSoundsDone) ? setDefaultSoundOptions() : setSoundsAccordingToLocalStorage();
     (tabName === 'rotateYourPhone' || tabName === 'loadingSpinner') && rotateYourPhoneTopAndBottomSection();
-    stopRepeatableSounds();
 }
 
 document.addEventListener('DOMContentLoaded', turnYourPhone);
@@ -176,6 +168,7 @@ function turnYourPhone() {
     const isPortrait = window.innerWidth < window.innerHeight;
     const isTooSmall = window.innerWidth < 720 || window.innerHeight < 480;
     if (isTooSmall && isPortrait) {
+        if (world && world.gameRunning) {endGame();}
         showMenuTab('rotateYourPhone');
     } else {
         showMenuTab('title', titleBg)

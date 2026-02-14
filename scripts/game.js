@@ -22,7 +22,6 @@ function finishGame(outcome, ev) {
     if (ev) eventBlurAndStopPropagation(ev);
     if (!world || !world.gameRunning) return;
     world.gameRunning = false;
-    stopRepeatableSounds();
     endGame();
     if (outcome === 'win') {
         window.sounds.playOnce(window.sounds.ENDGAME_WIN, 'effect');
@@ -30,8 +29,10 @@ function finishGame(outcome, ev) {
     } else if (outcome === 'lose') {
         window.sounds.playOnce(window.sounds.ENDGAME_LOOSE, 'effect');
         showMenuTab('gameover');
-    } else if (outcome === 'replay') { playGame();
-    } else { showMenuTab('title', titleBg);
+    } else if (outcome === 'replay') {
+        playGame();
+    } else {
+        showMenuTab('title', titleBg);
     }
 }
 
@@ -50,6 +51,7 @@ function stopRepeatableSounds() {
  * Cleans up state and listeners after ending a game session.
  */
 function endGame() {
+    stopRepeatableSounds();
     removeKeyboardListeners();
     removeTouchListeners();
     stopGame();
